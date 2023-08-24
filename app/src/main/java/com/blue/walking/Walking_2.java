@@ -3,6 +3,7 @@ package com.blue.walking;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,6 +70,8 @@ public class Walking_2 extends Fragment {
 
     TextView txtDate;   // 산책일지 날짜
     Calendar calendar;  // 달력
+
+    RecyclerView recyclerView;  // 산책일지 목록 띄우는 리사이클러뷰
 
 
     @Override

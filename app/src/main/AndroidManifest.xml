@@ -23,7 +23,7 @@
         android:theme="@style/Theme.Walking"
         tools:targetApi="31">
         <activity
-            android:name=".UserActivity"
+            android:name=".PetRegisterActivity"
             android:exported="false" />
 
         <provider

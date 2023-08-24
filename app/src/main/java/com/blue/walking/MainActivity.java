@@ -52,43 +52,43 @@ public class MainActivity extends AppCompatActivity {
 
                 int itemId = item.getItemId();
                 if (itemId == R.id.home) {
+                    // 홈
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.containers, homeFragment)
                             .commit();
-                    getSupportActionBar().setTitle("홈");
                     return true;
 
                 } else if (itemId == R.id.community) {
+                    // 커뮤니티
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.containers, communityFragment)
                             .commit();
-                    getSupportActionBar().setTitle("커뮤니티");
                     return true;
 
                 } else if (itemId == R.id.walking) {
+                    // 산책하기
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.containers, walkingFragment)
                             .commit();
-                    getSupportActionBar().setTitle("산책");
                     return true;
 
                 } else if (itemId == R.id.chat) {
+                    // 채팅
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.containers, chatFragment)
                             .commit();
-                    getSupportActionBar().setTitle("채팅");
                     return true;
 
                 } else if (itemId == R.id.user) {
+                    // 내 정보
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.containers, userFragment)
                             .commit();
-                    getSupportActionBar().setTitle("내 정보");
                     return true;
                 }
                 return false;

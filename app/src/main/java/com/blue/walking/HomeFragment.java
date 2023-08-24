@@ -1,8 +1,10 @@
 package com.blue.walking;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -94,6 +96,8 @@ public class HomeFragment extends Fragment {
     ImageView imgCommunity;  // 커뮤니티 +
     TextView txtCommunity1;  // 커뮤니티 글1
     TextView txtCommunity2;  // 커뮤니티 글2
+    TextView txtCommuCount1; // 커뮤니티 글1의 댓글? 카운트 수
+    TextView txtCommuCount2; // 커뮤니티 글2의 댓글? 카운트 수
 
     ImageView imgNotices;  // 공지사항 +
     TextView txtNotices1;  // 공지사항 글1
@@ -130,6 +134,22 @@ public class HomeFragment extends Fragment {
         imgFollowPet3 = rootView.findViewById(R.id.imgFollowPet3);
         imgFollowPet3.setClipToOutline(true);  // 둥근 테두리 적용
 
+
+        imgStart = rootView.findViewById(R.id.imgStart);
+        imgStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /** Fragment 끼리 이동하기 위해서는 Activity 내 Fragment manager 를 통해 이동하게 되며,
+                 * Activity 위에서 이동하기 때문에 intent 가 아닌 메소드를 통해서 이동하게 된다. */
+
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                WalkingFragment walkingFragment = new WalkingFragment();
+                // 프레그먼트 화면을 walkingFragment 로 활성화
+                transaction.replace(R.id.containers, walkingFragment);
+                // 꼭 commit 을 해줘야 바뀜
+                transaction.commit();
+            }
+        });
 
 
         return rootView;

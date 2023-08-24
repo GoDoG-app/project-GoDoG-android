@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        android:icon="@drawable/home"
+        android:title="Home"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/community"
+        android:enabled="true"
+        android:icon="@drawable/list"
+        android:title="커뮤니티"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/walking"
+        android:enabled="true"
+        android:icon="@drawable/walking"
+        android:title="산책"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/chat"
+        android:enabled="true"
+        android:icon="@drawable/chat"
+        android:title="채팅"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/user"
+        android:enabled="true"
+        android:icon="@drawable/user"
+        android:title="내 정보"
+        app:showAsAction="always" />
+</menu>

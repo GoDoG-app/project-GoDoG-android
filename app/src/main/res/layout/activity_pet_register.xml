@@ -87,7 +87,7 @@
         </LinearLayout>
 
         <EditText
-            android:id="@+id/editPetName"
+            android:id="@+id/editEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -106,7 +106,7 @@
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/btnPetBrith"
+            android:id="@+id/btnBirth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#FFFFFF"
@@ -133,7 +133,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnPetMale"
+                android:id="@+id/btnMale"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -145,7 +145,7 @@
                 app:strokeWidth="1dp" />
 
             <Button
-                android:id="@+id/btnPetFemale"
+                android:id="@+id/btnFemale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"

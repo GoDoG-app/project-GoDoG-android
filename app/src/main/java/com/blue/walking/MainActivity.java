@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blue.walking.config.Config;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -28,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     WalkingFragment walkingFragment;
     ChatFragment chatFragment;
     UserFragment userFragment;
+
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +99,18 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        // 토큰 발급
+        SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+        // 토큰 확인
+        if(token.isEmpty()){
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+
+            finish();
+            return;
+        }
     }
 
 }

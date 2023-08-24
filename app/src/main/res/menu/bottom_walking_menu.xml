@@ -5,6 +5,7 @@
     <item
         android:id="@+id/walking1"
         android:title="산책하기"
+        android:visible="true"
         app:showAsAction="always" />
     <item
         android:id="@+id/walking2"

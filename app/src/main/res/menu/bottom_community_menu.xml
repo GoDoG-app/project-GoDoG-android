@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/Commu1"
+        android:title="전체"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/Commu2"
+        android:title="일상"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/Commu3"
+        android:title="정보"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/Commu4"
+        android:title="산책"
+        android:visible="true"
+        app:showAsAction="always" />
+</menu>

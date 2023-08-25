@@ -151,6 +151,27 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        imgPlace1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                Walking_3 walking_3 = new Walking_3();
+                // 프레그먼트 화면을 walking_3 로 활성화
+                transaction.replace(R.id.containers, walking_3);
+                transaction.commit();
+            }
+        });
+
+        imgPlace2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                Walking_3 walking_3 = new Walking_3();
+                // 프레그먼트 화면을 walking_3 로 활성화
+                transaction.replace(R.id.containers, walking_3);
+                transaction.commit();
+            }
+        });
 
         return rootView;
     }

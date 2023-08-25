@@ -102,21 +102,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_weight="10"
-            android:text="생일"
+            android:text="나이"
             android:textColor="#000000"
             android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/btnBirth"
+        <EditText
+            android:id="@+id/editPetAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#FFFFFF"
-            android:text="날짜 선택"
-            android:textColor="#000000"
-            android:textSize="16sp"
-            app:cornerRadius="5dp"
-            app:strokeColor="#979797"
-            app:strokeWidth="1dp" />
+            android:ems="10"
+            android:hint="나이를 입력하세요 (ex. 3)"
+            android:inputType="text"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/textView8"

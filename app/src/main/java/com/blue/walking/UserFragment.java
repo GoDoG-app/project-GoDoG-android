@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,27 +96,80 @@ public class UserFragment extends Fragment {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_user, container, false);
 
+        imgSetting = rootView.findViewById(R.id.imgSetting);
+        userNickname = rootView.findViewById(R.id.userNickname);
+        userInfo = rootView.findViewById(R.id.userInfo);
+        userPlace = rootView.findViewById(R.id.userPlace);
+        userComment = rootView.findViewById(R.id.userComment);
+        userUpdate = rootView.findViewById(R.id.userUpdate);
+        userTemp = rootView.findViewById(R.id.userTemp);
+        userScore1 = rootView.findViewById(R.id.userScore1);
+        userScore2 = rootView.findViewById(R.id.userScore2);
+
         imgUser = rootView.findViewById(R.id.imgUser);
         imgUser.setClipToOutline(true);  // 둥근 테두리 적용
 
         imgPet = rootView.findViewById(R.id.imgPet);
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
 
+        petNickname = rootView.findViewById(R.id.petNickname);
+        petInfo = rootView.findViewById(R.id.petInfo);
+        petComment = rootView.findViewById(R.id.petComment);
+        petUpdate = rootView.findViewById(R.id.petUpdate);
+        imgPetAddition = rootView.findViewById(R.id.imgPetAddition);
+
+        btnFollowList = rootView.findViewById(R.id.btnFollowList);
+        btnWalkList = rootView.findViewById(R.id.btnWalkList);
+        btnCommuList = rootView.findViewById(R.id.btnCommuList);
 
         progressBar = rootView.findViewById(R.id.progressBar);
         progressBar.setProgress((int) 36.5);
         // 프로그래스바 초기값 (소숫점을 붙이니 int 로만 가능한거 같음. (float)를 해봐도 int 로 고쳐진다)
 
 
-        imgPetAddition = rootView.findViewById(R.id.imgPetAddition);
+
         imgPetAddition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 반려가족 추가
                 Intent intent;
                 intent = new Intent(getActivity(), PetRegisterActivity.class);
                 // fragment 에서는 this 사용이 불가능해서 getActivity 를 이용
 
                 startActivity(intent);
+            }
+        });
+
+        petUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 반려가족 수정
+                Intent intent;
+                intent = new Intent(getActivity(), PetUpdateActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        userUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 프로필 수정
+                Intent intent;
+                intent = new Intent(getActivity(), UserUpdateActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnWalkList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 산책 기록 보기
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                Walking_2 walking_2 = new Walking_2();
+                // 프레그먼트 화면을 walkingFragment 로 활성화
+                transaction.replace(R.id.containers, walking_2);
+                // 꼭 commit 을 해줘야 바뀜
+                transaction.commit();
             }
         });
 

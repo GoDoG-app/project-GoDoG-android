@@ -80,6 +80,17 @@ public class RegisterActivity extends AppCompatActivity {
         btnMale = findViewById(R.id.btnMale);
         btnFemale = findViewById(R.id.btnFemale);
         btnRegister = findViewById(R.id.btnRegister);
+        imgBack = findViewById(R.id.imgBack);
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            // 뒤로가기
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         txtPlace.setOnClickListener(new View.OnClickListener() {
             @Override

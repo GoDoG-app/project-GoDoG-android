@@ -104,13 +104,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
         token = sp.getString(Config.ACCESS_TOKEN, "");
         // 토큰 확인
-        if(token.isEmpty()){
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-
-            finish();
-            return;
-        }
+//        if(token.isEmpty()){
+//            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//            startActivity(intent);
+//
+//            finish();
+//            return;
+//        }
     }
 
 }

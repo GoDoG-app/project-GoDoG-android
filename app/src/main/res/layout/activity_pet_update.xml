@@ -13,7 +13,7 @@
         android:layout_marginStart="11dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="251dp"
-        android:text="반려가족 추가"
+        android:text="반려가족 수정"
         android:textColor="#000000"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,9 +52,9 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:background="@drawable/round_circle_backgroud"
-            app:srcCompat="@drawable/group_26"
             android:elevation="10dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/dog" />
 
         <TextView
             android:id="@+id/txtImg"
@@ -94,6 +94,7 @@
             android:ems="10"
             android:hint="이름을 입력하세요"
             android:inputType="text"
+            android:text="똘이"
             android:textSize="16sp" />
 
         <TextView
@@ -180,12 +181,12 @@
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnUpdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="#FFD953"
-            android:text="추가 완료"
+            android:text="수정 완료"
             android:textColor="#000000"
             android:textSize="20sp"
             app:cornerRadius="10dp" />

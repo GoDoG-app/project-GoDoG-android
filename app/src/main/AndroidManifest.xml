@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -28,10 +27,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".PetUpdateActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegionActivity"
             android:exported="false" />
         <activity
             android:name=".PetRegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserUpdateActivity"
             android:exported="false" />
 
         <provider
@@ -59,7 +64,6 @@
                     android:scheme="kakao80e37f349a16fcd565298d9e9591c338" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:exported="false" />

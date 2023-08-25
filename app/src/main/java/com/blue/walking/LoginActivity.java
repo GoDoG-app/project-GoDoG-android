@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.blue.walking.api.NetworkClient;
@@ -52,6 +51,16 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         txtRegister = findViewById(R.id.txtRegister);
 
+        txtRegister.setOnClickListener(new View.OnClickListener() {
+            // 회원가입 텍스트 클릭 -> 회원가입 엑티비티로 이동
+            @Override
+            public void onClick(View view) {
+                Intent intent;
+                intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 String password = editPassword.getText().toString().trim();
-                if (password.length() < 4 || password.length() >12){
+                if (password.length() < 6 || password.length() >12){
                     Snackbar.make(btnLogin,
                             "비밀번호 길이가 잘못되었습니다.",
                             Snackbar.LENGTH_SHORT).show();

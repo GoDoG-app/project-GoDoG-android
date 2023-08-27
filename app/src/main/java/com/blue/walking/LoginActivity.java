@@ -1,5 +1,7 @@
 package com.blue.walking;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -21,6 +23,7 @@ import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.User;
+import com.blue.walking.model.UserKakaoToken;
 import com.blue.walking.model.UserRes;
 import com.google.android.material.snackbar.Snackbar;
 import com.kakao.sdk.common.KakaoSdk;
@@ -148,6 +151,38 @@ public class LoginActivity extends AppCompatActivity {
                     } else if (oAuthToken != null) {
                         // 로그인 성공
                         Log.i("aaa", "로그인 성공(토큰): " + oAuthToken.getAccessToken());
+
+                        // 토큰을 받아오면 토큰을 서버로 전달
+                        Retrofit retrofit = NetworkClient.getRetrofitClient(LoginActivity.this);
+
+                        UserApi api = retrofit.create(UserApi.class);
+
+                        UserKakaoToken userKakaoToken = new UserKakaoToken(oAuthToken.getIdToken());
+
+                        Call<UserKakaoToken> call = api.sendToken(userKakaoToken);
+
+                        call.enqueue(new Callback<UserKakaoToken>() {
+                            @Override
+                            public void onResponse(Call<UserKakaoToken> call, Response<UserKakaoToken> response) {
+                                if (response.isSuccessful()) {
+
+                                    Log.i("test","토큰 전송 성공: "+userKakaoToken);
+
+                                } else {
+                                    Log.e("test","토큰 전송 실패: "+response.code());
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<UserKakaoToken> call, Throwable t) {
+
+                                Log.e(TAG,"서버 연결 오류:",t);
+
+                            }
+                        });
+
+
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         // 프로필 수정창으로 이동

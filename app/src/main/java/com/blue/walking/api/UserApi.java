@@ -1,6 +1,7 @@
 package com.blue.walking.api;
 
 import com.blue.walking.model.User;
+import com.blue.walking.model.UserKakaoToken;
 import com.blue.walking.model.UserRes;
 
 import retrofit2.Call;
@@ -14,5 +15,9 @@ public interface UserApi {
 
     @POST("/user/login")
     Call<UserRes> login(@Body User user);
+
+    // 카카오 로그인 인증 토큰
+    @POST("/user/login/kakaoToken")
+    Call<UserKakaoToken> sendToken(@Body UserKakaoToken userKakaoToken);
 
 }

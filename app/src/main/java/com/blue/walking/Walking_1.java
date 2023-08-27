@@ -67,6 +67,7 @@ public class Walking_1 extends Fragment {
     TextView txtTime;    // 산책 시간
     TextView txtDistance;  // 산책 거리
     Button btnReset;  // 산책 초기화
+    TextView txtPlace;  // 산책로 추천을 통해 산책하기를 시작했을때, 나오는 추천 장소 이름
 
     boolean i = true;  // 산책 시작 이미지 변경에 사용
 
@@ -85,10 +86,12 @@ public class Walking_1 extends Fragment {
             public void onClick(View v) {
                 btnReset.setVisibility(View.VISIBLE); // 초기화 버튼 띄우기
 
+
                 if (i == true){
                     // 정지로 변경
                     imgStart.setImageResource(R.drawable.baseline_stop_24);
                     i = false;
+
                 } else {
                     // 정지 눌렀을때 다시 시작으로 변경 + 초기화 버튼 숨기기
                     imgStart.setImageResource(R.drawable.baseline_play_arrow_24);

@@ -3,10 +3,15 @@ package com.blue.walking;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.MapView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,13 +60,59 @@ public class Walking_3 extends Fragment {
         }
     }
 
+
+
+    ImageView imgLoop;  // 산책로 새로고침
+    TextView txtRegion;  // 현재 위치 주소
+
+    MapView mapView1;   // 첫번째 산책로 지도
+    TextView txtPlace1; // 첫번재 산책로 이름
+    TextView txtTime1;  // 첫번째 산책로 이동 시간
+    TextView txtKm1;    // 첫번째 산책로 거리
+
+    MapView mapView2;   // 두번째 산책로 지도
+    TextView txtPlace2; // 두번째 산책로 이름
+    TextView txtTime2;  // 두번째 산책로 이동 시간
+    TextView txtKm2;    // 두번째 산책로 거리
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup)  inflater.inflate(R.layout.fragment_walking_3, container, false);
 
+        mapView1 = rootView.findViewById(R.id.mapView1);
+        mapView2 = rootView.findViewById(R.id.mapView2);
+
+        mapView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                WalkingFragment walkingFragment = new WalkingFragment();
+                // 프레그먼트 화면을 walkingFragment 로 활성화
+                transaction.replace(R.id.containers, walkingFragment);
+                // 꼭 commit 을 해줘야 바뀜
+                transaction.commit();
+            }
+        });
+
+        mapView2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                WalkingFragment walkingFragment = new WalkingFragment();
+                // 프레그먼트 화면을 walkingFragment 로 활성화
+                transaction.replace(R.id.containers, walkingFragment);
+                // 꼭 commit 을 해줘야 바뀜
+                transaction.commit();
+            }
+        });
 
         return rootView;
     }
+
+    // 알러트 다이얼로그
+
+
 }

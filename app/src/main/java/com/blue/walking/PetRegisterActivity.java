@@ -18,7 +18,7 @@ public class PetRegisterActivity extends AppCompatActivity {
     ImageView imgPet;  // 강아지 이미지
     TextView txtImg;   // 강아지 사진 선택
     EditText editPetName;  // 강아지 이름
-    Button btnPetBrith;  // 강아지 생일 선택
+    Button editPetAge;  // 강아지 생일 선택
     Button btnPetMale;  // 강아지 성별 남성
     Button btnPetFemale;  // 강아지 성별 여성
     EditText editComment;  // 한 줄 소개

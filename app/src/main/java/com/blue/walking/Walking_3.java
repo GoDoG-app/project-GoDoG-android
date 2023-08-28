@@ -1,10 +1,13 @@
 package com.blue.walking;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,24 +91,14 @@ public class Walking_3 extends Fragment {
         mapView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                WalkingFragment walkingFragment = new WalkingFragment();
-                // 프레그먼트 화면을 walkingFragment 로 활성화
-                transaction.replace(R.id.containers, walkingFragment);
-                // 꼭 commit 을 해줘야 바뀜
-                transaction.commit();
+                showAlertDialog();
             }
         });
 
         mapView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                WalkingFragment walkingFragment = new WalkingFragment();
-                // 프레그먼트 화면을 walkingFragment 로 활성화
-                transaction.replace(R.id.containers, walkingFragment);
-                // 꼭 commit 을 해줘야 바뀜
-                transaction.commit();
+                showAlertDialog();
             }
         });
 
@@ -113,6 +106,33 @@ public class Walking_3 extends Fragment {
     }
 
     // 알러트 다이얼로그
+    private void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("[안내]");
+        builder.setMessage("산책을 시작하시겠습니까?");
 
+        builder.setCancelable(false); // 아래 둘 중 한개의 버튼을 꼭 누르게 해줌(외각을 클릭해도 안사라지게)
 
+        // 긍정버튼
+        builder.setPositiveButton("시작", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                WalkingFragment walkingFragment = new WalkingFragment();
+                // 프레그먼트 화면을 walkingFragment 로 활성화
+                transaction.replace(R.id.containers, walkingFragment);
+                // 꼭 commit 을 해줘야 바뀜
+                transaction.commit();
+            }
+        });
+
+        // 부정버튼
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+        builder.show();
+    }
 }

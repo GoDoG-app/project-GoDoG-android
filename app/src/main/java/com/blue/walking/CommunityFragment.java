@@ -1,5 +1,6 @@
 package com.blue.walking;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 
 /**
@@ -67,6 +69,7 @@ public class CommunityFragment extends Fragment {
 
     /** 화면뷰 */
     BottomNavigationView bottomNavigationView;
+    FloatingActionButton floatingActionButton;
 
     /** 프레그먼트 */
     CommuFragment_1 commuFragment_1;  // 커뮤 전체
@@ -81,6 +84,8 @@ public class CommunityFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_community, container, false);
 
         bottomNavigationView = rootView.findViewById(R.id.bottomNavigationView);
+        floatingActionButton = rootView.findViewById(R.id.floatingActionButton);
+
         commuFragment_1 = new CommuFragment_1();
         commuFragment_2 = new CommuFragment_2();
         commuFragment_3 = new CommuFragment_3();
@@ -131,6 +136,16 @@ public class CommunityFragment extends Fragment {
 
                 }
                 return false;
+            }
+        });
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 커뮤니티 게시글 업로드 엑티비티로 이동
+                Intent intent;
+                intent = new Intent(getActivity(), CommuUpPostActivity.class);
+                startActivity(intent);
             }
         });
 

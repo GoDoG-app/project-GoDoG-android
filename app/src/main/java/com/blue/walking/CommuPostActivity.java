@@ -9,6 +9,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blue.walking.api.NetworkClient;
+
+import retrofit2.Retrofit;
+
 public class CommuPostActivity extends AppCompatActivity {
 
     /** 화면뷰 */
@@ -30,7 +34,6 @@ public class CommuPostActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commu_post);
-
 
     }
 }

@@ -32,17 +32,15 @@ public class PetRegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_register);
 
+        imgBack = findViewById(R.id.imgBack);
         imgPet = findViewById(R.id.imgPet);
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
 
-
-        imgBack = findViewById(R.id.imgBack);
+        // 뒤로가기
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent;
-                intent = new Intent(PetRegisterActivity.this, UserFragment.class);
-                startActivity(intent); // 음.. 내 정보로 돌아가지 않고 홈으로 돌아감. 수정필요
+                finish();
             }
         });
 

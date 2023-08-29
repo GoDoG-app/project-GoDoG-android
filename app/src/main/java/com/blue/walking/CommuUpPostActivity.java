@@ -120,7 +120,7 @@ public class CommuUpPostActivity extends AppCompatActivity {
 
 
 
-        /** 커뮤니티 게시물 작성 API */
+        /** 커뮤니티 게시물 작성 API (아직 안됨) */
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,10 +148,9 @@ public class CommuUpPostActivity extends AppCompatActivity {
                 RequestBody fileBody = RequestBody.create(photoFile, MediaType.parse("image/jpg"));
                 MultipartBody.Part photo = MultipartBody.Part.createFormData("Photo", photoFile.getName(), fileBody);
 
-                // 내용과 카테고리 선택한 정보를 Post 에 담음
-                Post post = new Post(content, category);
+                RequestBody textBody = RequestBody.create(content,  MediaType.parse("text/plain"));
 
-                Call<ResultRes> call = api.upPost("Bearer"+token,photo,post);
+                Call<ResultRes> call = api.upPost("Bearer "+token,photo,textBody); //todo: 카테고리는 어떻게보낼지..
                 call.enqueue(new Callback<ResultRes>() {
                     @Override
                     public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {

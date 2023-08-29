@@ -24,7 +24,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imgPet"
+                android:id="@+id/imgUser"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_weight="0"
@@ -46,7 +46,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/txtPetName"
+                        android:id="@+id/txtUserName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"

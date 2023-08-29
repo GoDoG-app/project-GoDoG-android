@@ -40,6 +40,10 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
         Post post = postArrayList.get(position);
 
         holder.txtContent.setText(post.postContent);
+        holder.txtUserName.setText(post.user_nickname);
+        holder.txtCategory.setText(post.category);
+        holder.txtPlace.setText(post.user_region);
+        holder.txtLike.setText(post.isLike);
 
         // 카테고리 항목
         String category = post.category;
@@ -56,6 +60,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
         // 이미지
         Glide.with(context).load(post.postImgUrl).into(holder.imgContent);
+        Glide.with(context).load(post.user_profile_image).into(holder.imgUser);
 
     }
 
@@ -68,8 +73,8 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
         /** 화면뷰 */
         CardView cardView;  // 카드뷰
-        ImageView imgPet;   // 프로필 사진
-        TextView txtPetName;  // 이름
+        ImageView imgUser;   // 프로필 사진
+        TextView txtUserName;  // 이름
         TextView txtCategory; // 카테고리
         TextView txtPlace;  // 유저의 지역
         TextView txtTime;   // 업로드 시간
@@ -85,13 +90,12 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
             super(itemView);
 
             cardView = itemView.findViewById(R.id.cardView);
-            imgPet = itemView.findViewById(R.id.imgPet);
-            txtPetName = itemView.findViewById(R.id.txtPetName);
+            imgUser = itemView.findViewById(R.id.imgUser);
+            txtUserName = itemView.findViewById(R.id.txtUserName);
             txtCategory = itemView.findViewById(R.id.txtCategory);
             txtPlace = itemView.findViewById(R.id.txtPlace);
             txtTime = itemView.findViewById(R.id.txtTime);
             txtContent = itemView.findViewById(R.id.txtContent);
-
             imgLike = itemView.findViewById(R.id.imgLike);
             txtLike = itemView.findViewById(R.id.txtLike);
             txtComment = itemView.findViewById(R.id.txtComment);

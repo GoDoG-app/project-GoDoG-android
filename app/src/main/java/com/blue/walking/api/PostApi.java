@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
@@ -17,10 +18,11 @@ import retrofit2.http.Query;
 public interface PostApi {
 
     // 커뮤니티 게시물 작성 API
+    @Multipart
     @POST("/posting")
     Call<ResultRes> upPost(@Header("Authorization") String token,
                            @Part MultipartBody.Part photo,
-                           @Body Post post);
+                           @Part ("content")RequestBody content);  // todo: 카테고리는..?
                             // 폼 데이터 보내는 @Part
 
     // 커뮤니티 게시물 전체보기 API

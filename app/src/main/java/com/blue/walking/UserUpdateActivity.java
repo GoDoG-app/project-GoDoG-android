@@ -3,6 +3,7 @@ package com.blue.walking;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,8 +29,16 @@ public class UserUpdateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_update);
 
+        imgBack = findViewById(R.id.imgBack);
         imgUser = findViewById(R.id.imgUser);
         imgUser.setClipToOutline(true);  // 둥근 테두리 적용
 
+        // 뒤로가기
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 }

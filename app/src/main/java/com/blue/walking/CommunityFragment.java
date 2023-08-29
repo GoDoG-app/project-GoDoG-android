@@ -16,9 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.blue.walking.adapter.CommuAdapter;
+import com.blue.walking.model.Post;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,6 +80,7 @@ public class CommunityFragment extends Fragment {
     CommuFragment_2 commuFragment_2;  // 커뮤 일상
     CommuFragment_3 commuFragment_3;  // 커뮤 정보
     CommuFragment_4 commuFragment_4;  // 커뮤 산책
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

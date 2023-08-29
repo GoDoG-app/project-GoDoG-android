@@ -6,6 +6,6 @@ public class Config {
 
     public static final String ACCESS_TOKEN = "accessToken";
 
-    public static final String HOST = "https://t35396rnjh.execute-api.us-east-1.amazonaws.com";
+    public static final String HOST = "https://m2243e589l.execute-api.us-east-1.amazonaws.com";
 
 }

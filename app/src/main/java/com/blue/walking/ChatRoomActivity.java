@@ -17,6 +17,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     EditText editChat;
     ImageView imgMenu;
     ImageView imgSend;
+    ImageView imgBack;
     RecyclerView recyclerView;
 
 
@@ -26,6 +27,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat_room);
 
         imgMenu = findViewById(R.id.imgMenu);
+        imgBack = findViewById(R.id.imgBack);
 
         // TODO : 약속하기와 파일첨부 메뉴 띄우기 (엑티비티가 다이얼로그로 띄워지는지 아직 확인 안해봄)
         imgMenu.setOnClickListener(new View.OnClickListener() {
@@ -34,6 +36,14 @@ public class ChatRoomActivity extends AppCompatActivity {
                 Intent intent;
                 intent = new Intent(ChatRoomActivity.this, ChatMenuActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        // 뒤로가기
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

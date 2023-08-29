@@ -37,16 +37,17 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="산책시간"
-                    android:textSize="14sp" />
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/txtTime"
+                <Chronometer
+                    android:id="@+id/chronometer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="00 : 00"
-                    android:textSize="18sp" />
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <ImageView
@@ -73,7 +74,8 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="산책거리"
-                    android:textSize="14sp" />
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/txtDistance"
@@ -82,7 +84,8 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="0 km"
-                    android:textSize="18sp" />
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
             </LinearLayout>
         </LinearLayout>
 

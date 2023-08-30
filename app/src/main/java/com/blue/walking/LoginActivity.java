@@ -1,5 +1,7 @@
 package com.blue.walking;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -16,19 +18,31 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.User;
+import com.blue.walking.model.UserKakaoToken;
 import com.blue.walking.model.UserRes;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.kakao.sdk.auth.model.OAuthToken;
 import com.kakao.sdk.common.KakaoSdk;
 import com.kakao.sdk.common.util.Utility;
 import com.kakao.sdk.user.UserApiClient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = editEmail.getText().toString().trim();
                 Pattern pattern = Patterns.EMAIL_ADDRESS;
-                if (pattern.matcher(email).matches() == false){
+                if (pattern.matcher(email).matches() == false) {
                     Snackbar.make(btnLogin,
                             "이메일 형식을 바르게 입력하세요.",
                             Snackbar.LENGTH_SHORT).show();
@@ -74,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 String password = editPassword.getText().toString().trim();
-                if (password.length() < 6 || password.length() >12){
+                if (password.length() < 6 || password.length() > 12) {
                     Snackbar.make(btnLogin,
                             "비밀번호 길이가 잘못되었습니다.",
                             Snackbar.LENGTH_SHORT).show();
@@ -94,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<UserRes> call, Response<UserRes> response) {
                         dismissProgress();
-                        if (response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             UserRes res = response.body();
 
                             SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
@@ -106,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
 
-                        } else if(response.code() == 400) {
+                        } else if (response.code() == 400) {
                             Snackbar.make(btnLogin,
                                     "이메일이나 비밀번호가 맞지않습니다.",
                                     Snackbar.LENGTH_SHORT).show();
@@ -133,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // 키해시 가져오기
         String keyHash = Utility.INSTANCE.getKeyHash(LoginActivity.this);
-        Log.i("test", "키해시:"+keyHash);
+        Log.i("test", "키해시:" + keyHash);
 
         // sdk 초기화
         KakaoSdk.init(LoginActivity.this, "80e37f349a16fcd565298d9e9591c338");
@@ -149,17 +163,41 @@ public class LoginActivity extends AppCompatActivity {
                         // 로그인 성공
                         Log.i("aaa", "로그인 성공(토큰): " + oAuthToken.getAccessToken());
 
+                        Retrofit retrofit = NetworkClient.getRetrofitClient(LoginActivity.this);
+                        UserApi api = retrofit.create(UserApi.class);
+                        String kakaoToken = oAuthToken.getAccessToken();
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("kakaoToken", kakaoToken);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(jsonObject));
+
+                        Call<UserKakaoToken> call = api.sendToken(new UserKakaoToken(kakaoToken));
+                        call.enqueue(new Callback<UserKakaoToken>() {
+                            @Override
+                            public void onResponse(Call<UserKakaoToken> call, Response<UserKakaoToken> response) {
+                                if (response.isSuccessful()) {
+
+                                    Log.i("test","토큰 전송 성공: "+kakaoToken);
+
+                                } else {
+                                    Log.e("test","토큰 전송 실패: "+response.code());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<UserKakaoToken> call, Throwable t) {
+                                Log.e(TAG,"서버 연결 오류:",t);
+                            }
+                        });
+
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         // 프로필 수정창으로 이동
                         startActivity(intent);
+
                     }
                     return null;
                 });
-
             }
         });
-
-
     }
     Dialog dialog;
 
@@ -175,4 +213,6 @@ public class LoginActivity extends AppCompatActivity {
     void dismissProgress(){
         dialog.dismiss();
     }
+
+
 }

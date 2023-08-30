@@ -51,14 +51,14 @@ public class RegisterActivity extends AppCompatActivity {
     EditText editPassword2;  // 비밀번호 확인
     EditText editNickname;   // 닉네임 입력
     TextView txtPlace;  // 지역 설정
-    Button btnBrith;    // 생일 입력
+    Button btnBirth;    // 생일 입력
     Button btnMale;     // 성별 남성
     Button btnFemale;   // 성별 여성
 
     Button btnRegister; // 회원가입
 
     String token;
-    String date = "";
+    String date = null;
     int gender = 1;
     double latitude;
     double longitude;
@@ -76,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
         editPassword2 = findViewById(R.id.editPassword2);
         editNickname = findViewById(R.id.editNickname);
         txtPlace = findViewById(R.id.txtPlace);
-        btnBrith = findViewById(R.id.btnBirth);
+        btnBirth = findViewById(R.id.btnBirth);
         btnMale = findViewById(R.id.btnMale);
         btnFemale = findViewById(R.id.btnFemale);
         btnRegister = findViewById(R.id.btnRegister);
@@ -115,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         // 생일가져오기
-        btnBrith.setOnClickListener(new View.OnClickListener() {
+        btnBirth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 오늘 날짜로 셋팅하기 위해 변수로 저장
@@ -148,7 +148,8 @@ public class RegisterActivity extends AppCompatActivity {
                         }
 
                         date = year + "-" + strM + "-" + strD;
-                        btnBrith.setText(date);
+                        btnBirth.setText(date);
+                        Log.i("DATE",date);
                     }
                 }, y, m, d); // 날짜 셋팅한 변수 입력
                 // 화면에 보여주기
@@ -199,7 +200,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 String password2 = editPassword2.getText().toString().trim();
-                if (password2 != password1){
+                if (!password2.equals(password1)){
                     Snackbar.make(btnRegister,
                             "비밀번호가 일치하지않습니다.",
                             Snackbar.LENGTH_SHORT).show();
@@ -216,54 +217,65 @@ public class RegisterActivity extends AppCompatActivity {
 
                 // 지역과 생일 성별 조건은 어떻게 if문을 넣을것인가?
 
+
+
                 Retrofit retrofit = NetworkClient.getRetrofitClient(RegisterActivity.this);
                 UserApi api =retrofit.create(UserApi.class);
 
-                User user = new User(email, password1, nickname, gender, date, address, latitude, longitude);
+                Log.i("DATE",date);
 
-                Call<UserRes> call = api.register(user);
+                if (date != null && !date.isEmpty()) {
+                    User user = new User(email, password1, nickname, gender, date, address, latitude, longitude);
 
-                showProgress();
 
-                call.enqueue(new Callback<UserRes>() {
-                    @Override
-                    public void onResponse(Call<UserRes> call, Response<UserRes> response) {
+                    Call<UserRes> call = api.register(user);
 
-                        dismissProgress();
-                        if (response.isSuccessful()){
-                            SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sp.edit();
+                    showProgress();
 
-                            UserRes res = response.body();
-                            editor.putString(Config.ACCESS_TOKEN, res.access_token);
-                            editor.apply();
+                    call.enqueue(new Callback<UserRes>() {
+                        @Override
+                        public void onResponse(Call<UserRes> call, Response<UserRes> response) {
 
-                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                            startActivity(intent);
+                            dismissProgress();
+                            if (response.isSuccessful()) {
+                                SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sp.edit();
 
-                            finish();
-                        } else if(response.code() == 400){
-                            Snackbar.make(btnRegister,
-                                    "이미 회원입니다. 로그인하세요.",
-                                    Snackbar.LENGTH_SHORT).show();
-                            return;
-                        } else if(response.code() == 401){
+                                UserRes res = response.body();
+                                editor.putString(Config.ACCESS_TOKEN, res.access_token);
+                                editor.apply();
 
-                        } else if(response.code() == 404){
+                                Log.i("DATE",date);
 
-                        } else if(response.code() == 500){
+                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                startActivity(intent);
 
-                        } else{
+                                finish();
+                            } else if (response.code() == 400) {
+                                Snackbar.make(btnRegister,
+                                        "이미 회원입니다. 로그인하세요.",
+                                        Snackbar.LENGTH_SHORT).show();
+                                return;
+                            } else if (response.code() == 401) {
+
+                            } else if (response.code() == 404) {
+
+                            } else if (response.code() == 500) {
+
+                            } else {
+
+                            }
 
                         }
 
-                    }
+                        @Override
+                        public void onFailure(Call<UserRes> call, Throwable t) {
 
-                    @Override
-                    public void onFailure(Call<UserRes> call, Throwable t) {
-
-                    }
-                });
+                        }
+                    });
+                }else {
+                    Snackbar.make(btnRegister, "생일을 선택하세요.", Snackbar.LENGTH_SHORT).show();
+                }
 
 
             }

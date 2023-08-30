@@ -13,7 +13,7 @@ import android.widget.TextView;
 public class ChatRoomActivity extends AppCompatActivity {
 
     /** 화면뷰 */
-    TextView txtPetName;
+    TextView txtUserName;
     EditText editChat;
     ImageView imgMenu;
     ImageView imgSend;
@@ -29,7 +29,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         imgMenu = findViewById(R.id.imgMenu);
         imgBack = findViewById(R.id.imgBack);
 
-        // TODO : 약속하기와 파일첨부 메뉴 띄우기 (엑티비티가 다이얼로그로 띄워지는지 아직 확인 안해봄)
+        // TODO : 약속하기와 파일첨부 메뉴 띄우기 변경 예정
         imgMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,5 +46,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+
+
+
+
     }
 }

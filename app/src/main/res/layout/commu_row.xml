@@ -69,7 +69,7 @@
                             android:layout_weight="1"
                             android:gravity="right"
                             android:text="일상"
-                            android:textColor="#FFD953"
+                            android:textColor="#E47D0E"
                             android:textSize="14sp" />
                     </LinearLayout>
 

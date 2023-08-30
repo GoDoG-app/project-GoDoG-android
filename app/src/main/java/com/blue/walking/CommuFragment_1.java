@@ -140,9 +140,6 @@ public class CommuFragment_1 extends Fragment {
                     recyclerView.setAdapter(adapter);
                 } else {
                     Log.i("Call", "서버 실행 실패");
-                    //todo: 토큰 만료 문제로 한번밖에 실행 안됨
-//                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-//                    startActivity(intent);
 
                 }
             }

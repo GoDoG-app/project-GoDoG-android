@@ -80,8 +80,8 @@ public class HomeFragment extends Fragment {
 
     ImageView imgWalkPet1;  // 산책중인 친구1
     TextView txtWalkPet1;  // 산책중인 친구 이름1
-    ImageView imgWalkPet2;  // 산책중인 친구2
-    TextView txtWalkPet2;  // 산책중인 친구 이름2
+//    ImageView imgWalkPet2;  // 산책중인 친구2
+//    TextView txtWalkPet2;  // 산책중인 친구 이름2
 
     ImageView imgLoop;  // 추천 친구 새로고침
     ImageView imgFollowPet1;  // 추천 친구1
@@ -122,8 +122,8 @@ public class HomeFragment extends Fragment {
         imgWalkPet1 = rootView.findViewById(R.id.imgWalkPet1);
         imgWalkPet1.setClipToOutline(true);  // 둥근 테두리 적용
 
-        imgWalkPet2 = rootView.findViewById(R.id.imgWalkPet2);
-        imgWalkPet2.setClipToOutline(true);  // 둥근 테두리 적용
+//        imgWalkPet2 = rootView.findViewById(R.id.imgWalkPet2);
+//        imgWalkPet2.setClipToOutline(true);  // 둥근 테두리 적용
 
         imgFollowPet1 = rootView.findViewById(R.id.imgFollowPet1);
         imgFollowPet1.setClipToOutline(true);  // 둥근 테두리 적용
@@ -170,6 +170,16 @@ public class HomeFragment extends Fragment {
                 // 프레그먼트 화면을 walking_3 로 활성화
                 transaction.replace(R.id.containers, walking_3);
                 transaction.commit();
+            }
+        });
+
+        imgFollowPet1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 친구 프로필로 이동
+                Intent intent;
+                intent = new Intent(getActivity(), FriendActivity.class);
+                startActivity(intent);
             }
         });
 

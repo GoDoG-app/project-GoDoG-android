@@ -8,11 +8,13 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface PostApi {
@@ -32,6 +34,13 @@ public interface PostApi {
                                @Header("Authorization") String token);
 
     // 커뮤니티 게시물 좋아요 API
+    @POST("/post/{postId}/like")
+    Call<ResultRes> setPostLike(@Path("postId") int postId,
+                                @Header("Authorization") String token);
 
+    // 커뮤니티 게시물 좋아요 해제 API
+    @DELETE("/post/{postId}/like")
+    Call<ResultRes> deletePostLike(@Path("postId") int postId,
+                                @Header("Authorization") String token);
 
 }

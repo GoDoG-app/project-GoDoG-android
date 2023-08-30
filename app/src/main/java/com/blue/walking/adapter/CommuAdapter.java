@@ -2,6 +2,8 @@ package com.blue.walking.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blue.walking.CommuPostActivity;
 import com.blue.walking.R;
 import com.blue.walking.UserUpdateActivity;
+import com.blue.walking.api.NetworkClient;
+import com.blue.walking.api.PostApi;
+import com.blue.walking.config.Config;
 import com.blue.walking.model.Post;
+import com.blue.walking.model.ResultRes;
 import com.bumptech.glide.Glide;
 
 import java.io.Serializable;
@@ -26,6 +32,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
@@ -76,6 +87,16 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
         } catch (ParseException e) {
             Log.i("walking", e.toString());
+        }
+
+        // 좋아요인 isLike 는 0 또는 1로 나타남
+        if(post.isLike == 0){
+            // 좋아요가 0 이면 빈 하트 사진으로
+            holder.imgLike.setImageResource(R.drawable.baseline_favorite_border_24);
+
+        } else if(post.isLike == 1){
+            // 좋아요가 1이면 채워진 하트 사진으로
+            holder.imgLike.setImageResource(R.drawable.baseline_favorite_24);
         }
 
     }
@@ -148,9 +169,61 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
             imgLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     Log.i("imgLike", "좋아요 누름");
 
+                    // 유저가 누른 포스트의 좋아요 유무 확인해서, API 호출
+                    int index = getAdapterPosition();
+                    Post post = postArrayList.get(index);
+
+                    Retrofit retrofit = NetworkClient.getRetrofitClient(context);
+                    PostApi api = retrofit.create(PostApi.class);
+
+                    SharedPreferences sp = context.getSharedPreferences(Config.PREFERENCE_NAME, Context.MODE_PRIVATE);
+                    String token = sp.getString(Config.ACCESS_TOKEN, "");
+
+                    if (post.isLike ==0){ // 좋아요가 안눌러져 있는 상태니깐 좋아요 API 사용
+                        Call<ResultRes> call = api.setPostLike(post.post_id, "Bearer "+token);
+                        call.enqueue(new Callback<ResultRes>() {
+                            @Override
+                            public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
+                                if (response.isSuccessful()){
+                                    Log.i("Call", "서버 실행 성공");
+
+                                    post.isLike = 1; // 좋아요 값을 1로 변경
+                                    notifyDataSetChanged(); // 어뎁터 업데이트
+
+                                } else {
+                                    Log.i("Call", "서버 실행 실패");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResultRes> call, Throwable t) {
+                                Log.i("Call", "서버 실행 실패");
+                            }
+                        });
+                    } else { // 좋아요가 눌러져 있는 상태니깐 좋아요 해제 API 사용
+                        Call<ResultRes> call = api.deletePostLike(post.post_id, "Bearer "+token);
+                        call.enqueue(new Callback<ResultRes>() {
+                            @Override
+                            public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
+                                if (response.isSuccessful()){
+                                    Log.i("Call", "서버 실행 성공");
+
+                                    post.isLike = 0; // 좋아요 값을 0으로 변경
+                                    notifyDataSetChanged(); // 어뎁터 업데이트
+
+                                } else {
+                                    Log.i("Call", "서버 실행 실패");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResultRes> call, Throwable t) {
+                                Log.i("Call", "서버 실행 실패");
+                            }
+                        });
+                    }
                 }
             });
         }

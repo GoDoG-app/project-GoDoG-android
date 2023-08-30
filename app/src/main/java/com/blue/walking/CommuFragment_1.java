@@ -3,6 +3,7 @@ package com.blue.walking;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,129 +97,67 @@ public class CommuFragment_1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ViewGroup rootView = (ViewGroup)  inflater.inflate(R.layout.fragment_commu_1, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_commu_1, container, false);
 
         recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //todo: 리사이클러뷰 띄우기 수정하기...(미완)
-        adapter = new CommuAdapter(getContext(), postArrayList);
-        recyclerView.setAdapter(adapter);
+        Log.i("recyclerView", "커뮤니티 카드뷰 띄우기 실행");
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        /** 전체 게시물 가져오는 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
 
+        PostApi api = retrofit.create(PostApi.class);
 
-//        // 데이터 추가로 불러오기 위해 추가된 리사이클러뷰 스크롤
-//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                int lastPosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-//                int totalCount = recyclerView.getAdapter().getItemCount(); // PostAdapter에서 가져옴
-//
-//                if (lastPosition+1 == totalCount){
-//                    // 데이터를 추가로 불러오기
-//                    // 카운트한게 리미트보다 작냐 => 작으면 데이터 불러올 필요 없음
-//                    if (count == limit){
-//                        addNetworkData();
-//                    }
-//                }
-//            }
-//        });
-        getNetworkData();
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Log.i("token", "토큰 가져옴");
+        Log.i("token", token);
+
+        Call<PostList> call = api.getPostList(offset, limit, "Bearer "+token);
+
+        call.enqueue(new Callback<PostList>() {
+            @Override
+            public void onResponse(Call<PostList> call, Response<PostList> response) {
+                if (response.isSuccessful()){
+                    PostList postList = response.body();
+
+                    Log.i("Call", "서버 실행 성공");
+
+                    // 페이징처리
+                    count = postList.count;
+                    offset = offset + count;
+
+                    postArrayList.addAll(postList.items);
+                    adapter = new CommuAdapter(getActivity(), postArrayList);
+
+                    // 프레그먼트에서 리사이클러뷰를 만들면 layoutManager 를 사용해야함
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(layoutManager);
+
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Log.i("Call", "서버 실행 실패");
+                    //todo: 토큰 만료 문제로 한번밖에 실행 안됨
+//                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+//                    startActivity(intent);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostList> call, Throwable t) {
+                Log.i("Call", "서버 실행 실패");
+            }
+        });
 
         return rootView;
     }
-
-
-    private void addNetworkData() {
-        // 레트로핏 변수 생성
-        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
-
-        // API 만들기
-        PostApi api = retrofit.create(PostApi.class);
-
-        // 토큰 가져오기
-        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-        token = sp.getString(Config.ACCESS_TOKEN, "");
-
-        // API 실행
-        Call<PostList> call = api.getPostList(offset, limit, "Bearer " + token);
-
-        call.enqueue(new Callback<PostList>() {
-            @Override
-            public void onResponse(Call<PostList> call, Response<PostList> response) {
-                if (response.isSuccessful()){
-                    PostList postList = response.body();
-
-                    // 페이징 처리
-                    count = postList.count;
-                    offset = offset + count;
-
-                    // postList 안에 있는 items 리스트를 전부 가져오고
-                    // 업데이트 하기
-                    postArrayList.addAll(postList.items);
-                    adapter.notifyDataSetChanged();
-
-                } else{
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PostList> call, Throwable t) {
-            }
-        });
-
-    }
-
-    private void getNetworkData() {
-        // 리스트 초기화
-        postArrayList.clear();
-
-        // 레트로핏 변수 생성
-        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
-
-        // API 만들기
-        PostApi api = retrofit.create(PostApi.class);
-
-        // 토큰 가져오기
-        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-        token = sp.getString(Config.ACCESS_TOKEN, "");
-
-        // API 실행
-        Call<PostList> call = api.getPostList(offset, limit, "Bearer " + token);
-
-        call.enqueue(new Callback<PostList>() {
-            @Override
-            public void onResponse(Call<PostList> call, Response<PostList> response) {
-                if (response.isSuccessful()){
-                    PostList postList = response.body();
-
-                    // 페이징 처리
-                    count = postList.count;
-                    offset = offset + count;
-
-                    // postList 안에 있는 items 리스트를 전부 가져다가
-                    // postArrayList 에 넣고 adapter 로 화면에 띄우기
-                    postArrayList.addAll(postList.items);
-                    adapter = new CommuAdapter(getActivity(), postArrayList);
-                    recyclerView.setAdapter(adapter);
-
-                } else{
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PostList> call, Throwable t) {
-            }
-        });
-    }
-
-
+//
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
 }

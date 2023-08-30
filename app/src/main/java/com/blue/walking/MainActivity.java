@@ -103,6 +103,10 @@ public class MainActivity extends AppCompatActivity {
         // 토큰 발급
         SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
         token = sp.getString(Config.ACCESS_TOKEN, "");
+
+//        Log.i("token", "로그인 토큰 정보");
+//        Log.i("token", token);
+
         // 토큰 확인
         if(token.isEmpty()){
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);

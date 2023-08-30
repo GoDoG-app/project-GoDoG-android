@@ -25,9 +25,13 @@ public interface PostApi {
                            @Part ("content")RequestBody content);  // todo: 카테고리는..?
                             // 폼 데이터 보내는 @Part
 
-    // 커뮤니티 게시물 전체보기 API
+    // 커뮤니티 게시물 전체 가져오기 API
     @GET("/posting/list")
     Call<PostList> getPostList(@Query("offset")int offset,
                                @Query("limit")int limit,
                                @Header("Authorization") String token);
+
+    // 커뮤니티 게시물 좋아요 API
+
+
 }

@@ -35,5 +35,7 @@ public class CommuPostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commu_post);
 
+
+
     }
 }

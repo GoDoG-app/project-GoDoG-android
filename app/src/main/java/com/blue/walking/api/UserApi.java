@@ -17,7 +17,7 @@ public interface UserApi {
     Call<UserRes> login(@Body User user);
 
     // 카카오 로그인 인증 토큰
-    @POST("/user/login/kakaoToken")
+    @POST("/user/kakao/oauth")
     Call<UserKakaoToken> sendToken(@Body UserKakaoToken userKakaoToken);
 
 }

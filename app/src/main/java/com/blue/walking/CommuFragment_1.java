@@ -1,9 +1,14 @@
 package com.blue.walking;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +19,7 @@ import android.view.ViewGroup;
 import com.blue.walking.adapter.CommuAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PostApi;
+import com.blue.walking.config.Config;
 import com.blue.walking.model.Post;
 import com.blue.walking.model.PostList;
 
@@ -95,24 +101,33 @@ public class CommuFragment_1 extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        // 데이터 추가로 불러오기 위해 추가된 리사이클러뷰 스크롤
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+        //todo: 리사이클러뷰 띄우기 수정하기...(미완)
+        adapter = new CommuAdapter(getContext(), postArrayList);
+        recyclerView.setAdapter(adapter);
 
-                int lastPosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-                int totalCount = recyclerView.getAdapter().getItemCount(); // PostAdapter에서 가져옴
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-                if (lastPosition+1 == totalCount){
-                    // 데이터를 추가로 불러오기
-                    // 카운트한게 리미트보다 작냐 => 작으면 데이터 불러올 필요 없음
-                    if (count == limit){
-                        addNetworkData();
-                    }
-                }
-            }
-        });
+
+//        // 데이터 추가로 불러오기 위해 추가된 리사이클러뷰 스크롤
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                int lastPosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+//                int totalCount = recyclerView.getAdapter().getItemCount(); // PostAdapter에서 가져옴
+//
+//                if (lastPosition+1 == totalCount){
+//                    // 데이터를 추가로 불러오기
+//                    // 카운트한게 리미트보다 작냐 => 작으면 데이터 불러올 필요 없음
+//                    if (count == limit){
+//                        addNetworkData();
+//                    }
+//                }
+//            }
+//        });
         getNetworkData();
 
         return rootView;
@@ -122,10 +137,16 @@ public class CommuFragment_1 extends Fragment {
     private void addNetworkData() {
         // 레트로핏 변수 생성
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+
         // API 만들기
         PostApi api = retrofit.create(PostApi.class);
+
+        // 토큰 가져오기
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
         // API 실행
-        Call<PostList> call = api.getPostList(offset, limit, "Bearer "+token);
+        Call<PostList> call = api.getPostList(offset, limit, "Bearer " + token);
 
         call.enqueue(new Callback<PostList>() {
             @Override
@@ -157,12 +178,19 @@ public class CommuFragment_1 extends Fragment {
     private void getNetworkData() {
         // 리스트 초기화
         postArrayList.clear();
+
         // 레트로핏 변수 생성
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+
         // API 만들기
         PostApi api = retrofit.create(PostApi.class);
+
+        // 토큰 가져오기
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
         // API 실행
-        Call<PostList> call = api.getPostList(offset, limit, "Bearer "+token);
+        Call<PostList> call = api.getPostList(offset, limit, "Bearer " + token);
 
         call.enqueue(new Callback<PostList>() {
             @Override
@@ -174,10 +202,11 @@ public class CommuFragment_1 extends Fragment {
                     count = postList.count;
                     offset = offset + count;
 
-                    // postList 안에 있는 items 리스트를 전부 가져오고
-                    // 업데이트 하기
+                    // postList 안에 있는 items 리스트를 전부 가져다가
+                    // postArrayList 에 넣고 adapter 로 화면에 띄우기
                     postArrayList.addAll(postList.items);
-                    adapter.notifyDataSetChanged();
+                    adapter = new CommuAdapter(getActivity(), postArrayList);
+                    recyclerView.setAdapter(adapter);
 
                 } else{
 

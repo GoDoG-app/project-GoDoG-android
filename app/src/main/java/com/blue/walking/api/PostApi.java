@@ -3,6 +3,8 @@ package com.blue.walking.api;
 import com.blue.walking.model.PostList;
 import com.blue.walking.model.ResultRes;
 
+import java.util.Map;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -12,6 +14,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -23,9 +26,14 @@ public interface PostApi {
     Call<ResultRes> upPost(@Header("Authorization") String token,
                            @Part MultipartBody.Part photo,
                            @Part ("content") RequestBody content,
-                           @Part ("category") RequestBody category
-                           );
+                           @Part ("category") RequestBody category);
                             // 폼 데이터 보내는 @Part
+
+//    @Multipart
+//    @POST("/posting")
+//    Call<ResultRes> upPost(@Header("Authorization") String token,
+//                           @PartMap Map<String, RequestBody> params);
+
 
     // 커뮤니티 게시물 전체 가져오기 API
     @GET("/posting/list")

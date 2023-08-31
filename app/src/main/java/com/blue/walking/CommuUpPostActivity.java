@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -145,11 +146,11 @@ public class CommuUpPostActivity extends AppCompatActivity {
                 Log.i("token", token);
 
                 // 큰 파일을 한번에 못 보내니깐 잘게 쪼개서 보낼 수 있도록 하는 코드
-                RequestBody fileBody = RequestBody.create(photoFile, MediaType.parse("image/*"));
-                MultipartBody.Part photo = MultipartBody.Part.createFormData("Photo", photoFile.getName(), fileBody);
+                RequestBody fileBody = RequestBody.create(photoFile, MediaType.parse("image/jpg"));
+                MultipartBody.Part photo = MultipartBody.Part.createFormData("photo", photoFile.getName(), fileBody);
 
-                RequestBody textBody = RequestBody.create(content,  MediaType.parse("text/plain"));
-                RequestBody categoryBody = RequestBody.create(category,  MediaType.parse("text/plain"));
+                RequestBody textBody = RequestBody.create(content, MediaType.parse("text/plain"));
+                RequestBody categoryBody = RequestBody.create(category, MediaType.parse("text/plain"));
 
                 Log.i("call", "서버 실행");
 
@@ -172,7 +173,6 @@ public class CommuUpPostActivity extends AppCompatActivity {
                         Log.i("post", "업로드 실패");
                     }
                 });
-                finish();
             }
         });
 

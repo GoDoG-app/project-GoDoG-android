@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,11 +14,11 @@ import android.widget.TextView;
 public class ChatRoomActivity extends AppCompatActivity {
 
     /** 화면뷰 */
-    TextView txtUserName;
-    EditText editChat;
-    ImageView imgMenu;
-    ImageView imgSend;
-    ImageView imgBack;
+    TextView txtUserName;  // 상대 유저 이름
+    EditText editChat;  // 채팅 입력
+    ImageView imgSend;  // 채팅 보내기
+    ImageView imgBack;  // 뒤로가기
+    Button btnPromise;  // 약속 잡기
     RecyclerView recyclerView;
 
 
@@ -26,18 +27,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
-        imgMenu = findViewById(R.id.imgMenu);
         imgBack = findViewById(R.id.imgBack);
-
-        // TODO : 약속하기와 파일첨부 메뉴 띄우기 변경 예정
-        imgMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent;
-                intent = new Intent(ChatRoomActivity.this, ChatMenuActivity.class);
-                startActivity(intent);
-            }
-        });
+        btnPromise = findViewById(R.id.btnPromise);
 
         // 뒤로가기
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +38,16 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
+
+        // 약속하기로 이동
+        btnPromise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(ChatRoomActivity.this, ChatPromiseActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
 

@@ -1,8 +1,10 @@
 package com.blue.walking.model;
 
+import java.io.Serializable;
+
 import okhttp3.MultipartBody;
 
-public class Post {
+public class Post implements Serializable {
 
     public int post_userid;
     public int post_id;

@@ -75,6 +75,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
         holder.txtCategory.setText(post.category);
         holder.txtPlace.setText(post.user_region);
         holder.txtLike.setText(String.valueOf(post.isLike));
+        holder.txtComment.setText(String.valueOf(post.post_likes_count));
 
         // 이미지
         Glide.with(context).load(post.postImgUrl).into(holder.imgContent);
@@ -98,7 +99,6 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
             // 좋아요가 1이면 채워진 하트 사진으로
             holder.imgLike.setImageResource(R.drawable.baseline_favorite_24);
         }
-
     }
 
     @Override
@@ -151,13 +151,9 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
                     Post post = postArrayList.get(index);
 
                     // 보내주기
-//                    Intent intent = new Intent(context, CommuPostActivity.class);
-//                    intent.putExtra("post", (Serializable) post);
-//                    context.startActivity(intent);
-
                     Intent intent;
                     intent = new Intent(context, CommuPostActivity.class);
-                    intent.putExtra("post", post.toString());
+                    intent.putExtra("post", post);
                     context.startActivity(intent);
 
                     Log.i("cardView", post+"번 게시글");

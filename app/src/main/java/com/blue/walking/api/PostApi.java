@@ -2,6 +2,7 @@ package com.blue.walking.api;
 
 import com.blue.walking.model.Post;
 import com.blue.walking.model.PostList;
+import com.blue.walking.model.PostUp;
 import com.blue.walking.model.ResultRes;
 
 import okhttp3.MultipartBody;
@@ -24,7 +25,10 @@ public interface PostApi {
     @POST("/posting")
     Call<ResultRes> upPost(@Header("Authorization") String token,
                            @Part MultipartBody.Part photo,
-                           @Part ("content")RequestBody content);  // todo: 카테고리는..?
+                           @Body PostUp postUp
+//                          @Part ("content") RequestBody content,
+//                          @Part ("category") RequestBody category
+                           );
                             // 폼 데이터 보내는 @Part
 
     // 커뮤니티 게시물 전체 가져오기 API

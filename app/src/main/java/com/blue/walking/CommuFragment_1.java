@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.blue.walking.adapter.CommuAdapter;
 import com.blue.walking.api.NetworkClient;
@@ -82,6 +83,7 @@ public class CommuFragment_1 extends Fragment {
 
     /** 화면뷰 */
     RecyclerView recyclerView;
+    ProgressBar progressBar;
 
     CommuAdapter adapter;
     ArrayList<Post> postArrayList = new ArrayList<>();
@@ -99,11 +101,14 @@ public class CommuFragment_1 extends Fragment {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_commu_1, container, false);
 
+        progressBar = rootView.findViewById(R.id.progressBar);
         recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         Log.i("recyclerView", "커뮤니티 카드뷰 띄우기 실행");
+
+        progressBar.setVisibility(View.VISIBLE);
 
         /** 전체 게시물 가져오는 API */
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
@@ -121,6 +126,8 @@ public class CommuFragment_1 extends Fragment {
         call.enqueue(new Callback<PostList>() {
             @Override
             public void onResponse(Call<PostList> call, Response<PostList> response) {
+                progressBar.setVisibility(View.GONE);
+
                 if (response.isSuccessful()){
                     PostList postList = response.body();
 
@@ -146,15 +153,11 @@ public class CommuFragment_1 extends Fragment {
 
             @Override
             public void onFailure(Call<PostList> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 Log.i("Call", "서버 실행 실패");
             }
         });
 
         return rootView;
     }
-//
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//
 }

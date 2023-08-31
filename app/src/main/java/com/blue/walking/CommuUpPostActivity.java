@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,7 +18,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.ColorDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -39,6 +43,7 @@ import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PostApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Post;
+import com.blue.walking.model.PostUp;
 import com.blue.walking.model.ResultRes;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -136,6 +141,8 @@ public class CommuUpPostActivity extends AppCompatActivity {
                     return;
                 }
 
+                PostUp postUp = new PostUp(content, category);  // 모델 파일을 만들어서 테스트
+
                 // 확인했다면 서버로 데이터 보내기
                 Retrofit retrofit = NetworkClient.getRetrofitClient(CommuUpPostActivity.this);
                 PostApi api = retrofit.create(PostApi.class);
@@ -144,28 +151,35 @@ public class CommuUpPostActivity extends AppCompatActivity {
                 SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
                 String token = sp.getString(Config.ACCESS_TOKEN, "");
 
+                Log.i("token", "토큰 가져옴");
+                Log.i("token", token);
+
                 // 큰 파일을 한번에 못 보내니깐 잘게 쪼개서 보낼 수 있도록 하는 코드
                 RequestBody fileBody = RequestBody.create(photoFile, MediaType.parse("image/jpg"));
                 MultipartBody.Part photo = MultipartBody.Part.createFormData("Photo", photoFile.getName(), fileBody);
 
-                RequestBody textBody = RequestBody.create(content,  MediaType.parse("text/plain"));
+//                RequestBody textBody = RequestBody.create(content,  MediaType.parse("text/plain"));
+//                RequestBody categoryBody = RequestBody.create(category,  MediaType.parse("text/plain"));
 
-                Call<ResultRes> call = api.upPost("Bearer "+token,photo,textBody); //todo: 카테고리는 어떻게보낼지..
+                Log.i("call", "서버 실행");
+
+                Call<ResultRes> call = api.upPost("Bearer "+token, photo, postUp);
                 call.enqueue(new Callback<ResultRes>() {
                     @Override
                     public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
-                        dismissProgress();
+//                        dismissProgress();
                         if (response.isSuccessful()){
+                            Log.i("post", "업로드 완료");
                             finish();
 
                         }else {
-
+                            Log.i("post", "업로드 실패");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ResultRes> call, Throwable t) {
-
+                        Log.i("post", "업로드 실패");
                     }
                 });
                 finish();
@@ -182,8 +196,6 @@ public class CommuUpPostActivity extends AppCompatActivity {
 
     }
 
-    private void dismissProgress() {
-    }
 
     // 사진 가져오는 알러트 다이얼로그
     private void showDialog() {

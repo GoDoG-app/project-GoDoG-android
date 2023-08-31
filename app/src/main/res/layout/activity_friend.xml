@@ -162,27 +162,29 @@
                     android:id="@+id/btnChat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="30dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:backgroundTint="#A0C3FF"
                     android:text="채팅 보내기"
                     android:textColor="#000000"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    app:cornerRadius="20dp" />
 
                 <Button
                     android:id="@+id/btnFollower"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginRight="30dp"
                     android:layout_weight="1"
                     android:backgroundTint="#FFE977"
                     android:text="친구 등록"
                     android:textColor="#000000"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    app:cornerRadius="20dp" />
             </LinearLayout>
 
             <LinearLayout

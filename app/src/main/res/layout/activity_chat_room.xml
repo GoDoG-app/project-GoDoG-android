@@ -66,47 +66,55 @@
             </androidx.recyclerview.widget.RecyclerView>
 
             <LinearLayout
-                android:id="@+id/linearLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="15dp"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imgMenu"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@drawable/round_background3"
-                    app:srcCompat="@drawable/baseline_add_24"
-                    app:tint="#7BA0FF" />
-
-                <EditText
-                    android:id="@+id/editChat"
+                <Button
+                    android:id="@+id/btnPromise"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/round_backgroud"
-                    android:ems="10"
-                    android:hint="채팅 입력..."
-                    android:inputType="text"
-                    android:padding="5dp"
-                    android:textColor="#000000"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:id="@+id/imgSend"
-                    android:layout_width="40dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:background="@drawable/round_background3"
-                    app:srcCompat="@drawable/_icon__send_" />
+                    android:layout_weight="1"
+                    android:backgroundTint="#BDFFF7"
+                    android:text="약속 잡기"
+                    android:textColor="#000000"
+                    android:textSize="15sp"
+                    app:cornerRadius="15dp" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/editChat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/round_backgroud"
+                        android:ems="10"
+                        android:hint="채팅 입력..."
+                        android:inputType="text"
+                        android:padding="5dp"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:id="@+id/imgSend"
+                        android:layout_width="40dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/round_background3"
+                        app:srcCompat="@drawable/_icon__send_" />
+                </LinearLayout>
             </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

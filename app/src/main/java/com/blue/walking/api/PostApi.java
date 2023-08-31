@@ -1,14 +1,11 @@
 package com.blue.walking.api;
 
-import com.blue.walking.model.Post;
 import com.blue.walking.model.PostList;
-import com.blue.walking.model.PostUp;
 import com.blue.walking.model.ResultRes;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -25,9 +22,8 @@ public interface PostApi {
     @POST("/posting")
     Call<ResultRes> upPost(@Header("Authorization") String token,
                            @Part MultipartBody.Part photo,
-                           @Body PostUp postUp
-//                          @Part ("content") RequestBody content,
-//                          @Part ("category") RequestBody category
+                           @Part ("content") RequestBody content,
+                           @Part ("category") RequestBody category
                            );
                             // 폼 데이터 보내는 @Part
 

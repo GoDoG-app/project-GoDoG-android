@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "339269196218",
-    "project_id": "walking-app-3cdc8",
-    "storage_bucket": "walking-app-3cdc8.appspot.com"
+    "project_number": "488060311112",
+    "project_id": "project-walk-app",
+    "storage_bucket": "project-walk-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:339269196218:android:13582761f79c98d2cd6583",
+        "mobilesdk_app_id": "1:488060311112:android:40fa4a1a5e2c708c286a7d",
         "android_client_info": {
           "package_name": "com.blue.walking"
         }
       },
       "oauth_client": [
         {
-          "client_id": "339269196218-hjmabpqtt73smfcao7hvupff2gbmok4s.apps.googleusercontent.com",
+          "client_id": "488060311112-j1o32hulbuk40f2o9j41p22fk9akc9c7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAYO56caN91zXYQlSbNi_fM1muo3xj6b2c"
+          "current_key": "AIzaSyBWkYJi8bG-b0_rCapivQ2OGYxt_veJD1g"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "339269196218-hjmabpqtt73smfcao7hvupff2gbmok4s.apps.googleusercontent.com",
+              "client_id": "488060311112-j1o32hulbuk40f2o9j41p22fk9akc9c7.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

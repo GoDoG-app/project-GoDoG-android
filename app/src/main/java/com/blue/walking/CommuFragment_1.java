@@ -123,6 +123,7 @@ public class CommuFragment_1 extends Fragment {
 
         Call<PostList> call = api.getPostList(offset, limit, "Bearer "+token);
 
+        //todo : 자동 새로고침 추가 (add,get)
         call.enqueue(new Callback<PostList>() {
             @Override
             public void onResponse(Call<PostList> call, Response<PostList> response) {

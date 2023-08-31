@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -96,8 +97,10 @@ public class CommuUpPostActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 // 이 오버라이드 메소드에서 i 는 몇번째 값이 클릭됬는지 알 수 있음
-                // 0:일상, 1:정보, 2:산책 (전체는 이 세개를 전부 가져오기)
-                category = i+"";  // 문자열로 담음(isEmpty() 때문)
+                // 1:일상, 2:정보, 3:산책 (전체는 이 세개를 전부 가져오기)
+
+                i += 1;
+                category = i+"";  // 문자열로 담음(isEmpty()과 RequestBody 때문)
                 Log.i("category","카테고리 "+category);
             }
 
@@ -161,6 +164,16 @@ public class CommuUpPostActivity extends AppCompatActivity {
 //                        dismissProgress();
                         if (response.isSuccessful()){
                             Log.i("post", "업로드 완료");
+
+                            //todo : 업로드 완료하면 성공 메시지 띄우기
+//                            Toast.makeText(CommuUpPostActivity.this,
+//                                    "업로드 성공!",
+//                                    Toast.LENGTH_LONG).show();
+
+                            Snackbar.make(btnUpload,
+                                    "업로드 성공!",
+                                    Snackbar.LENGTH_LONG).show();
+
                             finish();
 
                         }else {

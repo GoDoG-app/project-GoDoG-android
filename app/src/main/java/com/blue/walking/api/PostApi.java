@@ -29,12 +29,6 @@ public interface PostApi {
                            @Part ("category") RequestBody category);
                             // 폼 데이터 보내는 @Part
 
-//    @Multipart
-//    @POST("/posting")
-//    Call<ResultRes> upPost(@Header("Authorization") String token,
-//                           @PartMap Map<String, RequestBody> params);
-
-
     // 커뮤니티 게시물 전체 가져오기 API
     @GET("/posting/list")
     Call<PostList> getPostList(@Query("offset")int offset,
@@ -50,5 +44,13 @@ public interface PostApi {
     @DELETE("/post/{postId}/like")
     Call<ResultRes> deletePostLike(@Path("postId") int postId,
                                 @Header("Authorization") String token);
+
+    // 커뮤니티 게시물 카테고리별 가져오는 API
+    @GET("/posting/category/{categoryId}")
+    Call<PostList> getPostCategory(@Path("categoryId") int categoryId,
+                                   @Query("offset")int offset,
+                                   @Query("limit")int limit,
+                                   @Header("Authorization") String token);
+
 
 }

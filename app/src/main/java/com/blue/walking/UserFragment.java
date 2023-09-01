@@ -124,9 +124,8 @@ public class UserFragment extends Fragment {
 
         progressBar = rootView.findViewById(R.id.progressBar);
         progressBar.setProgress((int) 36.5);
-        // 프로그래스바 초기값 (소숫점을 붙이니 int 로만 가능한거 같음. (float)를 해봐도 int 로 고쳐진다)
-
-
+        // 프로그래스바(온도) 초기값
+        // (소숫점을 붙이니 int 로만 가능한거 같음. (float)를 해봐도 int 로 고쳐진다)
 
         imgPetAddition.setOnClickListener(new View.OnClickListener() {
             @Override

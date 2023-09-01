@@ -21,9 +21,14 @@ import com.blue.walking.api.PostApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Post;
 import com.blue.walking.model.ResultRes;
+import com.blue.walking.model.User;
 import com.bumptech.glide.Glide;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,8 +52,10 @@ public class CommuPostActivity extends AppCompatActivity {
     RecyclerView recyclerView;  // 댓글 리스트
 
 
-    CommuAdapter adapter;
-    ArrayList<Post> postArrayList = new ArrayList<>();
+    // 시간 로컬타임 변수들을 멤버변수로 뺌
+    SimpleDateFormat sf;
+    SimpleDateFormat df;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +90,8 @@ public class CommuPostActivity extends AppCompatActivity {
         txtUserName.setText(post.user_nickname);
         txtContent.setText(post.postContent);
         txtPlace.setText(post.user_region);
-        txtLike.setText("좋아요 "+post.isLike);
-        txtComment.setText("댓글 "+post.post_likes_count);
-        txtTime.setText(post.createdAt);
+        txtLike.setText("좋아요 "+ post.post_likes_count);
+//        txtComment.setText("댓글 "+);
         Glide.with(CommuPostActivity.this).load(post.postImgUrl).into(imgContent);
         Glide.with(CommuPostActivity.this).load(post.user_profile_image).into(imgUser);
 
@@ -97,6 +103,29 @@ public class CommuPostActivity extends AppCompatActivity {
             // 좋아요가 1이면 채워진 하트 사진으로
             imgLike.setImageResource(R.drawable.baseline_favorite_24);
         }
+
+        sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        df = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
+        sf.setTimeZone(TimeZone.getTimeZone("UTC")); // UTC 글로벌 시간
+        df.setTimeZone(TimeZone.getDefault());
+
+        try {
+            Date date = sf.parse(post.createdAt); // 자바가 이해하는 시간으로 바꾸기
+            String localTime = df.format(date); // 자바가 이해한 시간을 사람이 이해할 수 있는 시간으로 바꾸기
+            txtTime.setText(localTime.substring(6)); // 년 제외 몇월 몇일 몇시
+
+        } catch (ParseException e) {
+            Log.i("walking", e.toString());
+        }
+
+
+        // 채팅 전송 버튼을 클릭할 때
+        btnComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
 
     }

@@ -43,6 +43,15 @@ public class FriendActivity extends AppCompatActivity {
 
         btnChat = findViewById(R.id.btnChat);
         imgBack = findViewById(R.id.imgBack);
+        imgUser = findViewById(R.id.imgUser);
+        imgPet = findViewById(R.id.imgPet);
+
+        // 프로그래스바(온도) 기본값
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setProgress((int) 36.5);
+
+        imgUser.setClipToOutline(true);  // 둥근 테두리 적용
+        imgPet.setClipToOutline(true);  // 둥근 테두리 적용
 
         btnChat.setOnClickListener(new View.OnClickListener() {
             @Override

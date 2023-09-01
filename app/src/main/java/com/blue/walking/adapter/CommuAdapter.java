@@ -53,7 +53,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
         // 여기에 넣으면 한번만 실행된대
         sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        df = new SimpleDateFormat("yyyy년MM월dd일 HH:mm");
+        df = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
         sf.setTimeZone(TimeZone.getTimeZone("UTC")); // UTC 글로벌 시간
         df.setTimeZone(TimeZone.getDefault());
     }
@@ -74,8 +74,8 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
         holder.txtUserName.setText(post.user_nickname);
         holder.txtCategory.setText(post.category);
         holder.txtPlace.setText(post.user_region);
-        holder.txtLike.setText(String.valueOf(post.isLike));
-        holder.txtComment.setText(String.valueOf(post.post_likes_count));
+        holder.txtLike.setText(String.valueOf(post.post_likes_count));
+//        holder.txtComment.setText(String.valueOf());
 
         // 이미지
         Glide.with(context).load(post.postImgUrl).into(holder.imgContent);
@@ -84,11 +84,35 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
         try {
             Date date = sf.parse(post.createdAt); // 자바가 이해하는 시간으로 바꾸기
             String localTime = df.format(date); // 자바가 이해한 시간을 사람이 이해할 수 있는 시간으로 바꾸기
-            holder.txtTime.setText(localTime);
+
+            // 업로드 시간 가공
+            long curTime = System.currentTimeMillis();  // 현재 시간
+            long diffTime = (curTime - date.getTime()) / 1000;  // (현재시간 - 계산할 업로드시간)/1000
+            String msg = null;
+            if (diffTime < 60){
+                msg = "방금 전";
+                holder.txtTime.setText(msg);
+
+            } else if ((diffTime /= 60)< 60) {
+                msg = diffTime + "분 전";
+                holder.txtTime.setText(msg);
+
+            } else if ((diffTime /= 60)< 24) {
+                msg = diffTime + "시간 전";
+                holder.txtTime.setText(msg);
+
+            } else if ((diffTime /= 24)< 30) {
+                msg = diffTime + "일 전";
+                holder.txtTime.setText(msg);
+
+            } else {
+                holder.txtTime.setText(localTime.substring(6)); // 년 제외 몇월 몇일 몇시
+            }
 
         } catch (ParseException e) {
             Log.i("walking", e.toString());
         }
+
 
         // 좋아요인 isLike 는 0 또는 1로 나타남
         if(post.isLike == 0){
@@ -186,6 +210,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
                                     Log.i("Call", "서버 실행 성공");
 
                                     post.isLike = 1; // 좋아요 값을 1로 변경
+                                    post.post_likes_count += 1;  // 좋아요 수 +1
                                     notifyDataSetChanged(); // 어뎁터 업데이트
 
                                 } else {
@@ -207,6 +232,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
                                     Log.i("Call", "서버 실행 성공");
 
                                     post.isLike = 0; // 좋아요 값을 0으로 변경
+                                    post.post_likes_count -= 1;  // 좋아요 수 -1
                                     notifyDataSetChanged(); // 어뎁터 업데이트
 
                                 } else {

@@ -58,7 +58,7 @@
                         android:layout_height="120dp"
                         android:background="@drawable/round_circle_backgroud"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/images_man" />
+                        app:srcCompat="@drawable/group_26" />
 
                     <TextView
                         android:id="@+id/userUpdate"
@@ -85,7 +85,7 @@
                             android:id="@+id/userNickname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="제임스근 "
+                            android:text="유저닉네임"
                             android:textColor="#000000"
                             android:textSize="20sp" />
 
@@ -94,7 +94,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
-                            android:text="(남, 20대)"
+                            android:text="(성별, 나이)"
                             android:textColor="#000000"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -116,7 +116,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:text="인천광역시 서구 왕길동"
+                            android:text="지역"
                             android:textColor="#000000"
                             android:textSize="16sp" />
 
@@ -149,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
-                    android:text="반가워요~ 같이 산책해요"
+                    android:text="나를 소개해보세요"
                     android:textColor="#000000"
                     android:textSize="16sp" />
 
@@ -229,7 +229,6 @@
                         android:layout_weight="1"
                         android:background="@drawable/round_background2"
                         android:gravity="center"
-                        android:text="친절해요"
                         android:textColor="#000000"
                         android:textSize="15sp"
                         app:cornerRadius="5dp" />
@@ -242,7 +241,6 @@
                         android:layout_weight="1"
                         android:background="@drawable/round_background2"
                         android:gravity="center"
-                        android:text="약속시간을 잘 지켜요"
                         android:textColor="#000000"
                         android:textSize="15sp" />
                 </LinearLayout>
@@ -310,7 +308,7 @@
                         android:layout_height="120dp"
                         android:background="@drawable/round_circle_backgroud"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/dog" />
+                        app:srcCompat="@drawable/group_26" />
 
                     <TextView
                         android:id="@+id/petUpdate"
@@ -337,7 +335,7 @@
                             android:id="@+id/petNickname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="똘이"
+                            android:text="이름"
                             android:textColor="#000000"
                             android:textSize="20sp" />
 
@@ -346,7 +344,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="(남, 3살)"
+                            android:text="(성별, 나이)"
                             android:textColor="#000000"
                             android:textSize="14sp" />
 
@@ -365,7 +363,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/round_backgroud"
                             android:padding="8dp"
-                            android:text="많이 물어요"
+                            android:text="내 가족을 소개해보세요"
                             android:textColor="#000000" />
                     </LinearLayout>
 

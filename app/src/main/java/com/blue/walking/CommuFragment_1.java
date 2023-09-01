@@ -108,6 +108,43 @@ public class CommuFragment_1 extends Fragment {
 
         Log.i("recyclerView", "커뮤니티 카드뷰 띄우기 실행");
 
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Log.i("token", "토큰 가져옴");
+        Log.i("token", token);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int lastPosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                int totalCount = recyclerView.getAdapter().getItemCount();
+
+                if (lastPosition+1 == totalCount){
+                    // 데이터를 추가로 불러오기
+                    // 카운트한게 리미트보다 작냐 => 작으면 데이터 불러올 필요 없음
+                    if (count == limit){
+                        addNetworkData();
+                    }
+                }
+            }
+        });
+        getNetworkData();
+
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getNetworkData();
+    }
+
+
+    private void getNetworkData() {
+        postArrayList.clear(); // 리스트 초기화
         progressBar.setVisibility(View.VISIBLE);
 
         /** 전체 게시물 가져오는 API */
@@ -115,15 +152,7 @@ public class CommuFragment_1 extends Fragment {
 
         PostApi api = retrofit.create(PostApi.class);
 
-        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-        token = sp.getString(Config.ACCESS_TOKEN, "");
-
-        Log.i("token", "토큰 가져옴");
-        Log.i("token", token);
-
         Call<PostList> call = api.getPostList(offset, limit, "Bearer "+token);
-
-        //todo : 자동 새로고침 추가 (add,get)
         call.enqueue(new Callback<PostList>() {
             @Override
             public void onResponse(Call<PostList> call, Response<PostList> response) {
@@ -158,7 +187,46 @@ public class CommuFragment_1 extends Fragment {
                 Log.i("Call", "서버 실행 실패");
             }
         });
+    }
 
-        return rootView;
+    private void addNetworkData() {
+        progressBar.setVisibility(View.VISIBLE);
+
+        /** 전체 게시물 가져오는 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+
+        PostApi api = retrofit.create(PostApi.class);
+
+        Call<PostList> call = api.getPostList(offset, limit, "Bearer "+token);
+        call.enqueue(new Callback<PostList>() {
+            @Override
+            public void onResponse(Call<PostList> call, Response<PostList> response) {
+                progressBar.setVisibility(View.GONE);
+
+                if (response.isSuccessful()){
+                    PostList postList = response.body();
+
+                    Log.i("Call", "서버 실행 성공");
+
+                    // 페이징처리
+                    count = postList.count;
+                    offset = offset + count;
+
+                    // postList 안에 있는 items 리스트를 전부 가져오고 업데이트 하기
+                    postArrayList.addAll(postList.items);
+                    adapter.notifyDataSetChanged();
+
+                } else {
+                    Log.i("Call", "서버 실행 실패");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostList> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Log.i("Call", "서버 실행 실패");
+            }
+        });
     }
 }

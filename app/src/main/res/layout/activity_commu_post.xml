@@ -146,7 +146,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="20dp"
-                    android:text="좋아요 5"
+                    android:text="좋아요 0"
                     android:textColor="#000000"
                     android:textSize="15dp" />
 
@@ -163,7 +163,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="5dp"
-                    android:text="댓글 5"
+                    android:text="댓글 0"
                     android:textColor="#000000"
                     android:textSize="15dp" />
             </LinearLayout>

@@ -1,14 +1,34 @@
 package com.blue.walking;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+
+import com.blue.walking.adapter.CommuAdapter;
+import com.blue.walking.api.NetworkClient;
+import com.blue.walking.api.PostApi;
+import com.blue.walking.config.Config;
+import com.blue.walking.model.Post;
+import com.blue.walking.model.PostList;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,14 +81,147 @@ public class CommuFragment_2 extends Fragment {
     RecyclerView recyclerView;
     ProgressBar progressBar;
 
+    CommuAdapter adapter;
+    ArrayList<Post> postArrayList = new ArrayList<>();
+
+    // 페이징 처리에 필요한 변수
+    int offset = 0;
+    int limit = 15;
+    int count = 0;
+    String token;
+    int category = 1;  // 일상 카테고리
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_commu_2, container, false);
 
+        progressBar = rootView.findViewById(R.id.progressBar);
+        recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        Log.i("recyclerView", "일상 카테고리 카드뷰 띄우기 실행");
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int lastPosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                int totalCount = recyclerView.getAdapter().getItemCount();
+
+                if (lastPosition+1 == totalCount){
+                    // 데이터를 추가로 불러오기
+                    // 카운트한게 리미트보다 작냐 => 작으면 데이터 불러올 필요 없음
+                    if (count == limit){
+                        addNetworkData();
+                    }
+                }
+            }
+        });
+        getNetworkData();
 
         return rootView;
+    }
+
+    private void getNetworkData() {
+        postArrayList.clear(); // 리스트 초기화
+        progressBar.setVisibility(View.VISIBLE);
+
+        /** 전체 게시물 가져오는 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+
+        PostApi api = retrofit.create(PostApi.class);
+
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Log.i("token", "토큰 가져옴");
+        Log.i("token", token);
+
+        Call<PostList> call = api.getPostCategory(category, offset, limit, "Bearer "+token);
+        call.enqueue(new Callback<PostList>() {
+            @Override
+            public void onResponse(Call<PostList> call, Response<PostList> response) {
+                progressBar.setVisibility(View.GONE);
+
+                if (response.isSuccessful()){
+                    PostList postList = response.body();
+
+                    Log.i("Call", "서버 실행 성공");
+
+                    // 페이징처리
+                    count = postList.count;
+                    offset = offset + count;
+
+                    postArrayList.addAll(postList.items);
+                    adapter = new CommuAdapter(getActivity(), postArrayList);
+
+                    // 프레그먼트에서 리사이클러뷰를 만들면 layoutManager 를 사용해야함
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(layoutManager);
+
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    Log.i("Call", "서버 실행 실패");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostList> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Log.i("Call", "서버 실행 실패");
+            }
+        });
+    }
+
+    private void addNetworkData() {
+        postArrayList.clear(); // 리스트 초기화
+        progressBar.setVisibility(View.VISIBLE);
+
+        /** 전체 게시물 가져오는 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+
+        PostApi api = retrofit.create(PostApi.class);
+
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Log.i("token", "토큰 가져옴");
+        Log.i("token", token);
+
+        Call<PostList> call = api.getPostCategory(category, offset, limit, "Bearer "+token);
+        call.enqueue(new Callback<PostList>() {
+            @Override
+            public void onResponse(Call<PostList> call, Response<PostList> response) {
+                progressBar.setVisibility(View.GONE);
+
+                if (response.isSuccessful()){
+                    PostList postList = response.body();
+
+                    Log.i("Call", "서버 실행 성공");
+
+                    // 페이징처리
+                    count = postList.count;
+                    offset = offset + count;
+
+                    // postList 안에 있는 items 리스트를 전부 가져오고 업데이트 하기
+                    postArrayList.addAll(postList.items);
+                    adapter.notifyDataSetChanged();
+                } else {
+                    Log.i("Call", "서버 실행 실패");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostList> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Log.i("Call", "서버 실행 실패");
+            }
+        });
     }
 }

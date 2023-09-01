@@ -39,7 +39,7 @@
                         android:layout_width="81dp"
                         android:layout_height="81dp"
                         android:background="@drawable/round_circle_backgroud"
-                        app:srcCompat="@drawable/pet"
+                        app:srcCompat="@drawable/group_26"
                         app:strokeColor="#FF9900"
                         app:strokeWidth="4dp" />
 
@@ -63,9 +63,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
                             android:layout_marginTop="20dp"
-                            android:layout_marginRight="16dp"
                             android:layout_weight="1"
-                            android:text="똘이와 산책을 시작해보세요~"
+                            android:text="산책을 시작해보세요~"
                             android:textColor="#000000"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -74,11 +73,10 @@
                             android:id="@+id/imgStart"
                             android:layout_width="102dp"
                             android:layout_height="60dp"
-                            android:layout_marginLeft="16dp"
+                            android:layout_marginLeft="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginRight="16dp"
                             android:layout_marginBottom="10dp"
-                            android:layout_weight="1"
                             app:srcCompat="@drawable/start" />
 
                     </LinearLayout>
@@ -133,7 +131,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="2 회"
+                            android:text="0 회"
                             android:textColor="#000000"
                             android:textSize="15sp" />
 
@@ -143,7 +141,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="1.0 km"
+                            android:text="0 km"
                             android:textColor="#000000"
                             android:textSize="15sp" />
 
@@ -153,7 +151,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="30:00"
+                            android:text="00:00"
                             android:textColor="#000000"
                             android:textSize="15sp" />
                     </LinearLayout>
@@ -331,7 +329,7 @@
                             android:layout_height="66dp"
                             android:layout_weight="1"
                             android:background="@drawable/round_circle_backgroud"
-                            app:srcCompat="@drawable/pet"
+                            app:srcCompat="@drawable/group_26"
                             app:strokeColor="#FF9900"
                             app:strokeWidth="4dp" />
 
@@ -437,7 +435,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/round_circle_backgroud"
                             android:scaleType="centerCrop"
-                            app:srcCompat="@drawable/dog"
+                            app:srcCompat="@drawable/group_26"
                             app:strokeColor="#FF9900"
                             app:strokeWidth="4dp" />
 
@@ -448,7 +446,7 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="페그"
+                            android:text="친구2"
                             android:textColor="#000000"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -468,7 +466,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/round_circle_backgroud"
                             android:scaleType="centerCrop"
-                            app:srcCompat="@drawable/dog"
+                            app:srcCompat="@drawable/group_26"
                             app:strokeColor="#FF9900"
                             app:strokeWidth="4dp" />
 
@@ -479,7 +477,7 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="댕댕"
+                            android:text="친구3"
                             android:textColor="#000000"
                             android:textSize="13sp" />
                     </LinearLayout>

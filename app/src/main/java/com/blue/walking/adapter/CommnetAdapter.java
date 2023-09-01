@@ -39,6 +39,7 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        /** 커뮤니티 코멘트(댓글) 화면뷰 */
         ImageView imgUser;  // 유저 프로필 사진
         TextView txtUserName;  // 유저 이름
         ImageView imgMy;  // 작성자 아이콘

@@ -121,7 +121,7 @@ public class CommuUpPostActivity extends AppCompatActivity {
 
 
 
-        /** 커뮤니티 게시물 작성 API (아직 안됨) */
+        /** 커뮤니티 게시물 작성 API */
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,14 +165,13 @@ public class CommuUpPostActivity extends AppCompatActivity {
                         if (response.isSuccessful()){
                             Log.i("post", "업로드 완료");
 
-                            //todo : 업로드 완료하면 성공 메시지 띄우기
-//                            Toast.makeText(CommuUpPostActivity.this,
-//                                    "업로드 성공!",
-//                                    Toast.LENGTH_LONG).show();
 
-                            Snackbar.make(btnUpload,
-                                    "업로드 성공!",
-                                    Snackbar.LENGTH_LONG).show();
+                            //todo : 업로드 완료하면 성공 메시지 띄우기
+                            Toast.makeText(CommuUpPostActivity.this,"업로드 성공!", Toast.LENGTH_LONG).show();
+
+//                            Snackbar.make(btnUpload,
+//                                    "업로드 성공!",
+//                                    Snackbar.LENGTH_LONG).show();
 
                             finish();
 

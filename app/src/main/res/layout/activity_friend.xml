@@ -337,7 +337,7 @@
                         android:layout_height="120dp"
                         android:background="@drawable/round_circle_backgroud"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/dog" />
+                        app:srcCompat="@drawable/pet" />
 
                 </LinearLayout>
 

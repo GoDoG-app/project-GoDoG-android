@@ -1,6 +1,9 @@
 package com.blue.walking;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,12 +11,27 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.blue.walking.api.NetworkClient;
+import com.blue.walking.api.PetApi;
+import com.blue.walking.config.Config;
+import com.blue.walking.model.Pet;
+import com.blue.walking.model.PetList;
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -103,12 +121,17 @@ public class HomeFragment extends Fragment {
     TextView txtNotices1;  // 공지사항 글1
     TextView txtNotices2;  // 공지사항 글2
 
+
+    String token;  // 토큰
+    ArrayList<Pet> petArrayList = new ArrayList<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
 
+        txtStart = rootView.findViewById(R.id.txtStart);
 
         imgPet = rootView.findViewById(R.id.imgPet);
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
@@ -133,6 +156,51 @@ public class HomeFragment extends Fragment {
 
         imgFollowPet3 = rootView.findViewById(R.id.imgFollowPet3);
         imgFollowPet3.setClipToOutline(true);  // 둥근 테두리 적용
+
+
+        /** 내 펫 정보 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+        PetApi api = retrofit.create(PetApi.class);
+
+        Log.i("pet","내 펫 정보 API 실행");
+
+        // 유저 토큰
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<PetList> call = api.petInfo("Bearer " + token);
+        call.enqueue(new Callback<PetList>() {
+            @Override
+            public void onResponse(Call<PetList> call, Response<PetList> response) {
+                if (response.isSuccessful()) {
+
+                    // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
+                    PetList petList = response.body();
+                    petArrayList.addAll(petList.items);
+
+                    if (petArrayList.size() != 0) {
+                        // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
+
+                        Log.i("pet", "펫 정보 불러오기 완료");
+
+                        txtStart.setText(petArrayList.get(0).petName + "와 산책을 시작해보세요~");
+                        Glide.with(getActivity()).load(petArrayList.get(0).petProUrl).into(imgPet);
+
+                    } else {
+                        return;
+                    }
+
+                } else {
+                    Log.i("pet","펫 정보 불러오기 실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PetList> call, Throwable t) {
+                Log.i("pet","펫 정보 불러오기 실패");
+            }
+        });
+
 
 
         imgStart = rootView.findViewById(R.id.imgStart);

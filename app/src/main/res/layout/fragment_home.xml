@@ -41,7 +41,8 @@
                         android:background="@drawable/round_circle_backgroud"
                         app:srcCompat="@drawable/group_26"
                         app:strokeColor="#FF9900"
-                        app:strokeWidth="4dp" />
+                        app:strokeWidth="4dp"
+                        android:scaleType="centerCrop"/>
 
                 </LinearLayout>
 
@@ -331,7 +332,8 @@
                             android:background="@drawable/round_circle_backgroud"
                             app:srcCompat="@drawable/group_26"
                             app:strokeColor="#FF9900"
-                            app:strokeWidth="4dp" />
+                            app:strokeWidth="4dp"
+                            android:scaleType="centerCrop"/>
 
                         <TextView
                             android:id="@+id/txtWalkPet1"

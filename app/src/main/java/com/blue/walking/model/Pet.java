@@ -1,16 +1,32 @@
 package com.blue.walking.model;
 
+import java.io.File;
+
 public class Pet {
 
-    public String photo;
+    public int id;
+    public int userId;
     public String petName;
     public String petAge;
-    public int petGender;
+    public String petGender;
+    public String petProUrl;
+    public String oneliner;
+    public String createdAt;
+    public String updatedAt;
 
-    public Pet(String photo, String petName, String petAge, int petGender) {
-        this.photo = photo;
+    public Pet(){}
+
+    public Pet(int id, int userId, String petName,
+               String petAge, String petGender, String petProUrl,
+               String oneliner, String createdAt, String updatedAt) {
+        this.id = id;
+        this.userId = userId;
         this.petName = petName;
         this.petAge = petAge;
         this.petGender = petGender;
+        this.petProUrl = petProUrl;
+        this.oneliner = oneliner;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

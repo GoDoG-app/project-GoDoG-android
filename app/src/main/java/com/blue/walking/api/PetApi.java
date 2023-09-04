@@ -1,10 +1,15 @@
 package com.blue.walking.api;
 
+import com.blue.walking.model.Pet;
+import com.blue.walking.model.PetList;
 import com.blue.walking.model.ResultRes;
+import com.blue.walking.model.User;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -19,6 +24,11 @@ public interface PetApi {
                                 @Part MultipartBody.Part photo,
                                 @Part ("petName") RequestBody petName,
                                 @Part ("petAge") RequestBody petAge,
-                                @Part ("petGender") RequestBody petGender);
+                                @Part ("petGender") RequestBody petGender,
+                                @Part ("petOneliner") RequestBody petOneliner);
+
+    // 내 펫 정보 API
+    @GET("/pet/info")
+    Call<PetList> petInfo(@Header("Authorization") String token);
 
 }

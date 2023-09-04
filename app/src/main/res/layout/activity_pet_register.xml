@@ -52,9 +52,9 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:background="@drawable/round_circle_backgroud"
-            app:srcCompat="@drawable/group_26"
             android:elevation="10dp"
-            android:scaleType="centerCrop" />
+            app:srcCompat="@drawable/group_26"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/txtImg"

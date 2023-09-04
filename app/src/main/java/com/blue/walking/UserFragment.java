@@ -1,11 +1,15 @@
 package com.blue.walking;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.blue.walking.api.NetworkClient;
+import com.blue.walking.api.PetApi;
+import com.blue.walking.config.Config;
+import com.blue.walking.model.Pet;
+import com.blue.walking.model.PetList;
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -78,7 +96,7 @@ public class UserFragment extends Fragment {
     TextView userScore1;  // 내가 받은 후기1
     TextView userScore2;  // 내가 받은 후기2
 
-    ImageView imgPetAddition;  // 반려가족 추가+
+    ImageView imgPetAddition;  // 반려가족 등록+
 
     ImageView imgPet;  // 동물 프로필 사진
     TextView petNickname;  // 동물 이름
@@ -89,6 +107,10 @@ public class UserFragment extends Fragment {
     Button btnFollowList;  // 산책 파트너 목록
     Button btnWalkList;    // 산책 기록
     Button btnCommuList;   // 내가 쓴 글(커뮤니티)
+
+
+    String token;  // 토큰
+    ArrayList<Pet> petArrayList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,10 +149,65 @@ public class UserFragment extends Fragment {
         // 프로그래스바(온도) 초기값
         // (소숫점을 붙이니 int 로만 가능한거 같음. (float)를 해봐도 int 로 고쳐진다)
 
+
+
+        /** 내 펫 정보 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+        PetApi api = retrofit.create(PetApi.class);
+
+        Log.i("pet","내 펫 정보 API 실행");
+
+        // 유저 토큰
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<PetList> call = api.petInfo("Bearer " + token);
+        call.enqueue(new Callback<PetList>() {
+            @Override
+            public void onResponse(Call<PetList> call, Response<PetList> response) {
+                if (response.isSuccessful()) {
+
+                    // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
+                    PetList petList = response.body();
+                    petArrayList.addAll(petList.items);
+
+                    if (petArrayList.size() != 0) {
+                        // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
+
+                        Log.i("pet", "펫 정보 불러오기 완료");
+
+                        String gender;  // 성별 확인
+                        if (Integer.valueOf(petArrayList.get(0).petGender) == 0) {
+                            gender = "여";
+                        } else {
+                            gender = "남";
+                        }
+
+                        petNickname.setText(petArrayList.get(0).petName);
+                        petInfo.setText("(" + gender + ", " + petArrayList.get(0).petAge + "살)");
+                        petComment.setText(petArrayList.get(0).oneliner);
+                        Glide.with(getActivity()).load(petArrayList.get(0).petProUrl).into(imgPet);
+
+                    } else {
+                        return;
+                    }
+
+                } else {
+                    Log.i("pet","펫 정보 불러오기 실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PetList> call, Throwable t) {
+                Log.i("pet","펫 정보 불러오기 실패");
+            }
+        });
+
+
         imgPetAddition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 반려가족 추가
+                // 반려가족 등록
                 Intent intent;
                 intent = new Intent(getActivity(), PetRegisterActivity.class);
                 // fragment 에서는 this 사용이 불가능해서 getActivity 를 이용
@@ -169,6 +246,14 @@ public class UserFragment extends Fragment {
                 transaction.replace(R.id.containers, walking_2);
                 // 꼭 commit 을 해줘야 바뀜
                 transaction.commit();
+            }
+        });
+
+        btnCommuList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 내가 쓴 커뮤니티 글 보기
+
             }
         });
 

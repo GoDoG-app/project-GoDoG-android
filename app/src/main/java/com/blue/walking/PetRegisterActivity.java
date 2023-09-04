@@ -6,10 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -35,6 +37,7 @@ import android.widget.Toast;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
 import com.blue.walking.api.UserApi;
+import com.blue.walking.config.Config;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.ResultRes;
 import com.google.android.material.snackbar.Snackbar;
@@ -51,7 +54,12 @@ import java.util.Date;
 
 import javax.xml.transform.Result;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class PetRegisterActivity extends AppCompatActivity {
@@ -67,8 +75,9 @@ public class PetRegisterActivity extends AppCompatActivity {
     EditText editComment;  // 한 줄 소개
     Button btnRegister;  // 등록 완료
 
-    int gender = 1;
+    int petGender = 1;  // RequestBody 에 들어갈때는 +"" 를 붙여서 문자열로 넣음
     File photoFile; // 사진 들어있는 멤버변수 파일
+    String token;  // 토큰
 
 
     @Override
@@ -106,7 +115,7 @@ public class PetRegisterActivity extends AppCompatActivity {
                 btnFemale.setTextColor(Color.parseColor("#FFFFFF"));
                 btnMale.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 btnMale.setTextColor(Color.parseColor("#262D33"));
-                gender = 0;
+                petGender = 0;
             }
         });
 
@@ -139,14 +148,44 @@ public class PetRegisterActivity extends AppCompatActivity {
                     return;
                 }
 
+                /** 펫 등록 API */
                 Retrofit retrofit = NetworkClient.getRetrofitClient(PetRegisterActivity.this);
                 PetApi api = retrofit.create(PetApi.class);
 
-                //todo : 펫 API 수정되면 이어서 만들기
-//                Pet pet = new Pet(photoFile, petName, petAge, gender);
-//
-//                Call<ResultRes> call = api.petRegister(pet);
+                Log.i("pet","펫 등록 API 실행");
 
+                // 유저 토큰
+                SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+                token = sp.getString(Config.ACCESS_TOKEN, "");
+
+                // Body 폼 데이터에 들어갈 데이터
+                RequestBody fileBody = RequestBody.create(photoFile, MediaType.parse("image/jpg"));
+                MultipartBody.Part photo = MultipartBody.Part.createFormData("photo", photoFile.getName(), fileBody);
+                RequestBody petNameBody = RequestBody.create(petName, MediaType.parse("text/plain"));
+                RequestBody petAgeBody = RequestBody.create(petAge, MediaType.parse("text/plain"));
+                RequestBody petGenderBody = RequestBody.create(petGender+"", MediaType.parse("text/plain"));
+                RequestBody petCommentBody = RequestBody.create(petComment, MediaType.parse("text/plain"));
+
+                // API 호출
+                Call<ResultRes> call = api.petRegister("Bearer "+token, photo, petNameBody, petAgeBody, petGenderBody, petCommentBody);
+                call.enqueue(new Callback<ResultRes>() {
+                    @Override
+                    public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
+                        if (response.isSuccessful()){
+                            Log.i("pet","펫 등록 완료");
+
+                           finish();
+
+                        } else {
+                            Log.i("pet","펫 등록 실패");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResultRes> call, Throwable t) {
+                        Log.i("pet","펫 등록 실패");
+                    }
+                });
             }
         });
 

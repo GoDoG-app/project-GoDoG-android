@@ -11,6 +11,7 @@ public class User {
     public double lat;
     public double lng;
 
+
     public User(){
 
     }
@@ -30,4 +31,6 @@ public class User {
         this.email = email;
         this.password = password;
     }
+
+
 }

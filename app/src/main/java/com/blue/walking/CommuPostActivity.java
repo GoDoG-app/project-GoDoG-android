@@ -1,5 +1,8 @@
 package com.blue.walking;
 
+import static android.content.ContentValues.TAG;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,14 +18,27 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blue.walking.adapter.CommnetAdapter;
 import com.blue.walking.adapter.CommuAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PostApi;
+import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
+import com.blue.walking.model.Firebase;
+import com.blue.walking.model.PetList;
 import com.blue.walking.model.Post;
 import com.blue.walking.model.ResultRes;
 import com.blue.walking.model.User;
+import com.blue.walking.model.UserInfo;
+import com.blue.walking.model.UserList;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Comment;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,11 +66,23 @@ public class CommuPostActivity extends AppCompatActivity {
     EditText editComment;  // 댓글 작성
     Button btnComment;   // 댓글 전송
     RecyclerView recyclerView;  // 댓글 리스트
-
+    CommnetAdapter adapter;
+    ArrayList<Firebase> firebaseArrayList = new ArrayList<>();
 
     // 시간 로컬타임 변수들을 멤버변수로 뺌
     SimpleDateFormat sf;
     SimpleDateFormat df;
+
+    String token;
+
+    ArrayList<UserInfo> userInfoArrayList = new ArrayList<>();
+
+    String userNickname;
+    String userAddress;
+    String userImgUrl;
+
+    Post post;
+    int postId;
 
 
     @Override
@@ -84,8 +112,8 @@ public class CommuPostActivity extends AppCompatActivity {
 
         // 카드뷰를 누르면 해당 게시물의 내용을 상세보기로 이동
         // CommuAdapter 에서 보내준걸 받아옴
-        Post post = (Post) getIntent().getSerializableExtra("post");
-
+        post = (Post) getIntent().getSerializableExtra("post");
+        postId = post.post_id;
         // 화면 셋팅
         txtUserName.setText(post.user_nickname);
         txtContent.setText(post.postContent);
@@ -118,15 +146,102 @@ public class CommuPostActivity extends AppCompatActivity {
             Log.i("walking", e.toString());
         }
 
+        // 파이어베이스 객체 생성
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // 어댑터 초기화
+        adapter = new CommnetAdapter(CommuPostActivity.this, firebaseArrayList);
+        recyclerView.setAdapter(adapter);
+
 
         // 채팅 전송 버튼을 클릭할 때
         btnComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                Retrofit retrofit = NetworkClient.getRetrofitClient(CommuPostActivity.this);
+
+                // 인터페이스를 클래스로 바꿈
+                UserApi api = retrofit.create(UserApi.class);
+
+                SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+                token = sp.getString(Config.ACCESS_TOKEN, "");
+
+                Call<UserList> call = api.getUserInfo("Bearer " + token);
+
+                call.enqueue(new Callback<UserList>() {
+                    @Override
+                    public void onResponse(Call<UserList> call, Response<UserList> response) {
+
+                        if(response.isSuccessful()){
+
+                            UserList userList = response.body();
+                            userInfoArrayList.addAll(userList.info);
+
+                            userNickname = userInfoArrayList.get(0).userNickname;
+                            userAddress = userInfoArrayList.get(0).userAddress;
+                            userImgUrl = userInfoArrayList.get(0).userImgUrl;
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserList> call, Throwable t) {
+
+                    }
+                });
+
+                // 데이터 한 번 초기화
+                firebaseArrayList.clear();
+
+                String commentContent = editComment.getText().toString().trim();
+
+                if (!commentContent.isEmpty()) {
+                    // 댓글을 Firebase Firestore에 추가
+                    addCommentToFirestore(commentContent);
+                }
+
+
+
             }
+
         });
 
 
+
+
     }
+
+    private void addCommentToFirestore(String commentContent) {
+
+        // 현재 시간 정보 가져오기
+        Timestamp timestamp = Timestamp.now();
+
+
+        // Firebase Firestore에 댓글 추가
+        Firebase comment = new Firebase(userNickname, userImgUrl, userAddress, commentContent, timestamp, timestamp);
+        comment.postId = postId;
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("comments")
+                .add(comment)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        // 댓글 추가 성공
+                        editComment.setText(""); // 댓글 입력창 초기화
+                        // TODO: 댓글 추가 후 화면 갱신 또는 필요한 작업 수행
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // 댓글 추가 실패
+                        Log.e(TAG, "댓글을 Firebase Firestore에 추가하는 중 오류 발생", e);
+                    }
+                });
+
+    }
+
+
 }

@@ -11,13 +11,24 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blue.walking.R;
+import com.blue.walking.model.Firebase;
+import com.bumptech.glide.Glide;
 
 import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHolder>{
 
     Context context;
+    ArrayList<Firebase> firebaseArrayList;
 
+    public CommnetAdapter(Context context, ArrayList<Firebase> firebaseArrayList) {
+        this.context = context;
+        this.firebaseArrayList = firebaseArrayList;
+    }
 
     @NonNull
     @Override
@@ -29,12 +40,25 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull CommnetAdapter.ViewHolder holder, int position) {
+        Firebase firebase = firebaseArrayList.get(position);
+
+        // 댓글 내용 설정
+        holder.txtComment.setText(firebase.commentContent);
+
+        // 댓글 작성자 정보 설정 (사용자 프로필 사진, 닉네임, 지역 등)
+        Glide.with(context).load(firebase.userImgUrl).into(holder.imgUser);
+        holder.txtUserName.setText(firebase.userNickname);
+        holder.txtPlace.setText(firebase.userAddress);
+
+        // 댓글 작성 시간 설정
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        holder.txtTime.setText(sdf.format(firebase.createdAt.toDate()));
 
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return firebaseArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -53,6 +77,19 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            // 댓글 화면뷰 초기화
+            imgUser = itemView.findViewById(R.id.imgUser);
+            txtUserName = itemView.findViewById(R.id.txtUserName);
+            imgMy = itemView.findViewById(R.id.imgMy);
+            txtMy = itemView.findViewById(R.id.txtMy);
+            txtPlace = itemView.findViewById(R.id.txtPlace);
+            txtTime = itemView.findViewById(R.id.txtTime);
+            txtComment = itemView.findViewById(R.id.txtComment);
+            imgLike = itemView.findViewById(R.id.imgLike);
+            txtLike = itemView.findViewById(R.id.txtLike);
+            txtComment2 = itemView.findViewById(R.id.txtComment2);
+
         }
     }
 }

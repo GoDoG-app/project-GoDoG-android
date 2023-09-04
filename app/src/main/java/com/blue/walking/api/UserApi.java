@@ -2,10 +2,13 @@ package com.blue.walking.api;
 
 import com.blue.walking.model.User;
 import com.blue.walking.model.UserKakaoToken;
+import com.blue.walking.model.UserList;
 import com.blue.walking.model.UserRes;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface UserApi {
@@ -19,5 +22,9 @@ public interface UserApi {
     // 카카오 로그인 인증 토큰
     @POST("/user/kakao/oauth")
     Call<UserKakaoToken> sendToken(@Body UserKakaoToken userKakaoToken);
+
+    // 유저 정보 API
+    @GET("/user/profile")
+    Call<UserList> getUserInfo(@Header("Authorization") String token);
 
 }

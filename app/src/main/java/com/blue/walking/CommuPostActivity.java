@@ -3,6 +3,7 @@ package com.blue.walking;
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blue.walking.adapter.CommnetAdapter;
 import com.blue.walking.adapter.CommuAdapter;
@@ -36,7 +38,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Comment;
 
@@ -53,7 +60,9 @@ import retrofit2.Retrofit;
 
 public class CommuPostActivity extends AppCompatActivity {
 
-    /** 화면뷰 */
+    /**
+     * 화면뷰
+     */
     ImageView imgUser;  // 프로필 사진
     TextView txtUserName;  // 이름
     TextView txtPlace;  // 유저 지역 이름
@@ -83,6 +92,9 @@ public class CommuPostActivity extends AppCompatActivity {
 
     Post post;
     int postId;
+
+    FirebaseFirestore db;
+    Firebase firebase;
 
 
     @Override
@@ -118,16 +130,16 @@ public class CommuPostActivity extends AppCompatActivity {
         txtUserName.setText(post.user_nickname);
         txtContent.setText(post.postContent);
         txtPlace.setText(post.user_region);
-        txtLike.setText("좋아요 "+ post.post_likes_count);
+        txtLike.setText("좋아요 " + post.post_likes_count);
 //        txtComment.setText("댓글 "+);
         Glide.with(CommuPostActivity.this).load(post.postImgUrl).into(imgContent);
         Glide.with(CommuPostActivity.this).load(post.user_profile_image).into(imgUser);
 
-        if(post.isLike == 0){
+        if (post.isLike == 0) {
             // 좋아요가 0 이면 빈 하트 사진으로
             imgLike.setImageResource(R.drawable.baseline_favorite_border_24);
 
-        } else if(post.isLike == 1){
+        } else if (post.isLike == 1) {
             // 좋아요가 1이면 채워진 하트 사진으로
             imgLike.setImageResource(R.drawable.baseline_favorite_24);
         }
@@ -147,7 +159,7 @@ public class CommuPostActivity extends AppCompatActivity {
         }
 
         // 파이어베이스 객체 생성
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // 어댑터 초기화
         adapter = new CommnetAdapter(CommuPostActivity.this, firebaseArrayList);
@@ -173,7 +185,7 @@ public class CommuPostActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<UserList> call, Response<UserList> response) {
 
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
 
                             UserList userList = response.body();
                             userInfoArrayList.addAll(userList.info);
@@ -181,6 +193,16 @@ public class CommuPostActivity extends AppCompatActivity {
                             userNickname = userInfoArrayList.get(0).userNickname;
                             userAddress = userInfoArrayList.get(0).userAddress;
                             userImgUrl = userInfoArrayList.get(0).userImgUrl;
+
+                            // 데이터 한 번 초기화
+                            firebaseArrayList.clear();
+
+                            String commentContent = editComment.getText().toString().trim();
+
+                            if (!commentContent.isEmpty()) {
+                                // 댓글을 Firebase Firestore에 추가
+                                addCommentToFirestore(commentContent);
+                            }
 
                         }
 
@@ -192,26 +214,14 @@ public class CommuPostActivity extends AppCompatActivity {
                     }
                 });
 
-                // 데이터 한 번 초기화
-                firebaseArrayList.clear();
-
-                String commentContent = editComment.getText().toString().trim();
-
-                if (!commentContent.isEmpty()) {
-                    // 댓글을 Firebase Firestore에 추가
-                    addCommentToFirestore(commentContent);
-                }
-
-
 
             }
 
         });
 
 
-
-
-    }
+        loadMessages();
+        }
 
     private void addCommentToFirestore(String commentContent) {
 
@@ -222,7 +232,7 @@ public class CommuPostActivity extends AppCompatActivity {
         // Firebase Firestore에 댓글 추가
         Firebase comment = new Firebase(userNickname, userImgUrl, userAddress, commentContent, timestamp, timestamp);
         comment.postId = postId;
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         db.collection("comments")
                 .add(comment)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -243,5 +253,44 @@ public class CommuPostActivity extends AppCompatActivity {
 
     }
 
+    public void loadMessages() {
+        db.collection("comments")
+                .orderBy("serverTimestamp", Query.Direction.ASCENDING)
+                .orderBy("createdAt", Query.Direction.ASCENDING)
+                // sendMessages에서 설명 했던 대로 serverTimeStamp를 사용하면
+                // second 아래 단위 까지 정밀하게 orderBy가 가능하다
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot querySnapshot,
+                                        @Nullable FirebaseFirestoreException e) {
+                        // onEvent 데이터베이스의 데이터가 변경되었을 때
 
+
+                        if (e != null) {
+                            Toast.makeText(CommuPostActivity.this,
+                                    "message Load Error: " + e,
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        // 리스트 초기화
+                        firebaseArrayList.clear();
+                        // 문서의 쿼리스냅샷 가져옴
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            firebase = document.toObject(Firebase.class);
+//                            Log.i("테스트",firebase.imgUrl);
+                            if (firebase != null) {
+                                // 리스트에 추가
+                                firebaseArrayList.add(firebase);
+                            }
+                        }
+
+                        // 인덱스는 0부터 시작하기 때문에 마지막 값을 가져오기 위해 -1을 함
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                        recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
+
+    }
 }

@@ -63,4 +63,7 @@ dependencies {
     implementation files('libs/tmap-sdk-1.2.aar')
     implementation files('libs/vsm-tmap-sdk-v2-android-1.6.60.aar')
 
+    // 프로필이미지 원형만들기
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
 }

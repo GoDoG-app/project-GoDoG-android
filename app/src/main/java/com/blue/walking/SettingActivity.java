@@ -62,9 +62,14 @@ public class SettingActivity extends AppCompatActivity {
                         if (response.isSuccessful()){
                             Log.i("pet","로그아웃 실행 성공");
 
+                            SharedPreferences preferences = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.remove(Config.ACCESS_TOKEN);
+                            editor.apply();
+
                             Intent intent;
-                            intent = new Intent(SettingActivity.this, LoginActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent = new Intent(SettingActivity.this, MainActivity.class);
+//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
 
                             finish();

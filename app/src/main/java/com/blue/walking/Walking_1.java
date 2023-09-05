@@ -23,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -30,7 +32,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.blue.walking.config.Config;
 import com.google.android.gms.maps.MapView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.skt.tmap.TMapPoint;
 import com.skt.tmap.TMapView;
@@ -97,7 +98,7 @@ public class Walking_1 extends Fragment {
     Button btnReset;  // 산책 초기화
     TextView txtPlace;  // 산책로 추천을 통해 산책하기를 시작했을때, 나오는 추천 장소 이름
     Chronometer chronometer; // 타이머
-    FloatingActionButton btnLocation; // 현재 위치 이동 및 마커용 버튼
+    ImageView btnLocation; // 현재 위치 이동 및 마커용 버튼
     ProgressBar progressBar; // 맵 로딩
 
     Button btnLine; // 경로 삭제
@@ -145,8 +146,8 @@ public class Walking_1 extends Fragment {
         btnLocation = rootView.findViewById(R.id.btnLocation);
         // 맵 로딩 프로그레스바
         progressBar = rootView.findViewById(R.id.progressBar);
-        // 현재 위치 버튼 숨김(맵이랑 위치 구현 후 사용)
-        btnLocation.setVisibility(GONE);
+
+
         btnLine = rootView.findViewById(R.id.btnLine);
 
 
@@ -178,9 +179,6 @@ public class Walking_1 extends Fragment {
                 if (tMapView != null) {
                 // 위치 관련 로직
 
-                    isLocationReady = true;
-                    btnLocation.setVisibility(View.VISIBLE);
-
                     if (i == false){
                         // 이전 경로 및 마커 삭제
                         tMapView.removeAllTMapPolyLine();
@@ -189,6 +187,7 @@ public class Walking_1 extends Fragment {
                     }
 
                 }
+                isLocationReady = true;
             }
         };
 
@@ -221,6 +220,10 @@ public class Walking_1 extends Fragment {
             public void onMapReady() {
                 //todo 맵 로딩 완료 후 구현
 
+                // 맵 준비 상태
+                mapReady = true;
+                progressBar.setVisibility(View.GONE); // 프로그레스바 숨기기
+
 
                 // 지도 중심점 표시(처음 한 번)
                 tMapView.setCenterPoint(first_lat, first_lng); // 지도 중심 설정
@@ -234,29 +237,38 @@ public class Walking_1 extends Fragment {
                 marker.setTMapPoint(new TMapPoint(first_lat, first_lng));
                 tMapView.addTMapMarkerItem(marker);
 
-                // GPS 버튼 눌렀을 때
-                btnLocation.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                    // GPS 버튼 눌렀을 때
+                    btnLocation.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                        tMapView.removeAllTMapMarkerItem();// 이전 마커 삭제
-                        marker = new TMapMarkerItem(); // 마커 객체 초기화
-                        marker.setId("marker1"); // 마커 이름 지정
-                        marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi)); // 마커 아이콘
-                        marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 표시할 위치
-                        tMapView.addTMapMarkerItem(marker); // 마커 적용
+                            if (lat==0.0){
+                                Snackbar.make(btnLocation,
+                                        "현재 위치 가져오는 중. 잠시만 기다려 주세요.",
+                                        Snackbar.LENGTH_SHORT).show();
+                                return;
+                            }
 
-                        // 지도 중심점 표시( 버튼 누르면)
-                        tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
-                        tMapView.setZoomLevel(17); // 줌 레벨 설정
-                    }
-                });
+                            tMapView.removeAllTMapMarkerItem();// 이전 마커 삭제
+                            marker = new TMapMarkerItem(); // 마커 객체 초기화
+                            marker.setId("marker1"); // 마커 이름 지정
+                            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi)); // 마커 아이콘
+                            marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 표시할 위치
+                            tMapView.addTMapMarkerItem(marker); // 마커 적용
+
+                            // 지도 중심점 표시( 버튼 누르면)
+                            tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
+                            tMapView.setZoomLevel(17); // 줌 레벨 설정
+                        }
+                    });
 
                     // 시작 버튼을 눌렀을 때
                     imgStart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
+
+                            btnLocation.setVisibility(View.VISIBLE);
 
                             // 이전 경로 지우기 (라인 remove가 안되서..)
                             btnLine.setOnClickListener(new View.OnClickListener() {
@@ -278,8 +290,9 @@ public class Walking_1 extends Fragment {
 
 
                             if (i == true) {
+                                btnLine.setVisibility(GONE);
                                 btnReset.setVisibility(View.VISIBLE); // 초기화 버튼 띄우기
-                                btnLine.setVisibility(GONE); // 경로 삭제 숨기기
+
                                 // 정지로 변경
                                 imgStart.setImageResource(R.drawable.baseline_stop_24);
                                 i = false;
@@ -306,18 +319,10 @@ public class Walking_1 extends Fragment {
 
                     }
                 });
-                // 맵 준비 상태
-                mapReady = true;
 
 
             }
         });
-
-
-        if (isLocationReady==true && mapReady==true){
-            // 맵 로딩 후 위치까지 모두 OK라면 프로그레스바 사라짐.
-            progressBar.setVisibility(View.GONE);
-        }
 
         // 초기화 버튼을 눌렀을 때
         btnReset.setOnClickListener(new View.OnClickListener() {

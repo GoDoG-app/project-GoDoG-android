@@ -2,13 +2,16 @@ package com.blue.walking;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -100,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         // 토큰 발급
         SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
         token = sp.getString(Config.ACCESS_TOKEN, "");
@@ -115,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
+
     }
+
+
 
 }

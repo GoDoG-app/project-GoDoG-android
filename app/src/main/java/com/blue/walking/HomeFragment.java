@@ -8,8 +8,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -125,6 +123,7 @@ public class HomeFragment extends Fragment {
     String token;  // 토큰
     ArrayList<Pet> petArrayList = new ArrayList<>();
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -162,7 +161,7 @@ public class HomeFragment extends Fragment {
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
         PetApi api = retrofit.create(PetApi.class);
 
-        Log.i("pet","내 펫 정보 API 실행");
+        Log.i("pet", "내 펫 정보 API 실행");
 
         // 유저 토큰
         SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
@@ -191,16 +190,15 @@ public class HomeFragment extends Fragment {
                     }
 
                 } else {
-                    Log.i("pet","펫 정보 불러오기 실패");
+                    Log.i("pet", "펫 정보 불러오기 실패");
                 }
             }
 
             @Override
             public void onFailure(Call<PetList> call, Throwable t) {
-                Log.i("pet","펫 정보 불러오기 실패");
+                Log.i("pet", "펫 정보 불러오기 실패");
             }
         });
-
 
 
         imgStart = rootView.findViewById(R.id.imgStart);

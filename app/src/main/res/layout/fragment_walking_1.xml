@@ -11,31 +11,33 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:id="@+id/tmapViewContainer"
-            android:layout_width="match_parent"
-            android:layout_height="400dp">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <FrameLayout
+                android:id="@+id/tmapViewContainer"
+                android:layout_width="match_parent"
+                android:layout_height="400dp">
+
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
+
+            <ImageView
                 android:id="@+id/btnLocation"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="bottom|end"
-                android:clickable="true"
-                android:contentDescription="현재 위치 갱신 버튼"
-                android:src="@drawable/baseline_my_location_24"
-                app:backgroundTint="#00FF0000"
-                app:backgroundTintMode="multiply"
-                app:fabSize="auto" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </FrameLayout>
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="340dp"
+                android:src="@drawable/baseline_my_location_24" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"

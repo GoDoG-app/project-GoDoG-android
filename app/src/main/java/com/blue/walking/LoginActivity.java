@@ -3,10 +3,12 @@ package com.blue.walking;
 import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
@@ -26,21 +27,15 @@ import com.blue.walking.config.Config;
 import com.blue.walking.model.User;
 import com.blue.walking.model.UserKakaoToken;
 import com.blue.walking.model.UserRes;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.kakao.sdk.auth.model.OAuthToken;
 import com.kakao.sdk.common.KakaoSdk;
 import com.kakao.sdk.common.util.Utility;
 import com.kakao.sdk.user.UserApiClient;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -55,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
     Button btnLogin;
     TextView txtRegister;
     ImageView imgKakao;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         editPassword = findViewById(R.id.editPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txtRegister = findViewById(R.id.txtRegister);
+
 
         txtRegister.setOnClickListener(new View.OnClickListener() {
             // 회원가입 텍스트 클릭 -> 회원가입 엑티비티로 이동
@@ -198,6 +193,23 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+
+        // 위치 권한이 허용된 경우에만 실행 (사용자가 위치 권한을 허용한 경우)
+        // onRequestPermissionsResult를 기다리지 않고 위 권한을 바로 확인하고,
+        // 권한이 허용되었다면 위치 업데이트를 요청.
+        // 초기 위치 업데이트를 요청할 때 권한을 확인하고자 할 때 유용.
+        // 사용자에게 권한 요청 대화 상자를 표시하지 않고 권한 상태를 검사하고자 할 때 사용할 수 있음.
+
+        if (ActivityCompat.checkSelfPermission(LoginActivity.this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(LoginActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    100);
+        }
+
+
     }
     Dialog dialog;
 

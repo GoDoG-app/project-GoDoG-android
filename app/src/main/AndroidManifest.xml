@@ -3,10 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:targetSandboxVersion="1">
 
+    <!-- 1. 인터넷 권한 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 2. 저장소 권한 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 3. 카메라 권한 -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 4. 위치 권한 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 

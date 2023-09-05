@@ -36,13 +36,15 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
-    implementation 'com.google.firebase:firebase-firestore:24.7.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.7.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
+    // Retrofit(파싱) 라이브러리
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     implementation 'commons-io:commons-io:2.4'
 
@@ -50,12 +52,15 @@ dependencies {
     implementation "com.kakao.sdk:v2-user:2.15.0"
 
     // 파이어베이스
-    implementation platform('com.google.firebase:firebase-bom:32.2.3')
+    implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
     implementation 'com.google.firebase:firebase-auth:21.1.0'
 
-    // 구글 지도
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    // 요청 또는 응답 정보를 기록하는 OkHttp의 인터셉터
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+
+    // TMap 라이브러리 수동 추가(project 로 libs 디렉토리에 라이브러리 파일 2개 추가)
+    implementation files('libs/tmap-sdk-1.2.aar')
+    implementation files('libs/vsm-tmap-sdk-v2-android-1.6.60.aar')
 
 }

@@ -11,11 +11,31 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/mapView"
+        <FrameLayout
+            android:id="@+id/tmapViewContainer"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:background="#C5C5C5" />
+            android:layout_height="400dp">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnLocation"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|end"
+                android:clickable="true"
+                android:contentDescription="현재 위치 갱신 버튼"
+                android:src="@drawable/baseline_my_location_24"
+                app:backgroundTint="#00FF0000"
+                app:backgroundTintMode="multiply"
+                app:fabSize="auto" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -99,7 +119,19 @@
             android:text="초기화"
             android:textColor="#000000"
             android:textSize="18sp"
-            android:visibility="invisible"
+            android:visibility="gone"
+            app:cornerRadius="10dp" />
+
+        <Button
+            android:id="@+id/btnLine"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#FFD953"
+            android:text="경로 삭제"
+            android:textColor="#000000"
+            android:textSize="18sp"
             app:cornerRadius="10dp" />
 
         <TextView
@@ -112,6 +144,7 @@
             android:textColor="#000000"
             android:textSize="15sp"
             android:visibility="invisible" />
+
     </LinearLayout>
 
 </FrameLayout>

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -112,6 +113,8 @@ public class UserFragment extends Fragment {
     String token;  // 토큰
     ArrayList<Pet> petArrayList = new ArrayList<>();
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -150,59 +153,18 @@ public class UserFragment extends Fragment {
         // (소숫점을 붙이니 int 로만 가능한거 같음. (float)를 해봐도 int 로 고쳐진다)
 
 
+        // 정보 수정하고 나오면 바로 반영될 수 있도록 자동 새로고침
+        onResume();
 
-        /** 내 펫 정보 API */
-        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
-        PetApi api = retrofit.create(PetApi.class);
 
-        Log.i("pet","내 펫 정보 API 실행");
-
-        // 유저 토큰
-        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-        token = sp.getString(Config.ACCESS_TOKEN, "");
-
-        Call<PetList> call = api.petInfo("Bearer " + token);
-        call.enqueue(new Callback<PetList>() {
+        imgSetting.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<PetList> call, Response<PetList> response) {
-                if (response.isSuccessful()) {
-
-                    // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
-                    PetList petList = response.body();
-                    petArrayList.addAll(petList.items);
-
-                    if (petArrayList.size() != 0) {
-                        // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
-
-                        Log.i("pet", "펫 정보 불러오기 완료");
-
-                        String gender;  // 성별 확인
-                        if (Integer.valueOf(petArrayList.get(0).petGender) == 0) {
-                            gender = "여";
-                        } else {
-                            gender = "남";
-                        }
-
-                        petNickname.setText(petArrayList.get(0).petName);
-                        petInfo.setText("(" + gender + ", " + petArrayList.get(0).petAge + "살)");
-                        petComment.setText(petArrayList.get(0).oneliner);
-                        Glide.with(getActivity()).load(petArrayList.get(0).petProUrl).into(imgPet);
-
-                    } else {
-                        return;
-                    }
-
-                } else {
-                    Log.i("pet","펫 정보 불러오기 실패");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PetList> call, Throwable t) {
-                Log.i("pet","펫 정보 불러오기 실패");
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(getActivity(), SettingActivity.class);
+                startActivity(intent);
             }
         });
-
 
         imgPetAddition.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -211,7 +173,6 @@ public class UserFragment extends Fragment {
                 Intent intent;
                 intent = new Intent(getActivity(), PetRegisterActivity.class);
                 // fragment 에서는 this 사용이 불가능해서 getActivity 를 이용
-
                 startActivity(intent);
             }
         });
@@ -257,7 +218,67 @@ public class UserFragment extends Fragment {
             }
         });
 
-
         return rootView;
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        /** 내 펫 정보 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+        PetApi api = retrofit.create(PetApi.class);
+
+        Log.i("pet","내 펫 정보 API 실행");
+
+        // 유저 토큰
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<PetList> call = api.petInfo("Bearer " + token);
+        call.enqueue(new Callback<PetList>() {
+            @Override
+            public void onResponse(Call<PetList> call, Response<PetList> response) {
+                if (response.isSuccessful()) {
+
+                    petArrayList.clear(); // 초기화
+
+                    // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
+                    PetList petList = response.body();
+                    petArrayList.addAll(petList.items);
+
+                    if (petArrayList.size() != 0) {
+                        // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
+
+                        Log.i("pet", "펫 정보 불러오기 완료");
+
+                        String gender;  // 성별 확인
+                        if (Integer.valueOf(petArrayList.get(0).petGender) == 0) {
+                            gender = "여";
+                        } else {
+                            gender = "남";
+                        }
+
+                        petNickname.setText(petArrayList.get(0).petName);
+                        petInfo.setText("(" + gender + ", " + petArrayList.get(0).petAge + "살)");
+                        petComment.setText(petArrayList.get(0).oneliner);
+                        Glide.with(UserFragment.this).load(petArrayList.get(0).petProUrl).into(imgPet);
+
+                    } else {
+                        return;
+                    }
+
+                } else {
+                    Log.i("pet","펫 정보 불러오기 실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PetList> call, Throwable t) {
+                Log.i("pet","펫 정보 불러오기 실패");
+            }
+        });
+    }
+
 }

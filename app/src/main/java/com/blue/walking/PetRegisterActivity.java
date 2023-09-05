@@ -173,8 +173,10 @@ public class PetRegisterActivity extends AppCompatActivity {
                     public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
                         if (response.isSuccessful()){
                             Log.i("pet","펫 등록 완료");
-
-                           finish();
+                            Toast.makeText(PetRegisterActivity.this,
+                                    "등록을 완료했습니다.",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
 
                         } else {
                             Log.i("pet","펫 등록 실패");

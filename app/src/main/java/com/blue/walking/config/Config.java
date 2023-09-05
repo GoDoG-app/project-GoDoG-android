@@ -6,7 +6,7 @@ public class Config {
 
     public static final String ACCESS_TOKEN = "accessToken";
 
-    public static final String HOST = "https://vjh2nj92xk.execute-api.ap-northeast-2.amazonaws.com/";
+    public static final String HOST = "https://m2243e589l.execute-api.us-east-1.amazonaws.com";
 
     // static final을 사용하여 상수로 지정.
     // 상수인 경우엔 변수 전체를 대문자로 지정 하는 것이 관례
@@ -15,5 +15,4 @@ public class Config {
     public static String getAppKey(){
         return TMAP_APP_KEY;
     }
-
 }

@@ -1,8 +1,9 @@
 package com.blue.walking.model;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class Pet {
+public class Pet implements Serializable {
 
     public int id;
     public int userId;

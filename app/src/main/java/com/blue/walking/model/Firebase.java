@@ -2,15 +2,16 @@ package com.blue.walking.model;
 
 import com.google.firebase.Timestamp;
 
+import java.util.Date;
+
 public class Firebase {
 
     public String userNickname;
     public String userImgUrl;
     public String userAddress;
     public String commentContent;
-    public Timestamp createdAt; // 댓글 작성 시간
-    public Timestamp updatedAt; // 수정 시간
-    public int postId;
+    public Date createdAt; // 댓글 작성 시간
+    public Date updatedAt; // 수정 시간
 
     public Firebase() {
     }
@@ -23,7 +24,7 @@ public class Firebase {
     }
 
     // 댓글 생성자
-    public Firebase(String userNickname, String userImgUrl, String userAddress, String commentContent, Timestamp createdAt, Timestamp updatedAt) {
+    public Firebase(String userNickname, String userImgUrl, String userAddress, String commentContent, Date createdAt, Date updatedAt) {
         this.userNickname = userNickname;
         this.userImgUrl = userImgUrl;
         this.userAddress = userAddress;

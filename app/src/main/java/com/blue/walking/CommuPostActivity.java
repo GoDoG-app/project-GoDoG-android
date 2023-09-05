@@ -152,7 +152,29 @@ public class CommuPostActivity extends AppCompatActivity {
         try {
             Date date = sf.parse(post.createdAt); // 자바가 이해하는 시간으로 바꾸기
             String localTime = df.format(date); // 자바가 이해한 시간을 사람이 이해할 수 있는 시간으로 바꾸기
-            txtTime.setText(localTime.substring(6)); // 년 제외 몇월 몇일 몇시
+            // 업로드 시간 가공
+            long curTime = System.currentTimeMillis();  // 현재 시간
+            long diffTime = (curTime - date.getTime()) / 1000;  // (현재시간 - 계산할 업로드시간)/1000
+            String msg = null;
+            if (diffTime < 60){
+                msg = "방금 전";
+                txtTime.setText(msg);
+
+            } else if ((diffTime /= 60)< 60) {
+                msg = diffTime + "분 전";
+                txtTime.setText(msg);
+
+            } else if ((diffTime /= 60)< 24) {
+                msg = diffTime + "시간 전";
+                txtTime.setText(msg);
+
+            } else if ((diffTime /= 24)< 30) {
+                msg = diffTime + "일 전";
+                txtTime.setText(msg);
+
+            } else {
+                txtTime.setText(localTime.substring(6)); // 년 제외 몇월 몇일 몇시
+            }
 
         } catch (ParseException e) {
             Log.i("walking", e.toString());
@@ -202,6 +224,9 @@ public class CommuPostActivity extends AppCompatActivity {
                             if (!commentContent.isEmpty()) {
                                 // 댓글을 Firebase Firestore에 추가
                                 addCommentToFirestore(commentContent);
+
+
+
                             }
 
                         }
@@ -221,44 +246,51 @@ public class CommuPostActivity extends AppCompatActivity {
 
 
         loadMessages();
-        }
+    }
 
     private void addCommentToFirestore(String commentContent) {
 
         // 현재 시간 정보 가져오기
         Timestamp timestamp = Timestamp.now();
 
-
         // Firebase Firestore에 댓글 추가
-        Firebase comment = new Firebase(userNickname, userImgUrl, userAddress, commentContent, timestamp, timestamp);
-        comment.postId = postId;
+        Firebase comment = new Firebase(userNickname, userImgUrl, userAddress, commentContent, timestamp.toDate(), timestamp.toDate());
+
         db = FirebaseFirestore.getInstance();
-        db.collection("comments")
-                .add(comment)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+
+        // "post_comments" 컬렉션에서 postId 문서를 생성 또는 가져옴
+        DocumentReference postRef = db.collection("post_comments").document(String.valueOf(postId));
+
+        postRef.collection("comments").document()
+                .set(comment)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
+                    public void onSuccess(Void unused) {
                         // 댓글 추가 성공
                         editComment.setText(""); // 댓글 입력창 초기화
+                        Log.i("AAA", String.valueOf(firebaseArrayList.size()));
                         // TODO: 댓글 추가 후 화면 갱신 또는 필요한 작업 수행
+//                        adapter.addComment(comment);
+
+                        // 댓글 수 업데이트
+                        txtComment.setText("댓글 " + firebaseArrayList.size());
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // 댓글 추가 실패
-                        Log.e(TAG, "댓글을 Firebase Firestore에 추가하는 중 오류 발생", e);
+                        // 댓글 추가 실패 처리
+
                     }
                 });
-
     }
 
     public void loadMessages() {
-        db.collection("comments")
-                .orderBy("serverTimestamp", Query.Direction.ASCENDING)
-                .orderBy("createdAt", Query.Direction.ASCENDING)
-                // sendMessages에서 설명 했던 대로 serverTimeStamp를 사용하면
-                // second 아래 단위 까지 정밀하게 orderBy가 가능하다
+        db.collection("post_comments")
+                .document(String.valueOf(postId))
+                .collection("comments")
+                .orderBy("createdAt", Query.Direction.ASCENDING)// 시간 순으로 정렬
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot querySnapshot,
@@ -276,18 +308,22 @@ public class CommuPostActivity extends AppCompatActivity {
                         firebaseArrayList.clear();
                         // 문서의 쿼리스냅샷 가져옴
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            firebase = document.toObject(Firebase.class);
+                            Firebase comment = document.toObject(Firebase.class);
 //                            Log.i("테스트",firebase.imgUrl);
-                            if (firebase != null) {
+                            if (comment != null) {
                                 // 리스트에 추가
-                                firebaseArrayList.add(firebase);
+                                firebaseArrayList.add(comment);
                             }
                         }
 
                         // 인덱스는 0부터 시작하기 때문에 마지막 값을 가져오기 위해 -1을 함
-                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                        recyclerView.setAdapter(adapter);
+//                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+//                        recyclerView.setAdapter(adapter);
+                        // RecyclerView 업데이트
                         adapter.notifyDataSetChanged();
+
+                        // 댓글 수 업데이트
+                        txtComment.setText("댓글 " + firebaseArrayList.size());
                     }
                 });
 

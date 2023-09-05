@@ -39,7 +39,7 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CommnetAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Firebase firebase = firebaseArrayList.get(position);
 
         // 댓글 내용 설정
@@ -52,7 +52,7 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
 
         // 댓글 작성 시간 설정
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        holder.txtTime.setText(sdf.format(firebase.createdAt.toDate()));
+        holder.txtTime.setText(sdf.format(firebase.createdAt));
 
     }
 
@@ -91,5 +91,10 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
             txtComment2 = itemView.findViewById(R.id.txtComment2);
 
         }
+    }
+
+    public void addComment(Firebase comment) {
+        firebaseArrayList.add(comment);
+        notifyItemInserted(firebaseArrayList.size() - 1); // 마지막 항목 갱신
     }
 }

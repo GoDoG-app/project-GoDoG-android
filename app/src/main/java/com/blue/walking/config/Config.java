@@ -15,4 +15,8 @@ public class Config {
     public static String getAppKey(){
         return TMAP_APP_KEY;
     }
+    private static final String KAKAO_APP_KEY = "80e37f349a16fcd565298d9e9591c338";
+    public static String getKakaoAppKey(){
+        return KAKAO_APP_KEY;
+    }
 }

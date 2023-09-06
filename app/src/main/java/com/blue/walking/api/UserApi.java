@@ -1,13 +1,10 @@
 package com.blue.walking.api;
 
+import com.blue.walking.model.KakaoUser;
 import com.blue.walking.model.ResultRes;
 import com.blue.walking.model.User;
-import com.blue.walking.model.UserInfo;
-import com.blue.walking.model.UserKakaoToken;
 import com.blue.walking.model.UserList;
 import com.blue.walking.model.UserRes;
-
-import javax.xml.transform.Result;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -29,10 +26,6 @@ public interface UserApi {
     @POST("/user/login")
     Call<UserRes> login(@Body User user);
 
-    // 카카오 로그인 인증 토큰
-    @POST("/user/kakao/oauth")
-    Call<UserKakaoToken> sendToken(@Body UserKakaoToken userKakaoToken);
-
     // 유저 정보 API
     @GET("/user/profile")
     Call<UserList> getUserInfo(@Header("Authorization") String token);
@@ -51,5 +44,9 @@ public interface UserApi {
                              @Part ("address") RequestBody address,
                              @Part ("lat") RequestBody lat,
                              @Part ("lng") RequestBody lng);
+
+    // 카카오 로그인
+    @POST("/user/kakaologin")
+    Call<UserRes> kakaoLogin(@Body KakaoUser kakaoUser);
 
 }

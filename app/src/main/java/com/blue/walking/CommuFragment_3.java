@@ -121,9 +121,20 @@ public class CommuFragment_3 extends Fragment {
                 }
             }
         });
-        getNetworkData();
+//        getNetworkData();
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        offset =0;
+        count = 0;
+        Log.i("ONRESUME","111");
+
+        getNetworkData();
     }
 
     private void getNetworkData() {

@@ -31,6 +31,7 @@ public class UserInfo {
     public String userAddress;
     public double lat;
     public double lng;
+    public int id;
 
     public UserInfo() {
     }

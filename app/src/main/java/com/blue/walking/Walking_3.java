@@ -2,6 +2,7 @@ package com.blue.walking;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,7 +15,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blue.walking.model.Park;
 import com.google.android.gms.maps.MapView;
+import com.skt.tmap.TMapPoint;
+import com.skt.tmap.poi.TMapPOIItem;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -84,6 +90,21 @@ public class Walking_3 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup)  inflater.inflate(R.layout.fragment_walking_3, container, false);
+
+        // 데이터를 받는 프래그먼트 (Walking_3)
+        Bundle args = getArguments();
+        if (args != null) {
+            ArrayList<Park> receivedParkArrayList = (ArrayList<Park>) args.getSerializable("parkList");
+            if (receivedParkArrayList != null) {
+                // 데이터 사용
+                // for 루프 외부에서 parkArrayList를 출력
+                for (Park park : receivedParkArrayList) {
+                    Log.i("워킹3프래그", "이름: " + park.getName() + ", 주소: " + park.getAddress() + ", 입구 좌표: " + park.getLat_lng());
+                }
+                // parkArrayList에 들어있는 데이터 확인
+                Log.i("워킹3프래그", "parkArrayList 크기: " + receivedParkArrayList.size());
+            }
+        }
 
         mapView1 = rootView.findViewById(R.id.mapView1);
         mapView2 = rootView.findViewById(R.id.mapView2);

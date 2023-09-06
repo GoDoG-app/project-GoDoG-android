@@ -2,6 +2,7 @@ package com.blue.walking;
 
 import static android.view.View.GONE;
 
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -23,10 +24,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -114,6 +114,8 @@ public class Walking_1 extends Fragment {
     // 실시간 현재 위치
     double lat; // 위도
     double lng; // 경도
+    double first_lat; // 최초 위도
+    double first_lng; // 최초 경도
     boolean isLocationReady = false; // 위치 정보가 준비 되었는 지 여부
     // 내 위치를 받기
     LocationManager locationManager;
@@ -130,6 +132,9 @@ public class Walking_1 extends Fragment {
     TMapPolyLine line; // 폴리라인 객체
     TMapMarkerItem marker; // 마커 객체
     boolean isPathDrawn = false; // 폴리라인 지우기용
+    boolean firstLocationReady = false;
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1; // 권한 요청 코드
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -147,19 +152,23 @@ public class Walking_1 extends Fragment {
         // 맵 로딩 프로그레스바
         progressBar = rootView.findViewById(R.id.progressBar);
 
-
         btnLine = rootView.findViewById(R.id.btnLine);
 
-
-
-        // TmapView 객체(context로 하면 안나옴)
-        // 프래그먼트는 activity가 아니라서 activity를 가져와야함.
-        tMapView = new TMapView(getActivity());
-        // tmapViewContainer(FrameLayout)에 TmapView 추가.
-        tmapViewContainer.addView(tMapView);
-        // AppKey 가져오기
-        tMapView.setSKTMapApiKey(Config.getAppKey());
-
+        // 권한(permission)상태 확인
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // 권한이 없는 경우 권한을 요청하는 다이얼로그 표시
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    REQUEST_LOCATION_PERMISSION); // 권한 요청 코드 사용
+        }
 
         // locationManager 객체 생성 및 변수 할당
         locationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
@@ -177,7 +186,7 @@ public class Walking_1 extends Fragment {
                 pointList.add(currentPoint);  // 경로에 현재 위치 추가
 
                 if (tMapView != null) {
-                // 위치 관련 로직
+                    // 위치 관련 로직
 
                     if (i == false){
                         // 이전 경로 및 마커 삭제
@@ -207,11 +216,60 @@ public class Walking_1 extends Fragment {
                     locationListener);
         }
 
+        // 최초 위치용 로케이션매니저
+        LocationManager locationManager1 = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         // 최초 위치 가져오기 ( 처음에 한 번 마커 및 중심점. 실시간 위치 가져오면 느려서인지 지도 안뜸)
-        Location first_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double first_lat = first_location.getLatitude(); // 마지막 위도
-        double first_lng = first_location.getLongitude(); // 마지막 경도
+        Location first_location = locationManager1.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        first_lat = first_location.getLatitude(); // 마지막 위도
+        first_lng = first_location.getLongitude(); // 마지막 경도
         Log.i("최초 위치 ", "최초 위치 first_lat+lon :" + first_lat + first_lng);
+
+
+        // TmapView 객체(context로 하면 안나옴)
+        // 프래그먼트는 activity가 아니라서 activity를 가져와야함.
+        tMapView = new TMapView(getActivity());
+        // tmapViewContainer(FrameLayout)에 TmapView 추가.
+        tmapViewContainer.addView(tMapView);
+        // AppKey 가져오기
+        tMapView.setSKTMapApiKey(Config.getAppKey());
+
+
+        // locationManager 객체 생성 및 변수 할당
+        locationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+        // 실시간 위치
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                lat = location.getLatitude();
+                lng = location.getLongitude();
+                Log.i("위치 확인", "위도 + 경도 : " + lat + " " +lng);
+
+                isLocationReady = true;
+
+                // 위치가 바뀔때 마다 현재 위치를 경로에 추가
+                TMapPoint currentPoint = new TMapPoint(lat, lng);
+                pointList.add(currentPoint);  // 경로에 현재 위치 추가
+
+                if (tMapView != null) {
+                // 위치 관련 로직
+
+                    if (i == false){
+                        // 이전 경로 및 마커 삭제
+                        tMapView.removeAllTMapPolyLine();
+                        tMapView.removeAllTMapMarkerItem();
+                        gpsLine();
+                    }
+
+                }
+            }
+        };
+
+
+        if (first_lat==0.0){
+            Snackbar.make(imgStart,
+                    "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
+                    Snackbar.LENGTH_SHORT).show();
+        }
 
 
         // 레이아웃에 지도를 구현
@@ -222,104 +280,95 @@ public class Walking_1 extends Fragment {
 
                 // 맵 준비 상태
                 mapReady = true;
-                progressBar.setVisibility(View.GONE); // 프로그레스바 숨기기
+                // 맵 준비 완료라면 프로그레스바 숨김
+                progressBar.setVisibility(GONE);
+                if (progressBar.getVisibility() == View.GONE) {
+                    // 지도 중심점 표시(처음 한 번)
+                    tMapView.setCenterPoint(first_lat, first_lng); // 지도 중심 설정
+                    tMapView.setZoomLevel(16); // 줌 레벨 설정
 
+                    // 최초 마커, 마커 생성 및 설정
+                    marker = new TMapMarkerItem();
+                    marker.setId("marker1");
+                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+                    // 최초 위치에 마커 추가
+                    marker.setTMapPoint(new TMapPoint(first_lat, first_lng));
+                    tMapView.addTMapMarkerItem(marker);
+                }
 
-                // 지도 중심점 표시(처음 한 번)
-                tMapView.setCenterPoint(first_lat, first_lng); // 지도 중심 설정
-                tMapView.setZoomLevel(17); // 줌 레벨 설정
+                // GPS 버튼 눌렀을 때
+                btnLocation.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                // 최초 마커, 마커 생성 및 설정
-                marker = new TMapMarkerItem();
-                marker.setId("marker1");
-                marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
-                // 최초 위치에 마커 추가
-                marker.setTMapPoint(new TMapPoint(first_lat, first_lng));
-                tMapView.addTMapMarkerItem(marker);
-
-                    // GPS 버튼 눌렀을 때
-                    btnLocation.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            if (lat==0.0){
-                                Snackbar.make(btnLocation,
-                                        "현재 위치 가져오는 중. 잠시만 기다려 주세요.",
-                                        Snackbar.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            tMapView.removeAllTMapMarkerItem();// 이전 마커 삭제
-                            marker = new TMapMarkerItem(); // 마커 객체 초기화
-                            marker.setId("marker1"); // 마커 이름 지정
-                            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi)); // 마커 아이콘
-                            marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 표시할 위치
-                            tMapView.addTMapMarkerItem(marker); // 마커 적용
-
-                            // 지도 중심점 표시( 버튼 누르면)
-                            tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
-                            tMapView.setZoomLevel(17); // 줌 레벨 설정
-                        }
-                    });
-
-                    // 시작 버튼을 눌렀을 때
-                    imgStart.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-
-                            btnLocation.setVisibility(View.VISIBLE);
-
-                            // 이전 경로 지우기 (라인 remove가 안되서..)
-                            btnLine.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    /** Fragment 끼리 이동하기 위해서는 Activity 내 Fragment manager 를 통해 이동하게 되며,
-                                     * Activity 위에서 이동하기 때문에 intent 가 아닌 메소드를 통해서 이동하게 된다. */
-
-                                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                                    WalkingFragment walkingFragment = new WalkingFragment();
-                                    // 프레그먼트 화면을 walkingFragment 로 활성화
-                                    transaction.replace(R.id.containers, walkingFragment);
-                                    // 꼭 commit 을 해줘야 바뀜
-                                    transaction.commit();
-                                }
-                            });
-
-                        if(isLocationReady==true && mapReady==true){
-
-
-                            if (i == true) {
-                                btnLine.setVisibility(GONE);
-                                btnReset.setVisibility(View.VISIBLE); // 초기화 버튼 띄우기
-
-                                // 정지로 변경
-                                imgStart.setImageResource(R.drawable.baseline_stop_24);
-                                i = false;
-                                chronometer.setBase(SystemClock.elapsedRealtime());  // 타이머 리셋
-                                chronometer.start();  // 타이머 재생
-
-
-                            } else {
-                                // 산책 기록 저장 여부 물어보기
-                                showAlertDialog();
-
-                                // 정지 눌렀을 때 다시 시작으로 변경 + 초기화 버튼 숨기기 + 타이머 종료
-                                imgStart.setImageResource(R.drawable.baseline_play_arrow_24);
-                                i = true;
-                                btnReset.setVisibility(View.GONE); // 초기화 버튼 숨기기
-                                btnLine.setVisibility(View.VISIBLE); // 경로 삭제 버튼 띄우기
-                                chronometer.stop();
-                            }
-                        }else{
-                            Snackbar.make(imgStart,
-                                    "아직 로딩 중 입니다. 잠시만 기다려 주세요.",
+                        if (lat==0.0){
+                            Snackbar.make(btnLocation,
+                                    "현재 위치 가져오는 중. 잠시만 기다려 주세요.",
                                     Snackbar.LENGTH_SHORT).show();
+                            return;
                         }
 
+                        tMapView.removeAllTMapMarkerItem();// 이전 마커 삭제
+                        marker = new TMapMarkerItem(); // 마커 객체 초기화
+                        marker.setId("marker1"); // 마커 이름 지정
+                        marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi)); // 마커 아이콘
+                        marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 표시할 위치
+                        tMapView.addTMapMarkerItem(marker); // 마커 적용
+
+                        // 지도 중심점 표시( 버튼 누르면)
+                        tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
+                        tMapView.setZoomLevel(16); // 줌 레벨 설정
                     }
                 });
 
+                // 시작 버튼을 눌렀을 때
+                imgStart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+//                        btnLocation.setVisibility(View.VISIBLE);
+
+                        // 이전 경로 지우기 (라인 remove가 안되서..)
+                        btnLine.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showAlertDialog2();
+                            }
+                        });
+
+                if(isLocationReady==true && mapReady==true){
+
+                    if (i == true) {
+                        btnLine.setVisibility(GONE);
+                        btnReset.setVisibility(View.VISIBLE); // 초기화 버튼 띄우기
+
+                        // 정지로 변경
+                        imgStart.setImageResource(R.drawable.baseline_stop_24);
+                        i = false;
+                        chronometer.setBase(SystemClock.elapsedRealtime());  // 타이머 리셋
+                        chronometer.start();  // 타이머 재생
+
+
+                    } else {
+                        // 산책 기록 저장 여부 물어보기
+                        showAlertDialog();
+
+                        // 정지 눌렀을 때 다시 시작으로 변경 + 초기화 버튼 숨기기 + 타이머 종료
+                        imgStart.setImageResource(R.drawable.baseline_play_arrow_24);
+                        i = true;
+                        btnReset.setVisibility(View.GONE); // 초기화 버튼 숨기기
+                        btnLine.setVisibility(View.VISIBLE); // 경로 삭제 버튼 띄우기
+                        chronometer.stop();
+                    }
+                }else{
+                    Snackbar.make(imgStart,
+                            "아직 로딩 중 입니다. 잠시만 기다려 주세요.",
+                            Snackbar.LENGTH_SHORT).show();
+                }
+
+                    }
+                });
 
             }
         });
@@ -369,29 +418,52 @@ public class Walking_1 extends Fragment {
         isPathDrawn = true; // 폴리라인과 마커가 그려진 상태로 설정
     }
 
-    // 권한이 허용되지 않은 경우를 처리 (여기서는 위치권한)
-    // 사용자가 권한 요청 대화 상자에서 권한을 허용하거나, 거부한 후 호출되는 콜백
-    // 권한을 허용하지 않은 경우 권한 요청을 다시 수행하고, 권한이 허용되면 위치 업데이트를 요청
+//     권한이 허용되지 않은 경우를 처리 (여기서는 위치권한)
+//     사용자가 권한 요청 대화 상자에서 권한을 허용하거나, 거부한 후 호출되는 콜백
+//     권한을 허용하지 않은 경우 권한 요청을 다시 수행하고, 권한이 허용되면 위치 업데이트를 요청
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == 100) {
-            if (ActivityCompat.checkSelfPermission(getActivity(),
-                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            // 권한 요청의 결과를 처리하는 부분.
 
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 권한이 부여된 경우
+
+                // 권한(permission)상태를 다시 확인
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getActivity(),
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // 권한이 없는 경우 다시 권한을 요청하는 다이얼로그 표시
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{
+                                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                            },
+                            REQUEST_LOCATION_PERMISSION); // 권한 요청 코드 사용
+                } else {
+                    // 권한이 이미 부여되었을 때
+
+                }
+
+            } else {
+                // 권한을 부여하지 않았을 때
+                // 다시 권한을 요청하는 다이얼로그 표시
+                // 권한이 없는 경우 다시 권한을 요청하는 다이얼로그 표시
                 ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                                android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                        100);
-                return;
+                        new String[]{
+                                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                        },
+                        REQUEST_LOCATION_PERMISSION); // 권한 요청 코드 사용
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    7000,
-                    -1,
-                    locationListener);
         }
     }
+
     private void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("[안내]");
@@ -421,6 +493,46 @@ public class Walking_1 extends Fragment {
         builder.show();
     }
 
+    private void showAlertDialog2() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("[지도]");
+        builder.setMessage("지도를 초기화 하시겠습니까?");
+
+        builder.setCancelable(false); // 아래 둘 중 한개의 버튼을 꼭 누르게 해줌(외각을 클릭해도 안사라지게)
+
+        builder.setPositiveButton("초기화", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // 초기화 누를 경우
+                /** Fragment 끼리 이동하기 위해서는 Activity 내 Fragment manager 를 통해 이동하게 되며,
+                 * Activity 위에서 이동하기 때문에 intent 가 아닌 메소드를 통해서 이동하게 된다. */
+
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                WalkingFragment walkingFragment = new WalkingFragment();
+                // 프레그먼트 화면을 walkingFragment 로 활성화
+                transaction.replace(R.id.containers, walkingFragment);
+                // 꼭 commit 을 해줘야 바뀜
+                transaction.commit();
+
+                // 스낵바 메세지
+                Snackbar.make(btnLine,
+                        "지도를 초기화 했습니다.",
+                        Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+        });
+
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+        builder.show();
+    }
+
+
     // 위치 리스너를 제거, 메모리 누수를 방지
     @Override
     public void onDestroyView() {
@@ -428,4 +540,5 @@ public class Walking_1 extends Fragment {
         // 위치 리스너 제거
         locationManager.removeUpdates(locationListener);
     }
+
 }

@@ -453,7 +453,7 @@ public class PetUpdateActivity extends AppCompatActivity {
                 }
 
                 imgPet.setImageBitmap(photo);
-                imgPet.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                imgPet.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
 //                imageView.setImageBitmap( getBitmapAlbum( imageView, albumUri ) );
 

@@ -29,15 +29,29 @@ public class UserInfo {
     public int userLoginType;
     public String userKakaoId;
     public String userAddress;
+    public double lat;
+    public double lng;
 
     public UserInfo() {
     }
 
-
-
     public UserInfo(String userNickname, String userImgUrl, String userAddress) {
         this.userNickname = userNickname;
         this.userImgUrl = userImgUrl;
+        this.userAddress = userAddress;
+    }
+
+    public UserInfo(String userEmail, String userNickname, int userGender,
+                    String userBirth, String userImgUrl, String userOneliner,
+                    int userLoginType, String userKakaoId, String userAddress) {
+        this.userEmail = userEmail;
+        this.userNickname = userNickname;
+        this.userGender = userGender;
+        this.userBirth = userBirth;
+        this.userImgUrl = userImgUrl;
+        this.userOneliner = userOneliner;
+        this.userLoginType = userLoginType;
+        this.userKakaoId = userKakaoId;
         this.userAddress = userAddress;
     }
 }

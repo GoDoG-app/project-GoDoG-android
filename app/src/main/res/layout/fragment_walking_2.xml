@@ -39,7 +39,7 @@
                         android:layout_gravity="center"
                         android:layout_marginLeft="40dp"
                         android:layout_weight="1"
-                        android:text="똘이의 산책기록"
+                        android:text="산책기록"
                         android:textColor="#000000"
                         android:textSize="20sp" />
 
@@ -52,9 +52,10 @@
                         android:layout_marginRight="20dp"
                         android:layout_weight="0"
                         android:background="@drawable/round_circle_backgroud"
-                        app:srcCompat="@drawable/pet"
+                        app:srcCompat="@drawable/group_26"
                         app:strokeColor="#FF9900"
-                        app:strokeWidth="4dp" />
+                        app:strokeWidth="4dp"
+                        android:scaleType="centerCrop"/>
 
                 </LinearLayout>
 
@@ -89,7 +90,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="총 거리"
+                            android:text="총 거리  "
                             android:textColor="#000000"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -118,7 +119,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="2 회"
+                            android:text="0 회"
                             android:textColor="#000000"
                             android:textSize="15sp" />
 
@@ -128,7 +129,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="1.0 km"
+                            android:text="0.0 km"
                             android:textColor="#000000"
                             android:textSize="15sp" />
 
@@ -138,7 +139,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="30:00"
+                            android:text="00:00"
                             android:textColor="#000000"
                             android:textSize="15sp" />
                     </LinearLayout>

@@ -16,6 +16,10 @@ import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.PetList;
 import com.blue.walking.model.ResultRes;
+import com.blue.walking.model.UserInfo;
+import com.blue.walking.model.UserList;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +33,7 @@ public class SettingActivity extends AppCompatActivity {
     TextView txtLogout;  // 로그아웃
 
     String token;
+    ArrayList<UserInfo> userInfoArrayList= new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +45,54 @@ public class SettingActivity extends AppCompatActivity {
         txtLogout = findViewById(R.id.txtLogout);
 
 
+        /** 내 정보 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(SettingActivity.this);
+        UserApi api = retrofit.create(UserApi.class);
+
+        Log.i("user","내 정보 API 실행");
+
+        // 유저 토큰
+        SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<UserList> call = api.getUserInfo("Bearer " + token);
+        call.enqueue(new Callback<UserList>() {
+            @Override
+            public void onResponse(Call<UserList> call, Response<UserList> response) {
+                if (response.isSuccessful()){
+                    userInfoArrayList.clear(); // 초기화
+
+                    UserList userList = response.body();
+                    userInfoArrayList.addAll(userList.info);
+
+                    // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
+                    if (userInfoArrayList.size() != 0) {
+                        // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
+
+                        Log.i("user", "내 정보 불러오기 완료");
+
+                        txtEmail.setText(userInfoArrayList.get(0).userEmail);
+                    }
+
+                } else {
+                    Log.i("user", "내 정보 불러오기 실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserList> call, Throwable t) {
+                Log.i("user", "내 정보 불러오기 실패");
+            }
+        });
+
+
+
         // 로그아웃을 클릭했을 때
         txtLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                /** 로그아웃 API (미완) */
+                /** 로그아웃 API */
                 Retrofit retrofit = NetworkClient.getRetrofitClient(SettingActivity.this);
                 UserApi api = retrofit.create(UserApi.class);
 

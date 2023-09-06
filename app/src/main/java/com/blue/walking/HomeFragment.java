@@ -173,6 +173,8 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<PetList> call, Response<PetList> response) {
                 if (response.isSuccessful()) {
 
+                    petArrayList.clear(); // 초기화
+
                     // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
                     PetList petList = response.body();
                     petArrayList.addAll(petList.items);
@@ -183,7 +185,7 @@ public class HomeFragment extends Fragment {
                         Log.i("pet", "펫 정보 불러오기 완료");
 
                         txtStart.setText(petArrayList.get(0).petName + "와 산책을 시작해보세요~");
-                        Glide.with(getActivity()).load(petArrayList.get(0).petProUrl).into(imgPet);
+                        Glide.with(HomeFragment.this).load(petArrayList.get(0).petProUrl).into(imgPet);
 
                     } else {
                         return;

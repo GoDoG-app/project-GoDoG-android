@@ -2,14 +2,16 @@ package com.blue.walking;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static java.util.Calendar.getInstance;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +23,16 @@ import android.widget.TextView;
 
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
+import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
+import com.blue.walking.model.UserInfo;
+import com.blue.walking.model.UserList;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -112,6 +118,7 @@ public class UserFragment extends Fragment {
 
     String token;  // 토큰
     ArrayList<Pet> petArrayList = new ArrayList<>();
+    ArrayList<UserInfo> userInfoArrayList= new ArrayList<>();
 
 
 
@@ -226,6 +233,11 @@ public class UserFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        userInfoApi();
+        petInfoApi();
+    }
+
+    private void petInfoApi() {
         /** 내 펫 정보 API */
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
         PetApi api = retrofit.create(PetApi.class);
@@ -280,5 +292,93 @@ public class UserFragment extends Fragment {
             }
         });
     }
+
+
+    private void userInfoApi() {
+        /** 내 정보 API */
+        Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+        UserApi api = retrofit.create(UserApi.class);
+
+        Log.i("user","내 정보 API 실행");
+
+        // 유저 토큰
+        SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<UserList> call = api.getUserInfo("Bearer " + token);
+        call.enqueue(new Callback<UserList>() {
+            @Override
+            public void onResponse(Call<UserList> call, Response<UserList> response) {
+                if (response.isSuccessful()){
+
+                    userInfoArrayList.clear(); // 초기화
+
+                    UserList userList = response.body();
+                    userInfoArrayList.addAll(userList.info);
+
+                    // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
+                    if (userInfoArrayList.size() != 0) {
+                        // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
+
+                        Log.i("user", "내 정보 불러오기 완료");
+
+                        String gender;  // 성별 확인
+                        if (Integer.valueOf(userInfoArrayList.get(0).userGender) == 0) {
+                            gender = "여";
+                        } else {
+                            gender = "남";
+                        }
+
+                        // 나이 확인
+                        int year = Integer.parseInt(userInfoArrayList.get(0).userBirth.substring(0,4));
+                        Calendar now = getInstance();
+                        int currentYear = now.get(Calendar.YEAR);
+                        int age = currentYear - year;  // 현재 년도 - 등록한 년도
+
+                        Log.i("user", String.valueOf(age));
+
+                        String strAge = "";
+                        if (age > 10 && age < 20) {
+                            strAge = "10대";
+                        } else if (age > 20 && age < 30) {
+                            strAge = "20대";
+                        } else if (age > 30 && age < 40) {
+                            strAge = "30대";
+                        } else if (age > 40 && age < 50) {
+                            strAge = "40대";
+                        } else if (age > 50 && age < 60) {
+                            strAge = "50대";
+                        } else if (age > 60 && age < 70) {
+                            strAge = "60대";
+                        }
+
+                        if (userInfoArrayList.get(0).userImgUrl == null){
+                            Glide.with(getActivity()).load(R.drawable.group_26).into(imgUser);
+
+                        } else {
+                            Glide.with(getActivity()).load(userInfoArrayList.get(0).userImgUrl).into(imgUser);
+                        }
+
+                        userNickname.setText(userInfoArrayList.get(0).userNickname);
+                        userInfo.setText("(" + gender + ", " + strAge + ")");
+                        userComment.setText(userInfoArrayList.get(0).userOneliner);
+                        userPlace.setText(userInfoArrayList.get(0).userAddress);
+
+                    } else {
+                        return;
+                    }
+                } else {
+                    Log.i("user", "내 정보 불러오기 실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserList> call, Throwable t) {
+                Log.i("user", "내 정보 불러오기 실패");
+            }
+        });
+    }
+
+
 
 }

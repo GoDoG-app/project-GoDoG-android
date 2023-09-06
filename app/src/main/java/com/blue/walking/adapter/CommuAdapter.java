@@ -1,5 +1,7 @@
 package com.blue.walking.adapter;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,9 +24,15 @@ import com.blue.walking.UserUpdateActivity;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PostApi;
 import com.blue.walking.config.Config;
+import com.blue.walking.model.Firebase;
 import com.blue.walking.model.Post;
 import com.blue.walking.model.ResultRes;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -46,6 +54,8 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
     // 시간 로컬타임 변수들을 멤버변수로 뺌
     SimpleDateFormat sf;
     SimpleDateFormat df;
+
+    Post post;
 
     public CommuAdapter(Context context, ArrayList<Post> postArrayList) {
         this.context = context;
@@ -75,7 +85,8 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
         holder.txtCategory.setText(post.category);
         holder.txtPlace.setText(post.user_region);
         holder.txtLike.setText(String.valueOf(post.post_likes_count));
-//        holder.txtComment.setText(String.valueOf());
+
+//        holder.txtComment.setText("댓글 ");
 
         // 이미지
         Glide.with(context).load(post.postImgUrl).into(holder.imgContent);
@@ -89,19 +100,19 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
             long curTime = System.currentTimeMillis();  // 현재 시간
             long diffTime = (curTime - date.getTime()) / 1000;  // (현재시간 - 계산할 업로드시간)/1000
             String msg = null;
-            if (diffTime < 60){
+            if (diffTime < 60) {
                 msg = "방금 전";
                 holder.txtTime.setText(msg);
 
-            } else if ((diffTime /= 60)< 60) {
+            } else if ((diffTime /= 60) < 60) {
                 msg = diffTime + "분 전";
                 holder.txtTime.setText(msg);
 
-            } else if ((diffTime /= 60)< 24) {
+            } else if ((diffTime /= 60) < 24) {
                 msg = diffTime + "시간 전";
                 holder.txtTime.setText(msg);
 
-            } else if ((diffTime /= 24)< 30) {
+            } else if ((diffTime /= 24) < 30) {
                 msg = diffTime + "일 전";
                 holder.txtTime.setText(msg);
 
@@ -115,15 +126,48 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
 
         // 좋아요인 isLike 는 0 또는 1로 나타남
-        if(post.isLike == 0){
+        if (post.isLike == 0) {
             // 좋아요가 0 이면 빈 하트 사진으로
             holder.imgLike.setImageResource(R.drawable.baseline_favorite_border_24);
 
-        } else if(post.isLike == 1){
+        } else if (post.isLike == 1) {
             // 좋아요가 1이면 채워진 하트 사진으로
             holder.imgLike.setImageResource(R.drawable.baseline_favorite_24);
         }
+
+        // Firebase Firestore 인스턴스 가져오기
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        String postId = String.valueOf(post.post_id);
+
+        // postId와 연관된 "comments" 하위 컬렉션의 레퍼런스 가져오기
+        CollectionReference commentsRef = db.collection("post_comments").document(postId).collection("comments");
+
+        // "comments" 컬렉션의 문서 수(댓글 수) 가져오기
+        commentsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    int commentCount = task.getResult().size();
+                    // 댓글 수를 commentCount 변수에 저장하고 사용할 수 있습니다.
+
+                    holder.txtComment.setText("댓글 " + commentCount);
+
+                    // commentCount를 UI에 업데이트하거나 다른 작업을 수행할 수 있습니다.
+                    Log.d(TAG, "댓글 수: " + commentCount);
+                } else {
+                    Log.w(TAG, "댓글 수를 가져오는 데 실패했습니다.", task.getException());
+                }
+            }
+        });
+
+
+
+
     }
+
+
+
 
     @Override
     public int getItemCount() {
@@ -193,7 +237,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
                     // 유저가 누른 포스트의 좋아요 유무 확인해서, API 호출
                     int index = getAdapterPosition();
-                    Post post = postArrayList.get(index);
+                    post = postArrayList.get(index);
 
                     Retrofit retrofit = NetworkClient.getRetrofitClient(context);
                     PostApi api = retrofit.create(PostApi.class);

@@ -1,6 +1,7 @@
 package com.blue.walking.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,18 +17,31 @@ import com.bumptech.glide.Glide;
 
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHolder>{
 
     Context context;
     ArrayList<Firebase> firebaseArrayList;
 
+    SimpleDateFormat sf;
+    SimpleDateFormat df;
+
     public CommnetAdapter(Context context, ArrayList<Firebase> firebaseArrayList) {
         this.context = context;
         this.firebaseArrayList = firebaseArrayList;
+
+        // 여기에 넣으면 한번만 실행된대
+        sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        df = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
+        sf.setTimeZone(TimeZone.getTimeZone("UTC")); // UTC 글로벌 시간
+        df.setTimeZone(TimeZone.getDefault());
+
     }
 
     @NonNull
@@ -51,8 +65,32 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
         holder.txtPlace.setText(firebase.userAddress);
 
         // 댓글 작성 시간 설정
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        holder.txtTime.setText(sdf.format(firebase.createdAt));
+        Date date = firebase.createdAt; // 자바가 이해하는 시간으로 바꾸기
+        String localTime = df.format(firebase.createdAt); // 자바가 이해한 시간을 사람이 이해할 수 있는 시간으로 바꾸기
+
+        // 업로드 시간 가공
+        long curTime = System.currentTimeMillis();  // 현재 시간
+        long diffTime = (curTime - date.getTime()) / 1000;  // (현재시간 - 계산할 업로드시간)/1000
+        String msg = null;
+        if (diffTime < 60){
+            msg = "방금 전";
+            holder.txtTime.setText(msg);
+
+        } else if ((diffTime /= 60)< 60) {
+            msg = diffTime + "분 전";
+            holder.txtTime.setText(msg);
+
+        } else if ((diffTime /= 60)< 24) {
+            msg = diffTime + "시간 전";
+            holder.txtTime.setText(msg);
+
+        } else if ((diffTime /= 24)< 30) {
+            msg = diffTime + "일 전";
+            holder.txtTime.setText(msg);
+
+        } else {
+            holder.txtTime.setText(localTime.substring(6)); // 년 제외 몇월 몇일 몇시
+        }
 
     }
 

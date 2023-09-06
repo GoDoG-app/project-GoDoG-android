@@ -2,9 +2,10 @@ package com.blue.walking.model;
 
 import com.google.firebase.Timestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Firebase {
+public class Firebase implements Serializable {
 
     public String userNickname;
     public String userImgUrl;
@@ -32,4 +33,5 @@ public class Firebase {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
 }

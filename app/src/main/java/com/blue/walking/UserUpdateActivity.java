@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -283,6 +285,21 @@ public class UserUpdateActivity extends AppCompatActivity {
 
                 // 한 줄 소개 가져오기
                 userComment = editComment.getText().toString().trim();
+
+                // 이미지 등록이 안되어있으면 등록해달라고 하기
+                Log.i("photo", photoText+"");
+                if (photoText != null){
+                    Log.i("user", "프로필 이미지 등록된 상태");
+                    finish();
+
+                } else if (photoFile == null) {
+                    Log.i("user2", "프로필 이미지 미등록");
+
+                    Toast.makeText(UserUpdateActivity.this,
+                            "프로필 이미지를 선택해주세요",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if (photoText.isEmpty()){
                     Toast.makeText(UserUpdateActivity.this,

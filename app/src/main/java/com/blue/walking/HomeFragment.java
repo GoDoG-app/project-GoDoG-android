@@ -2,12 +2,9 @@ package com.blue.walking;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,21 +22,23 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blue.walking.adapter.RandomAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
+import com.blue.walking.api.RandomFriendAPI;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
+import com.blue.walking.model.RandomFriend;
+import com.blue.walking.model.RandomFriendRes;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.auth.User;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
 import com.skt.tmap.TMapTapi;
-import com.skt.tmap.TMapView;
 import com.skt.tmap.poi.TMapPOIItem;
 
 import java.util.ArrayList;
@@ -119,13 +118,6 @@ public class HomeFragment extends Fragment {
 //    ImageView imgWalkPet2;  // 산책중인 친구2
 //    TextView txtWalkPet2;  // 산책중인 친구 이름2
 
-    ImageView imgLoop;  // 추천 친구 새로고침
-    ImageView imgFollowPet1;  // 추천 친구1
-    TextView txtFollowPet1;   // 추천 친구 이름1
-    ImageView imgFollowPet2;  // 추천 친구2
-    TextView txtFollowPet2;   // 추천 친구 이름2
-    ImageView imgFollowPet3;  // 추천 친구3
-    TextView txtFollowPet3;   // 추천 친구 이름3
 
     EditText editSearch;  // 유저 검색
 
@@ -137,6 +129,13 @@ public class HomeFragment extends Fragment {
     ImageView imgNotices;  // 공지사항 +
     TextView txtNotices1;  // 공지사항 글1
     TextView txtNotices2;  // 공지사항 글2
+
+    // 친구추천
+    RecyclerView recyclerViewRandom;
+    ArrayList<RandomFriend> randomFriendArrayList = new ArrayList<>();
+    RandomAdapter randomAdapter;
+    int offset = 0;
+    int limit = 300;
 
     String token;  // 토큰
     ArrayList<Pet> petArrayList = new ArrayList<>(); // 펫 정보 가져오기
@@ -189,14 +188,6 @@ public class HomeFragment extends Fragment {
 //        imgWalkPet2 = rootView.findViewById(R.id.imgWalkPet2);
 //        imgWalkPet2.setClipToOutline(true);  // 둥근 테두리 적용
 
-        imgFollowPet1 = rootView.findViewById(R.id.imgFollowPet1);
-        imgFollowPet1.setClipToOutline(true);  // 둥근 테두리 적용
-
-        imgFollowPet2 = rootView.findViewById(R.id.imgFollowPet2);
-        imgFollowPet2.setClipToOutline(true);  // 둥근 테두리 적용
-
-        imgFollowPet3 = rootView.findViewById(R.id.imgFollowPet3);
-        imgFollowPet3.setClipToOutline(true);  // 둥근 테두리 적용
 
         tMapTapi.setOnAuthenticationListenerCallback(new TMapTapi.OnAuthenticationListenerCallback() {
             @Override
@@ -310,6 +301,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
+
         /** 내 펫 정보 API */
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
         PetApi api = retrofit.create(PetApi.class);
@@ -347,6 +340,41 @@ public class HomeFragment extends Fragment {
                 Log.i("pet", "펫 정보 불러오기 실패");
             }
         });
+
+
+        // 친구 추천
+        Retrofit retrofitRandom = NetworkClient.getRetrofitClient(getActivity());
+        RandomFriendAPI randomApi = retrofitRandom.create(RandomFriendAPI.class);
+
+        Call<RandomFriendRes> randomCall = randomApi.getRandomFriend(offset, limit, "Bearer "+token);
+        randomCall.enqueue(new Callback<RandomFriendRes>() {
+            @Override
+            public void onResponse(Call<RandomFriendRes> call, Response<RandomFriendRes> response) {
+                if (response.isSuccessful()){
+
+                    randomFriendArrayList.clear();
+                    RandomFriendRes randomFriendRes = response.body();
+                    Log.i("test입니당", ""+randomFriendRes.items);
+                    randomFriendArrayList.addAll(0, randomFriendRes.items);
+                    randomAdapter = new RandomAdapter(getActivity(), randomFriendArrayList);
+                    recyclerViewRandom.setAdapter(randomAdapter);
+                    randomAdapter.notifyDataSetChanged();
+
+                } else {
+
+                    Log.i("test", "에러");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RandomFriendRes> call, Throwable t) {
+
+                Log.i("test", "에러"+t);
+
+            }
+        });
+
 
 
 
@@ -388,15 +416,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        imgFollowPet1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 친구 프로필로 이동
-                Intent intent;
-                intent = new Intent(getActivity(), FriendActivity.class);
-                startActivity(intent);
-            }
-        });
 
         return rootView;
     }

@@ -10,6 +10,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.blue.walking.api.NetworkClient;
+import com.blue.walking.api.PetApi;
+import com.blue.walking.api.UserApi;
+import com.blue.walking.model.PetList;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
+
 public class FriendActivity extends AppCompatActivity {
 
     /** 화면뷰 */
@@ -46,12 +54,27 @@ public class FriendActivity extends AppCompatActivity {
         imgUser = findViewById(R.id.imgUser);
         imgPet = findViewById(R.id.imgPet);
 
+        // 유저정보
+        userNickname = findViewById(R.id.userNickname);
+        userInfo = findViewById(R.id.userInfo);
+        userPlace = findViewById(R.id.userPlace);
+        userComment = findViewById(R.id.userComment);
+        userTemp = findViewById(R.id.userTemp);
+
+        // 펫정보
+        petNickname = findViewById(R.id.petNickname);
+        petInfo = findViewById(R.id.petInfo);
+        petComment = findViewById(R.id.petComment);
+
+
         // 프로그래스바(온도) 기본값
         progressBar = findViewById(R.id.progressBar);
         progressBar.setProgress((int) 36.5);
 
         imgUser.setClipToOutline(true);  // 둥근 테두리 적용
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
+
+
 
         btnChat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,5 +93,19 @@ public class FriendActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    private void FriendInfoAPI(){
+
+    }
+    private void FriendPetInfoAPI(){
+
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivity.this);
+        PetApi petApi = retrofit.create(PetApi.class);
+
+//        Call<PetList> call = petApi.getFriendPetInfo(id);
+
+
+
+
     }
 }

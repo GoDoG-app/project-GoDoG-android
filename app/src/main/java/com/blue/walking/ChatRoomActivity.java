@@ -24,6 +24,7 @@ import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Chat;
 import com.blue.walking.model.ChatRoom;
+import com.blue.walking.model.User;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -66,6 +67,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     Firebase firebase;
     FirebaseFirestore db;
     Chat chat;
+    UserInfo userInfo2;
 
 
 
@@ -143,12 +145,31 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Snackbar.LENGTH_SHORT).show();
             return;
         } else {
+            // 타 유져정보 가져오기
+            Retrofit retrofit2 = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
+            UserApi api2 = retrofit2.create(UserApi.class);
 
-            // 타 우져정보 가져오기
-            Retrofit retrofit1 = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
-            UserApi api2 = retrofit1.create(UserApi.class);
+            Call<UserList> call2 = api2.getFriendInfo(userInfo2.id);
 
-//            Call<UserList> call2 = api2.getUserInfo();
+            call2.enqueue(new Callback<UserList>() {
+                @Override
+                public void onResponse(Call<UserList> call, Response<UserList> response) {
+                    if (response.isSuccessful()){
+                        UserInfo userInfo2 = userInfoArrayList.get(0);
+                        int friendId = userInfo2.id;
+                        String friendImgUrl = userInfo2.userImgUrl;
+                        String friendNickname = userInfo2.userNickname;
+                        chat = new Chat(friendId, friendNickname, friendImgUrl, chatMessage, FieldValue.serverTimestamp().toString());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserList> call, Throwable t) {
+
+                }
+            });
+
+
             // 유저 정보 가져오기
             Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
             UserApi api = retrofit.create(UserApi.class);
@@ -190,7 +211,11 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     }
     public void loadMessage(){
-        db.collection("chat").document().collection("chatList").addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+        DocumentReference chatRef = db.collection("chat").document();
+        DocumentReference chatMessageRef = db.collection("chat").document().collection("chatMessage").document();
+
+        db.collection("chat").document().collection("chatMessage").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null){

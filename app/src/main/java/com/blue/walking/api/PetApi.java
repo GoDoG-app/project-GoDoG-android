@@ -4,6 +4,7 @@ import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
 import com.blue.walking.model.ResultRes;
 import com.blue.walking.model.User;
+import com.blue.walking.model.UserList;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -15,6 +16,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 public interface PetApi {
 
@@ -41,5 +43,9 @@ public interface PetApi {
                             @Part ("petAge") RequestBody petAge,
                             @Part ("petGender") RequestBody petGender,
                             @Part ("petOneliner") RequestBody petOneliner);
+
+
+    @GET("/userpet/{petId}")
+    Call<PetList> getFriendPetInfo(@Path("petId") int id);
 
 }

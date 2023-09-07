@@ -2,6 +2,7 @@ package com.blue.walking.api;
 
 import com.blue.walking.model.PostList;
 import com.blue.walking.model.ResultRes;
+import com.blue.walking.model.UserList;
 
 import java.util.Map;
 

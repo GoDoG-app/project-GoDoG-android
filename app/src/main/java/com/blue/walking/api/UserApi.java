@@ -17,6 +17,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 public interface UserApi {
 
@@ -45,8 +46,12 @@ public interface UserApi {
                              @Part ("lat") RequestBody lat,
                              @Part ("lng") RequestBody lng);
 
-    // 카카오 로그인
+    // 카카오 로그인 API
     @POST("/user/kakaologin")
     Call<UserRes> kakaoLogin(@Body KakaoUser kakaoUser);
+
+    // 특정 유저정보 API
+    @GET("/user/{id}")
+    Call<UserList> getFriendInfo(@Path("id") int id);
 
 }

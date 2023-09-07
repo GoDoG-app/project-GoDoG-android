@@ -196,11 +196,8 @@ public class Walking_1 extends Fragment {
                     // 최초 위치에 마커 추가
                     marker.setTMapPoint(new TMapPoint(lat, lng));
                     tMapView.addTMapMarkerItem(marker);
+                    mapReady = false;
 
-                }else{
-                    Snackbar.make(imgStart,
-                            "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
-                            Snackbar.LENGTH_SHORT).show();
                 }
 
 

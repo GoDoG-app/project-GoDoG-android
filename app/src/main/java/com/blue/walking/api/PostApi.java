@@ -53,5 +53,10 @@ public interface PostApi {
                                    @Query("limit")int limit,
                                    @Header("Authorization") String token);
 
+    // 내 게시물 가져오기 API
+    @GET("/posting/mylist")
+    Call<PostList> getMyPostList(@Query("offset")int offset,
+                                 @Query("limit")int limit,
+                                 @Header("Authorization") String token);
 
 }

@@ -221,6 +221,16 @@ public class UserFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 내가 쓴 커뮤니티 글 보기
+                Intent intent;
+                intent = new Intent(getActivity(), MyPostActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnFollowList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 산책 파트너(친구) 목록 보기
 
             }
         });
@@ -232,7 +242,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        /** API 호출 */
         userInfoApi();
         petInfoApi();
     }
@@ -353,10 +363,10 @@ public class UserFragment extends Fragment {
                         }
 
                         if (userInfoArrayList.get(0).userImgUrl == null){
-                            Glide.with(getActivity()).load(R.drawable.group_26).into(imgUser);
+                            Glide.with(UserFragment.this).load(R.drawable.group_26).into(imgUser);
 
                         } else {
-                            Glide.with(getActivity()).load(userInfoArrayList.get(0).userImgUrl).into(imgUser);
+                            Glide.with(UserFragment.this).load(userInfoArrayList.get(0).userImgUrl).into(imgUser);
                         }
 
                         userNickname.setText(userInfoArrayList.get(0).userNickname);

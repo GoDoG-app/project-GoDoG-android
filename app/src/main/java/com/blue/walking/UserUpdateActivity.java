@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -74,6 +72,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 public class UserUpdateActivity extends AppCompatActivity {
 
     /** 화면뷰 */
@@ -82,8 +83,6 @@ public class UserUpdateActivity extends AppCompatActivity {
     TextView txtImg;   // 프로필 사진 선택
     EditText editNickName;  // 유저 닉네임
     TextView txtPlace;  // 유저 지역
-    Button btnFemale;  // 유저 성별 여성
-    Button btnMale;    // 유저 성별 남성
     EditText editComment;  // 한 줄 소개
     Button btnUpdate;  // 수정 완료 버튼
 
@@ -115,8 +114,6 @@ public class UserUpdateActivity extends AppCompatActivity {
         txtImg = findViewById(R.id.txtImg);
         editNickName = findViewById(R.id.editNickName);
         txtPlace = findViewById(R.id.txtPlace);
-        btnFemale = findViewById(R.id.btnFemale);
-        btnMale = findViewById(R.id.btnMale);
         editComment = findViewById(R.id.editComment);
         btnUpdate = findViewById(R.id.btnUpdate);
 
@@ -152,22 +149,6 @@ public class UserUpdateActivity extends AppCompatActivity {
                         // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
 
                         Log.i("user", "내 정보 불러오기 완료");
-
-                        // 성별 확인
-                        if (Integer.valueOf(userInfoArrayList.get(0).userGender) == 0) {
-                            btnFemale.setBackgroundColor(Color.parseColor("#262D33"));
-                            btnFemale.setTextColor(Color.parseColor("#FFFFFF"));
-                            btnMale.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                            btnMale.setTextColor(Color.parseColor("#262D33"));
-                            gender = 0;
-
-                        } else {
-                            btnMale.setBackgroundColor(Color.parseColor("#262D33"));
-                            btnMale.setTextColor(Color.parseColor("#FFFFFF"));
-                            btnFemale.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                            btnFemale.setTextColor(Color.parseColor("#262D33"));
-                            gender = 1;
-                        }
 
                         // 수정하기 전, 서버를 통해 가져온 수정 전인 값을 멤버 변수에 넣음(저장)
                         // 이렇게하면 부분 수정 가능해짐
@@ -241,29 +222,6 @@ public class UserUpdateActivity extends AppCompatActivity {
         });
 
 
-        // 성별 버튼 클릭
-        btnMale.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                btnMale.setBackgroundColor(Color.parseColor("#262D33"));
-                btnMale.setTextColor(Color.parseColor("#FFFFFF"));
-                btnFemale.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                btnFemale.setTextColor(Color.parseColor("#262D33"));
-            }
-        });
-
-        btnFemale.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                btnFemale.setBackgroundColor(Color.parseColor("#262D33"));
-                btnFemale.setTextColor(Color.parseColor("#FFFFFF"));
-                btnMale.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                btnMale.setTextColor(Color.parseColor("#262D33"));
-                gender = 0;
-            }
-        });
-
-
         // 프로필 사진 선택하기
         txtImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,12 +257,6 @@ public class UserUpdateActivity extends AppCompatActivity {
                             "프로필 이미지를 선택해주세요",
                             Toast.LENGTH_SHORT).show();
                     return;
-                }
-
-                if (photoText.isEmpty()){
-                    Toast.makeText(UserUpdateActivity.this,
-                            "프로필 이미지를 선택해주세요",
-                            Toast.LENGTH_SHORT).show();
                 }
 
 

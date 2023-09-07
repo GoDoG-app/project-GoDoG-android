@@ -1,6 +1,7 @@
 package com.blue.walking;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 
 import android.app.AlertDialog;
@@ -129,6 +130,7 @@ public class Walking_1 extends Fragment {
     TMapPolyLine line; // 폴리라인 객체
     TMapMarkerItem marker; // 마커 객체
     private static final int REQUEST_LOCATION_PERMISSION = 1; // 권한 요청 코드
+    boolean mapReady = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -171,16 +173,36 @@ public class Walking_1 extends Fragment {
             @Override
             public void onLocationChanged(@NonNull Location location) {
 
+
                 lat = location.getLatitude();
                 lng = location.getLongitude();
                 Log.i("위치 확인", "위도 + 경도 : " + lat + " " +lng);
                 isLocationReady = true;
 
-//                // 위치가 바뀔때 마다 현재 위치를 경로에 추가
-//                TMapPoint currentPoint = new TMapPoint(lat, lng);
-//                pointList.add(currentPoint);  // 경로에 현재 위치 추가
-
+                //  완료라면 프로그레스바 숨김
+                progressBar.setVisibility(GONE);
                 gpsLine();
+
+                if (mapReady) {
+
+                    // 지도 중심점 표시(처음 한 번)
+                    tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
+                    tMapView.setZoomLevel(16); // 줌 레벨 설정
+
+                    // 최초 마커, 마커 생성 및 설정
+                    marker = new TMapMarkerItem();
+                    marker.setId("marker");
+                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+                    // 최초 위치에 마커 추가
+                    marker.setTMapPoint(new TMapPoint(lat, lng));
+                    tMapView.addTMapMarkerItem(marker);
+
+                }else{
+                    Snackbar.make(imgStart,
+                            "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
+                            Snackbar.LENGTH_SHORT).show();
+                }
+
 
             }
         };
@@ -194,7 +216,7 @@ public class Walking_1 extends Fragment {
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     -1,
-                    10,
+                    7,
                     locationListener);
         }
 
@@ -220,6 +242,9 @@ public class Walking_1 extends Fragment {
             @Override
             public void onMapReady() {
                 //todo 맵 로딩 완료 후 구현
+
+
+                mapReady = true;
 
                 // GPS 버튼 눌렀을 때
                 btnLocation.setOnClickListener(new View.OnClickListener() {
@@ -295,73 +320,56 @@ public class Walking_1 extends Fragment {
                     }
                 });
 
-                if (tMapView != null && lat != 0.0) {
-
-                    // 맵& 현재 위치 준비 완료라면 프로그레스바 숨김
-                    progressBar.setVisibility(GONE);
-
-                    // 지도 중심점 표시(처음 한 번)
-                    tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
-                    tMapView.setZoomLevel(16); // 줌 레벨 설정
-
-                    // 최초 마커, 마커 생성 및 설정
-                    marker = new TMapMarkerItem();
-                    marker.setId("marker1");
-                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
-                    // 최초 위치에 마커 추가
-                    marker.setTMapPoint(new TMapPoint(lat, lng));
-                    tMapView.addTMapMarkerItem(marker);
-
-                }else{
-                    Snackbar.make(imgStart,
-                            "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
-                            Snackbar.LENGTH_SHORT).show();
-                }
             }
+
         });
+
         return rootView;
     }
 
 
     public void gpsLine(){
 
+        if (btnLine.getVisibility() == GONE){
 
-        // 현재 위치를 TMapPoint 객체로 변환
-        TMapPoint currentPoint = new TMapPoint(lat, lng);
+            // 현재 위치를 TMapPoint 객체로 변환
+            TMapPoint currentPoint = new TMapPoint(lat, lng);
 
-        pointList.add(currentPoint);  // 경로에 현재 위치 추가
+            pointList.add(currentPoint);  // 경로에 현재 위치 추가
 
-        // 이전 경로 및 마커 삭제
-        tMapView.removeAllTMapPolyLine();
-        tMapView.removeAllTMapMarkerItem();
+            // 이전 경로 및 마커 삭제
+            tMapView.removeAllTMapPolyLine();
+            tMapView.removeTMapPolygon("path1");
+            tMapView.removeAllTMapMarkerItem();
+            tMapView.removeTMapMarkerItem("marker");
+            tMapView.removeTMapMarkerItem("marker1");
 
-        // 새로운 폴리라인 생성 및 추가
-        line = new TMapPolyLine("path1", pointList);
-        line.setLineColor(Color.BLUE);
-        tMapView.addTMapPolyLine(line);
+            // 새로운 폴리라인 생성 및 추가
+            line = new TMapPolyLine("path1", pointList);
+            line.setLineColor(Color.BLUE);
+            tMapView.addTMapPolyLine(line);
 
-        // 지도 중심점 표시
-        tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
-        tMapView.setZoomLevel(17); // 줌 레벨 설정
+            // 지도 중심점 표시
+            tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
+            tMapView.setZoomLevel(17); // 줌 레벨 설정
 
-        // 마커 생성 및 설정
-        marker = new TMapMarkerItem();
-        marker.setId("marker1");
-        marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+            // 마커 생성 및 설정
+            marker = new TMapMarkerItem();
+            marker.setId("marker1");
+            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
 
-        // bitMap 이미지 수정 하드코딩
+            // bitMap 이미지 수정 하드코딩
 //                Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),
 //                        image);
 //                bitmap = Bitmap.createScaledBitmap(bitmap, 50, 50,false);
 
-        // 기존 마커 삭제
-        tMapView.removeTMapMarkerItem("marker1");
 
-        // 현재 위치에 마커 추가
-        marker.setTMapPoint(new TMapPoint(lat, lng));
-        tMapView.addTMapMarkerItem(marker);
-
+            // 현재 위치에 마커 추가
+            marker.setTMapPoint(new TMapPoint(lat, lng));
+            tMapView.addTMapMarkerItem(marker);
+        }
     }
+
 
 //     권한이 허용되지 않은 경우를 처리 (여기서는 위치권한)
 //     사용자가 권한 요청 대화 상자에서 권한을 허용하거나, 거부한 후 호출되는 콜백

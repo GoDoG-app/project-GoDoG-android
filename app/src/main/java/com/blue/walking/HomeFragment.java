@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -188,6 +189,13 @@ public class HomeFragment extends Fragment {
 //        imgWalkPet2 = rootView.findViewById(R.id.imgWalkPet2);
 //        imgWalkPet2.setClipToOutline(true);  // 둥근 테두리 적용
 
+        // 친구추천 리사이클러뷰 초기화
+        recyclerViewRandom = rootView.findViewById(R.id.recyclerViewRandom);
+        recyclerViewRandom.setHasFixedSize(true);
+        // 리사이클러뷰 가로모드
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewRandom.setLayoutManager(layoutManager);
+
 
         tMapTapi.setOnAuthenticationListenerCallback(new TMapTapi.OnAuthenticationListenerCallback() {
             @Override
@@ -358,7 +366,6 @@ public class HomeFragment extends Fragment {
                     randomFriendArrayList.addAll(0, randomFriendRes.items);
                     randomAdapter = new RandomAdapter(getActivity(), randomFriendArrayList);
                     recyclerViewRandom.setAdapter(randomAdapter);
-                    randomAdapter.notifyDataSetChanged();
 
                 } else {
 

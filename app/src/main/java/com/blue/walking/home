@@ -2,7 +2,6 @@ package com.blue.walking;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -38,7 +37,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.auth.User;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
-import com.skt.tmap.TMapTapi;
 import com.skt.tmap.TMapView;
 import com.skt.tmap.poi.TMapPOIItem;
 
@@ -134,17 +132,21 @@ public class HomeFragment extends Fragment {
     TextView txtCommunity2;  // 커뮤니티 글2
     TextView txtCommuCount1; // 커뮤니티 글1의 댓글? 카운트 수
     TextView txtCommuCount2; // 커뮤니티 글2의 댓글? 카운트 수
+
     ImageView imgNotices;  // 공지사항 +
     TextView txtNotices1;  // 공지사항 글1
     TextView txtNotices2;  // 공지사항 글2
+    boolean isMapInitialized = false;
 
     String token;  // 토큰
-    ArrayList<Pet> petArrayList = new ArrayList<>(); // 펫 정보 가져오기
-    ArrayList<UserInfo> userInfoArrayList = new ArrayList<>(); // 유저 정보(주소) 가져오기
+    ArrayList<Pet> petArrayList = new ArrayList<>();
+    ArrayList<UserInfo> userInfoArrayList = new ArrayList<>(); // 유저 정보(주소) Api용
+
+    LocationManager locationManager; // 유저 위치를 위한 로케이션 매니저
     private static final int REQUEST_LOCATION_PERMISSION = 1; // 권한 요청 코드
     double first_lat ; // 처음 위도
     double first_lng ; // 처음 경도
-    TMapTapi tMapTapi; // 티맵 사용
+    TMapView tMapView; // 티맵 사용
     RecyclerView RecommndRecyclerView; // 산책로 추천용
 
     @Override
@@ -154,8 +156,8 @@ public class HomeFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
 
         // TMapView 초기화 및 설정
-        tMapTapi = new TMapTapi(getActivity());
-        tMapTapi.setSKTmapAuthentication(Config.getAppKey());
+        tMapView = new TMapView(getActivity());
+        tMapView.setSKTMapApiKey(Config.getAppKey());
 
         // 권한(permission)상태 확인
         if (ContextCompat.checkSelfPermission(getActivity(),
@@ -172,6 +174,7 @@ public class HomeFragment extends Fragment {
                     },
                     REQUEST_LOCATION_PERMISSION); // 권한 요청 코드 사용
         }
+
         txtStart = rootView.findViewById(R.id.txtStart);
 
         imgPet = rootView.findViewById(R.id.imgPet);
@@ -198,117 +201,6 @@ public class HomeFragment extends Fragment {
         imgFollowPet3 = rootView.findViewById(R.id.imgFollowPet3);
         imgFollowPet3.setClipToOutline(true);  // 둥근 테두리 적용
 
-        tMapTapi.setOnAuthenticationListenerCallback(new TMapTapi.OnAuthenticationListenerCallback() {
-            @Override
-            public void SKTMapApikeySucceed() {
-                // 인증 성공
-                // 여기에서 관련 작업을 수행
-                Log.v("TMAP KEY 성공 : ", "성공, KEY 인증 완료.");
-
-                // 유저 토큰
-                SharedPreferences sp1 = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-                token = sp1.getString(Config.ACCESS_TOKEN, "");
-
-                // 유저 정보에서 lat, lng을 가져온다.
-                Retrofit retrofit1 = NetworkClient.getRetrofitClient(getActivity());
-                UserApi api2 = retrofit1.create(UserApi.class); // API 인터페이스를 구현한 객체를 생성
-                Call<UserList> call2 = api2.getUserInfo("Bearer " + token); // 서버에 HTTP 요청을 생성
-
-                // HTTP 요청을 서버로 보냄
-                call2.enqueue(new Callback<UserList>() {
-                    @Override
-                    public void onResponse(Call<UserList> call, Response<UserList> response) {
-                        // 서버 응답을 처리하는 코드
-                        if (response.isSuccessful()) {
-
-                            userInfoArrayList.clear(); //초기화
-
-                            // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용
-                            UserList userList = response.body();
-                            userInfoArrayList.addAll(userList.info);
-
-                            if (userInfoArrayList.size() != 0) {
-                                // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
-                                Log.i("SUCCESS", "유저 정보 불러오기 완료");
-                                for (int i = 0; i < userInfoArrayList.size(); i++) {
-                                    Log.i("유저 정보", "유저 전체 정보: " + userInfoArrayList.get(i));
-                                    Log.i("유저 이름", "유저 정보 이름: " + userInfoArrayList.get(i).userNickname);
-                                    Log.i("유저 주소", "유저 정보 주소: " + userInfoArrayList.get(i).userAddress);
-                                    Log.i("유저 위도", "유저 정보 위도: " + userInfoArrayList.get(i).lat);
-                                    Log.i("유저 경도", "유저 정보 경도: " + userInfoArrayList.get(i).lng);
-                                }
-
-                                first_lat = userInfoArrayList.get(0).lat;
-                                first_lng = userInfoArrayList.get(0).lng;
-                                Log.i("최초 위치 ", "최초 위치 first_lat+lon :" + first_lat + " " + first_lng);
-
-                                // TMapData 객체 생성
-                                TMapData tMapData = new TMapData();
-                                // 내 위치 설정
-                                TMapPoint myLocation = new TMapPoint(first_lat, first_lng);
-                                tMapData.findAroundNamePOI(myLocation, "공원", 5, 20, new TMapData.OnFindAroundNamePOIListener() {
-                                    @Override
-                                    public void onFindAroundNamePOI(ArrayList<TMapPOIItem> arrayList) {
-
-                                        if (arrayList != null && !arrayList.isEmpty()) {
-                                            // arrayList가 null이 아니고 비어있지 않은 경우에만 처리
-                                            Log.i("검색 결과", "검색 완료.");
-                                            ArrayList<Park> parkArrayList = new ArrayList<>(); // 공원 정보를 저장할 ArrayList
-
-                                            // 검색 결과로 받은 공원 리스트 처리
-                                            for (TMapPOIItem item : arrayList) {
-                                                // 공원 이름
-                                                String name = item.getPOIName();
-                                                // 공원 주소
-                                                String address = item.getPOIAddress();
-                                                // 공원 좌표
-                                                TMapPoint lat_lng = item.getPOIPoint();
-                                                // 필요한 정보 처리
-                                                Log.i("공원 정보", "이름: " + name + ", 주소: " + address +", 입구 좌표: " + lat_lng );
-
-                                                // Park 객체 생성 및 정보 저장
-                                                Park park = new Park(name, address, lat_lng);
-
-                                                // Park 객체를 ArrayList에 추가
-                                                parkArrayList.add(park);
-
-                                                Log.i("park 데이터 확인, parkGetName : ", ""+park.getName());
-                                            }
-                                            // for 루프 외부에서 parkArrayList를 출력
-                                            for (Park park : parkArrayList) {
-                                              Log.i("park 데이터 전체 확인", "이름: " + park.getName() + ", 주소: " + park.getAddress() + ", 입구 좌표: " + park.getLat_lng());
-                                            }
-//                                            // todo 데이터를 전달하는 프래그먼트 (필요 없을지도)
-//                                            Bundle bundle = new Bundle();
-//                                            bundle.putSerializable("parkList", parkArrayList);
-//                                            Walking_3 walking_3 = new Walking_3();
-//                                            walking_3.setArguments(bundle);
-
-                                            // parkArrayList에 들어있는 데이터 확인
-                                            Log.i("히히", "parkArrayList 크기: " + parkArrayList.size());
-                                        } else {
-                                            // arrayList가 null 또는 비어있는 경우에 대한 처리
-                                            Log.i("검색 결과", "검색 결과가 없습니다.");
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<UserList> call, Throwable t) {
-                        Log.e("ERROR", "유저 주소 불러오기 실패");
-                    }
-
-                });
-            }
-            @Override
-            public void SKTMapApikeyFailed(String s) {
-                // 인증 실패
-                // AppKey 인증 오류 처리를 여기에 추가
-                Log.e("TMAP KEY 실패 : ", "실패, Key 인증 실패.");
-            }
-        });
 
         /** 내 펫 정보 API */
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
@@ -325,8 +217,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<PetList> call, Response<PetList> response) {
                 if (response.isSuccessful()) {
-                    Log.i("pet", "펫 정보 불러오기 완료");
 
+                    Log.i("pet", "펫 정보 불러오기 완료1");
                     petArrayList.clear(); //초기화
 
                     // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
@@ -336,15 +228,140 @@ public class HomeFragment extends Fragment {
                     if (petArrayList.size() != 0) {
                         // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
 
+                        Log.i("pet", "펫 정보 불러오기 완료");
+
                         txtStart.setText(petArrayList.get(0).petName + "와 산책을 시작해보세요~");
                         Log.i("pet", petArrayList.get(0).petProUrl);
                         Glide.with(getActivity()).load(petArrayList.get(0).petProUrl).into(imgPet);
+
+
+
+                    } else {
+                        return;
                     }
+
+                } else {
+                    Log.i("pet", "펫 정보 불러오기 실패");
                 }
             }
+
             @Override
             public void onFailure(Call<PetList> call, Throwable t) {
                 Log.i("pet", "펫 정보 불러오기 실패");
+            }
+        });
+
+
+        // 유저 정보를 가져와서 추천해줄지.. // 유저 주소 기반 산책로 추천(유저 주소 가져오기)
+        UserApi api2 = retrofit.create(UserApi.class); // API 인터페이스를 구현한 객체를 생성
+        Call<UserList> call2 = api2.getUserInfo("Bearer " + token); // 서버에 HTTP 요청을 생성
+
+        // HTTP 요청을 서버로 보냄
+        call2.enqueue(new Callback<UserList>() {
+                          @Override
+                          public void onResponse(Call<UserList> call, Response<UserList> response) {
+                              // 서버 응답을 처리하는 코드
+                              if (response.isSuccessful()) {
+
+                                  userInfoArrayList.clear(); //초기화
+
+                                  // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용
+                                  UserList userList = response.body();
+                                  userInfoArrayList.addAll(userList.info);
+
+                                  if (userInfoArrayList.size() != 0) {
+
+
+                                      // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
+                                      Log.i("SUCCESS", "유저 정보 불러오기 완료");
+                                      for (int i = 0; i < userInfoArrayList.size(); i++) {
+                                          Log.i("유저 정보", "유저 전체 정보: " + userInfoArrayList.get(i));
+                                          Log.i("유저 이름", "유저 정보 이름: " + userInfoArrayList.get(i).userNickname);
+                                          Log.i("유저 주소", "유저 정보 주소: " + userInfoArrayList.get(i).userAddress);
+                                          Log.i("유저 위도", "유저 정보 위도: " + userInfoArrayList.get(i).lat);
+                                          Log.i("유저 경도", "유저 정보 경도: " + userInfoArrayList.get(i).lng);
+                                      }
+                                      first_lat = userInfoArrayList.get(0).lat;
+                                      first_lng = userInfoArrayList.get(0).lng;
+                                      Log.i("최초 위치 ", "최초 위치 first_lat+lon :" + first_lat + " " + first_lng);
+
+                                  }
+                              }
+                          }
+
+                          @Override
+                          public void onFailure(Call<UserList> call, Throwable t) {
+                              Log.e("ERROR", "유저 주소 불러오기 실패");
+                          }
+                      });
+
+        tMapView.setOnApiKeyListenerCallback(new TMapView.OnApiKeyListenerCallback() {
+            @Override
+            public void onSKTMapApikeySucceed() {
+                // 인증 성공
+                // 여기에서 관련 작업을 수행
+
+                Log.v("TMAP KEY 성공 : ", "성공, KEY 인증 완료.");
+
+                // TMapData 객체 생성
+                TMapData tMapData = new TMapData();
+                // 내 위치 설정
+                TMapPoint myLocation = new TMapPoint(first_lat, first_lng);
+                tMapData.findAroundNamePOI(myLocation, "공원", 5, 20, new TMapData.OnFindAroundNamePOIListener() {
+                    @Override
+                    public void onFindAroundNamePOI(ArrayList<TMapPOIItem> arrayList) {
+
+                        if (arrayList != null && !arrayList.isEmpty()) {
+                            // arrayList가 null이 아니고 비어있지 않은 경우에만 처리
+                            Log.i("검색 결과", "검색 완료.");
+                            ArrayList<Park> parkArrayList = new ArrayList<>(); // 공원 정보를 저장할 ArrayList
+
+                            // 검색 결과로 받은 공원 리스트 처리
+                            for (TMapPOIItem item : arrayList) {
+                                // 공원 이름
+                                String name = item.getPOIName();
+                                // 공원 주소
+                                String address = item.getPOIAddress();
+                                // 공원 좌표
+                                TMapPoint lat_lng = item.getPOIPoint();
+                                // 필요한 정보 처리
+                                Log.i("공원 정보", "이름: " + name + ", 주소: " + address +", 입구 좌표: " + lat_lng );
+
+                                // Park 객체 생성 및 정보 저장
+                                Park park = new Park(name, address, lat_lng);
+
+                                // Park 객체를 ArrayList에 추가
+                                parkArrayList.add(park);
+
+                                Log.i("park 데이터 확인, parkGetName : ", ""+park.getName());
+                            }
+                            // for 루프 외부에서 parkArrayList를 출력
+                            for (Park park : parkArrayList) {
+//                        Log.i("park 데이터 전체 확인", "이름: " + park.getName() + ", 주소: " + park.getAddress() + ", 입구 좌표: " + park.getLat_lng());
+                            }
+//                            // todo 데이터를 전달하는 프래그먼트 (필요 없을지도)
+//                            Bundle bundle = new Bundle();
+//                            bundle.putSerializable("parkList", parkArrayList);
+//                            Walking_3 walking_3 = new Walking_3();
+//                            walking_3.setArguments(bundle);
+
+                            // parkArrayList에 들어있는 데이터 확인
+                            Log.i("히히", "parkArrayList 크기: " + parkArrayList.size());
+                        } else {
+                            // arrayList가 null 또는 비어있는 경우에 대한 처리
+                            Log.i("검색 결과", "검색 결과가 없습니다.");
+                        }
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onSKTMapApikeyFailed(String s) {
+                // 인증 실패
+                // AppKey 인증 오류 처리를 여기에 추가
+                Log.e("TMAP KEY 실패 : ", "실패, Key 인증 실패.");
             }
         });
 
@@ -401,7 +418,7 @@ public class HomeFragment extends Fragment {
         return rootView;
     }
 
-    // 권한
+    // onRequestPermissionsResult 메서드는 onCreateView 밖에서 정의
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -414,6 +431,16 @@ public class HomeFragment extends Fragment {
             }
         }
     }
+    // 홈 화면을 업데이트하는 메서드
+    private void updateHomeScreen() {
+        // 인증 성공 후 화면을 업데이트하고, POI 검색 결과를 받을 준비를 합니다.
+        if (isMapInitialized) {
+            // 지도 초기화가 완료된 경우에만 화면 업데이트 및 검색을 진행
+            // 이곳에서 홈 화면을 나타내는 로직을 수행
+            // 예: 화면의 요소들을 설정하고 초기화
+            // 예: POI 검색 등의 작업 수행
 
 
+        }
+    }
 }

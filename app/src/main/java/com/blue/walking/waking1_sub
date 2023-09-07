@@ -123,6 +123,7 @@ public class Walking_1 extends Fragment {
 
     // 티맵 뷰 (지도 표시)
     TMapView tMapView;
+    boolean mapReady = false;
     // 지도가 나타날 화면
     FrameLayout tmapViewContainer;
 
@@ -175,17 +176,27 @@ public class Walking_1 extends Fragment {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-
                 lat = location.getLatitude();
                 lng = location.getLongitude();
                 Log.i("위치 확인", "위도 + 경도 : " + lat + " " +lng);
-                isLocationReady = true;
+
 
                 // 위치가 바뀔때 마다 현재 위치를 경로에 추가
                 TMapPoint currentPoint = new TMapPoint(lat, lng);
                 pointList.add(currentPoint);  // 경로에 현재 위치 추가
 
+                if (tMapView != null) {
+                    // 위치 관련 로직
 
+                    if (i == false){
+                        // 이전 경로 및 마커 삭제
+                        tMapView.removeAllTMapPolyLine();
+                        tMapView.removeAllTMapMarkerItem();
+                        gpsLine();
+                    }
+
+                }
+                isLocationReady = true;
             }
         };
 
@@ -194,6 +205,9 @@ public class Walking_1 extends Fragment {
         // 권한이 허용되었다면 위치 업데이트를 요청.
         // 초기 위치 업데이트를 요청할 때 권한을 확인하고자 할 때 유용.
         // 사용자에게 권한 요청 대화 상자를 표시하지 않고 권한 상태를 검사할 때 사용.
+
+        // 하단의 locationManger의 오버라이딩
+        // 위치 권한 확인 및 요청
         if (ActivityCompat.checkSelfPermission(getActivity(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -201,6 +215,15 @@ public class Walking_1 extends Fragment {
                     10,
                     locationListener);
         }
+
+        // 최초 위치용 로케이션매니저
+        LocationManager locationManager1 = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+        // 최초 위치 가져오기 ( 처음에 한 번 마커 및 중심점. 실시간 위치 가져오면 느려서인지 지도 안뜸)
+        Location first_location = locationManager1.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        first_lat = first_location.getLatitude(); // 마지막 위도
+        first_lng = first_location.getLongitude(); // 마지막 경도
+        Log.i("최초 위치 ", "최초 위치 first_lat+lon :" + first_lat + first_lng);
+
 
         // TmapView 객체(context로 하면 안나옴)
         // 프래그먼트는 activity가 아니라서 activity를 가져와야함.
@@ -210,19 +233,58 @@ public class Walking_1 extends Fragment {
         // AppKey 가져오기
         tMapView.setSKTMapApiKey(Config.getAppKey());
 
+
+        // locationManager 객체 생성 및 변수 할당
+        locationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+        // 실시간 위치
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                lat = location.getLatitude();
+                lng = location.getLongitude();
+                Log.i("위치 확인", "위도 + 경도 : " + lat + " " +lng);
+
+                isLocationReady = true;
+
+                // 위치가 바뀔때 마다 현재 위치를 경로에 추가
+                TMapPoint currentPoint = new TMapPoint(lat, lng);
+                pointList.add(currentPoint);  // 경로에 현재 위치 추가
+
+                if (tMapView != null) {
+                // 위치 관련 로직
+
+                    if (i == false){
+                        // 이전 경로 및 마커 삭제
+                        tMapView.removeAllTMapPolyLine();
+                        tMapView.removeAllTMapMarkerItem();
+                        gpsLine();
+                    }
+
+                }
+            }
+        };
+
+
+        if (first_lat==0.0){
+            Snackbar.make(imgStart,
+                    "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
+                    Snackbar.LENGTH_SHORT).show();
+        }
+
+
         // 레이아웃에 지도를 구현
         tMapView.setOnMapReadyListener(new TMapView.OnMapReadyListener() {
             @Override
             public void onMapReady() {
                 //todo 맵 로딩 완료 후 구현
 
-                if (tMapView != null && lat != 0.0) {
-
-                    // 맵& 현재 위치 준비 완료라면 프로그레스바 숨김
-                    progressBar.setVisibility(GONE);
-
+                // 맵 준비 상태
+                mapReady = true;
+                // 맵 준비 완료라면 프로그레스바 숨김
+                progressBar.setVisibility(GONE);
+                if (progressBar.getVisibility() == View.GONE) {
                     // 지도 중심점 표시(처음 한 번)
-                    tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
+                    tMapView.setCenterPoint(first_lat, first_lng); // 지도 중심 설정
                     tMapView.setZoomLevel(16); // 줌 레벨 설정
 
                     // 최초 마커, 마커 생성 및 설정
@@ -230,16 +292,8 @@ public class Walking_1 extends Fragment {
                     marker.setId("marker1");
                     marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
                     // 최초 위치에 마커 추가
-                    marker.setTMapPoint(new TMapPoint(lat, lng));
+                    marker.setTMapPoint(new TMapPoint(first_lat, first_lng));
                     tMapView.addTMapMarkerItem(marker);
-
-                }else{
-                    Snackbar.make(imgStart,
-                            "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
-                            Snackbar.LENGTH_SHORT).show();
-                }
-
-                if (progressBar.getVisibility() == View.GONE) {
                 }
 
                 // GPS 버튼 눌렀을 때
@@ -283,7 +337,7 @@ public class Walking_1 extends Fragment {
                             }
                         });
 
-                if(isLocationReady==true){
+                if(isLocationReady==true && mapReady==true){
 
                     if (i == true) {
                         btnLine.setVisibility(GONE);

@@ -114,8 +114,6 @@ public class Walking_1 extends Fragment {
     // 실시간 현재 위치
     double lat; // 위도
     double lng; // 경도
-    double first_lat; // 최초 위도
-    double first_lng; // 최초 경도
     boolean isLocationReady = false; // 위치 정보가 준비 되었는 지 여부
     // 내 위치를 받기
     LocationManager locationManager;
@@ -130,9 +128,6 @@ public class Walking_1 extends Fragment {
     ArrayList<TMapPoint> pointList = new ArrayList<>(); // 위치 정보가 준비되었는지 여부
     TMapPolyLine line; // 폴리라인 객체
     TMapMarkerItem marker; // 마커 객체
-    boolean isPathDrawn = false; // 폴리라인 지우기용
-    boolean firstLocationReady = false;
-
     private static final int REQUEST_LOCATION_PERMISSION = 1; // 권한 요청 코드
 
     @Override
@@ -181,10 +176,11 @@ public class Walking_1 extends Fragment {
                 Log.i("위치 확인", "위도 + 경도 : " + lat + " " +lng);
                 isLocationReady = true;
 
-                // 위치가 바뀔때 마다 현재 위치를 경로에 추가
-                TMapPoint currentPoint = new TMapPoint(lat, lng);
-                pointList.add(currentPoint);  // 경로에 현재 위치 추가
+//                // 위치가 바뀔때 마다 현재 위치를 경로에 추가
+//                TMapPoint currentPoint = new TMapPoint(lat, lng);
+//                pointList.add(currentPoint);  // 경로에 현재 위치 추가
 
+                gpsLine();
 
             }
         };
@@ -210,37 +206,20 @@ public class Walking_1 extends Fragment {
         // AppKey 가져오기
         tMapView.setSKTMapApiKey(Config.getAppKey());
 
+
+        // 초기화 버튼을 눌렀을 때
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chronometer.setBase(SystemClock.elapsedRealtime()); // 타이머 리셋
+            }
+        });
+
         // 레이아웃에 지도를 구현
         tMapView.setOnMapReadyListener(new TMapView.OnMapReadyListener() {
             @Override
             public void onMapReady() {
                 //todo 맵 로딩 완료 후 구현
-
-                if (tMapView != null && lat != 0.0) {
-
-                    // 맵& 현재 위치 준비 완료라면 프로그레스바 숨김
-                    progressBar.setVisibility(GONE);
-
-                    // 지도 중심점 표시(처음 한 번)
-                    tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
-                    tMapView.setZoomLevel(16); // 줌 레벨 설정
-
-                    // 최초 마커, 마커 생성 및 설정
-                    marker = new TMapMarkerItem();
-                    marker.setId("marker1");
-                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
-                    // 최초 위치에 마커 추가
-                    marker.setTMapPoint(new TMapPoint(lat, lng));
-                    tMapView.addTMapMarkerItem(marker);
-
-                }else{
-                    Snackbar.make(imgStart,
-                            "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
-                            Snackbar.LENGTH_SHORT).show();
-                }
-
-                if (progressBar.getVisibility() == View.GONE) {
-                }
 
                 // GPS 버튼 눌렀을 때
                 btnLocation.setOnClickListener(new View.OnClickListener() {
@@ -283,85 +262,105 @@ public class Walking_1 extends Fragment {
                             }
                         });
 
-                if(isLocationReady==true){
+                        if(isLocationReady==true){
 
-                    if (i == true) {
-                        btnLine.setVisibility(GONE);
-                        btnReset.setVisibility(View.VISIBLE); // 초기화 버튼 띄우기
+                            if (i == true) {
+                                btnLine.setVisibility(GONE);
+                                btnReset.setVisibility(View.VISIBLE); // 초기화 버튼 띄우기
 
-                        // 정지로 변경
-                        imgStart.setImageResource(R.drawable.baseline_stop_24);
-                        i = false;
-                        chronometer.setBase(SystemClock.elapsedRealtime());  // 타이머 리셋
-                        chronometer.start();  // 타이머 재생
+                                // 정지로 변경
+                                imgStart.setImageResource(R.drawable.baseline_stop_24);
+                                i = false;
+                                chronometer.setBase(SystemClock.elapsedRealtime());  // 타이머 리셋
+                                chronometer.start();  // 타이머 재생
 
 
-                    } else {
-                        // 산책 기록 저장 여부 물어보기
-                        showAlertDialog();
+                            } else {
+                                // 산책 기록 저장 여부 물어보기
+                                showAlertDialog();
 
-                        // 정지 눌렀을 때 다시 시작으로 변경 + 초기화 버튼 숨기기 + 타이머 종료
-                        imgStart.setImageResource(R.drawable.baseline_play_arrow_24);
-                        i = true;
-                        btnReset.setVisibility(View.GONE); // 초기화 버튼 숨기기
-                        btnLine.setVisibility(View.VISIBLE); // 경로 삭제 버튼 띄우기
-                        chronometer.stop();
-                    }
-                }else{
-                    Snackbar.make(imgStart,
-                            "아직 로딩 중 입니다. 잠시만 기다려 주세요.",
-                            Snackbar.LENGTH_SHORT).show();
-                }
+                                // 정지 눌렀을 때 다시 시작으로 변경 + 초기화 버튼 숨기기 + 타이머 종료
+                                imgStart.setImageResource(R.drawable.baseline_play_arrow_24);
+                                i = true;
+                                btnReset.setVisibility(View.GONE); // 초기화 버튼 숨기기
+                                btnLine.setVisibility(View.VISIBLE); // 경로 삭제 버튼 띄우기
+                                chronometer.stop();
+                            }
+                        }else{
+                            Snackbar.make(imgStart,
+                                    "아직 로딩 중 입니다. 잠시만 기다려 주세요.",
+                                    Snackbar.LENGTH_SHORT).show();
+                        }
 
                     }
                 });
 
+                if (tMapView != null && lat != 0.0) {
+
+                    // 맵& 현재 위치 준비 완료라면 프로그레스바 숨김
+                    progressBar.setVisibility(GONE);
+
+                    // 지도 중심점 표시(처음 한 번)
+                    tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
+                    tMapView.setZoomLevel(16); // 줌 레벨 설정
+
+                    // 최초 마커, 마커 생성 및 설정
+                    marker = new TMapMarkerItem();
+                    marker.setId("marker1");
+                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+                    // 최초 위치에 마커 추가
+                    marker.setTMapPoint(new TMapPoint(lat, lng));
+                    tMapView.addTMapMarkerItem(marker);
+
+                }else{
+                    Snackbar.make(imgStart,
+                            "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
+                            Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
-
-        // 초기화 버튼을 눌렀을 때
-        btnReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chronometer.setBase(SystemClock.elapsedRealtime()); // 타이머 리셋
-            }
-        });
-
         return rootView;
     }
 
 
     public void gpsLine(){
 
-        // 마커 생성 및 설정
-        marker = new TMapMarkerItem();
-        marker.setId("marker1");
-        marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
 
-        // 현재 위치에 마커 추가
-        marker.setTMapPoint(new TMapPoint(lat, lng));
-        tMapView.addTMapMarkerItem(marker);
+        // 현재 위치를 TMapPoint 객체로 변환
+        TMapPoint currentPoint = new TMapPoint(lat, lng);
 
+        pointList.add(currentPoint);  // 경로에 현재 위치 추가
 
-        // gps를 가져오지 못 했거나 map이 구현되지 않았을 경우
-        if (isLocationReady == false || tMapView == null) {
-            Snackbar.make(imgStart,
-                    "지도를 그리는 중 이거나 위치를 가져 오는 중 입니다. 잠시만 기다려 주세요.",
-                    Snackbar.LENGTH_SHORT).show();
-            return;
-        }
+        // 이전 경로 및 마커 삭제
+        tMapView.removeAllTMapPolyLine();
+        tMapView.removeAllTMapMarkerItem();
 
         // 새로운 폴리라인 생성 및 추가
-        line = new TMapPolyLine("line1", pointList);
+        line = new TMapPolyLine("path1", pointList);
         line.setLineColor(Color.BLUE);
         tMapView.addTMapPolyLine(line);
-
 
         // 지도 중심점 표시
         tMapView.setCenterPoint(lat, lng); // 지도 중심 설정
         tMapView.setZoomLevel(17); // 줌 레벨 설정
 
-        isPathDrawn = true; // 폴리라인과 마커가 그려진 상태로 설정
+        // 마커 생성 및 설정
+        marker = new TMapMarkerItem();
+        marker.setId("marker1");
+        marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+
+        // bitMap 이미지 수정 하드코딩
+//                Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+//                        image);
+//                bitmap = Bitmap.createScaledBitmap(bitmap, 50, 50,false);
+
+        // 기존 마커 삭제
+        tMapView.removeTMapMarkerItem("marker1");
+
+        // 현재 위치에 마커 추가
+        marker.setTMapPoint(new TMapPoint(lat, lng));
+        tMapView.addTMapMarkerItem(marker);
+
     }
 
 //     권한이 허용되지 않은 경우를 처리 (여기서는 위치권한)

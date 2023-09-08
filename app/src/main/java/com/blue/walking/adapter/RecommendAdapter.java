@@ -101,7 +101,6 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                     intent.putExtra("walkingRoute", park);
                     context.startActivity(intent);
 
-                    // todo walking_3을 액티비티로 변환했음
 //                    // 프래그먼트 간의 데이터 전달 인텐트 권장하지 않는다함
 //                    Bundle bundle = new Bundle();
 //                    bundle.putSerializable("walkingRoute", park); // 번들에 담을 데이터 (put.string int 등등 있음)

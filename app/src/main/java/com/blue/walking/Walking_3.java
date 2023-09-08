@@ -159,7 +159,7 @@ public class Walking_3 extends Fragment {
         tMapView1.setOnMapReadyListener(new TMapView.OnMapReadyListener() {
             @Override
             public void onMapReady() {
-                // todo 맵이 준비 되었다면 여기서 작성
+                // 맵이 준비 되었다면 여기서 작성
 
                 // 에러 방지용 더미 변수
                 double startLat = 37.5455; // 출발지

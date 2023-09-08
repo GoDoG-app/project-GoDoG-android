@@ -181,7 +181,7 @@
                     android:layout_marginRight="30dp"
                     android:layout_weight="1"
                     android:backgroundTint="#FFE977"
-                    android:text="친구 등록"
+                    android:text="친구 끊기"
                     android:textColor="#000000"
                     android:textSize="18sp"
                     app:cornerRadius="20dp" />

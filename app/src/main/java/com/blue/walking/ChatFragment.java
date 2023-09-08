@@ -112,7 +112,7 @@ public class ChatFragment extends Fragment {
                     userInfoArrayList.addAll(0, userList.info);
 
                     ChatRoom chatRoom = new ChatRoom();
-                    chatRoom.id = userInfoArrayList.get(0).id;
+                    chatRoom.senderId = userInfoArrayList.get(0).id;
                     chatRoom.userImgUrl = userInfoArrayList.get(0).userImgUrl;
                     chatRoom.userNickname = userInfoArrayList.get(0).userNickname;
                     chatRoomArrayList.add(chatRoom);

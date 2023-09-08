@@ -112,8 +112,8 @@ public class FriendActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // 채팅방으로 이동
-                Intent intent;
-                intent = new Intent(FriendActivity.this, ChatRoomActivity.class);
+                Intent intent = new Intent(FriendActivity.this, ChatRoomActivity.class);
+                intent.putExtra("randomFriend", randomFriend);
                 startActivity(intent);
             }
         });

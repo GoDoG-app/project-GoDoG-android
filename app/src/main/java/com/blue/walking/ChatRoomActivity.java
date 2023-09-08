@@ -24,6 +24,7 @@ import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Chat;
 import com.blue.walking.model.ChatRoom;
+import com.blue.walking.model.RandomFriend;
 import com.blue.walking.model.User;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
@@ -41,9 +42,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.ktx.Firebase;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -53,7 +56,7 @@ import retrofit2.Retrofit;
 
 public class ChatRoomActivity extends AppCompatActivity {
 
-    /** 화면뷰 */
+    /** 1:1 채팅 화면뷰 */
     TextView txtUserName;  // 상대 유저 이름
     EditText editChat;  // 채팅 입력
     ImageView imgSend;  // 채팅 보내기
@@ -68,6 +71,11 @@ public class ChatRoomActivity extends AppCompatActivity {
     FirebaseFirestore db;
     Chat chat;
     UserInfo userInfo2;
+    DocumentReference chatRef;
+    DocumentReference chatMessageRef;
+    RandomFriend randomFriend;
+    int reciverId;
+    int senderId;
 
 
 
@@ -84,6 +92,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(ChatRoomActivity.this));
+
 
 
         // 어댑터 초기화
@@ -145,30 +154,9 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Snackbar.LENGTH_SHORT).show();
             return;
         } else {
-            // 타 유져정보 가져오기
-            Retrofit retrofit2 = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
-            UserApi api2 = retrofit2.create(UserApi.class);
-
-            Call<UserList> call2 = api2.getFriendInfo(userInfo2.id);
-
-            call2.enqueue(new Callback<UserList>() {
-                @Override
-                public void onResponse(Call<UserList> call, Response<UserList> response) {
-                    if (response.isSuccessful()){
-                        UserInfo userInfo2 = userInfoArrayList.get(0);
-                        int friendId = userInfo2.id;
-                        String friendImgUrl = userInfo2.userImgUrl;
-                        String friendNickname = userInfo2.userNickname;
-                        chat = new Chat(friendId, friendNickname, friendImgUrl, chatMessage, FieldValue.serverTimestamp().toString());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<UserList> call, Throwable t) {
-
-                }
-            });
-
+            // 나와 채팅하는 유저정보 받아오기
+            randomFriend = (RandomFriend) getIntent().getSerializableExtra("randomFriend");
+            reciverId = randomFriend.id;
 
             // 유저 정보 가져오기
             Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
@@ -190,13 +178,27 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                             String userImgUrl = userInfo.userImgUrl;
                             String userNickname = userInfo.userNickname;
-                            int userId = userInfo.id;
+                            senderId = userInfo.id;
 
-                            chat = new Chat(userId, userNickname, userImgUrl, chatMessage, FieldValue.serverTimestamp().toString());
+                            chat = new Chat(senderId, reciverId, userNickname, userImgUrl, chatMessage, FieldValue.serverTimestamp().toString());
+
+                            chatMessageRef.collection("chat").document()
+                                    .collection("chatMessage").document()
+                                    .set(chat).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
 
 
-                            // 마지막 초기화
-                            editChat.setText("");
+                                    // 마지막 초기화
+                                    editChat.setText("");
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
+
                         }
                     }
                 }
@@ -212,11 +214,12 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
     public void loadMessage(){
 
-        DocumentReference chatRef = db.collection("chat").document();
-        DocumentReference chatMessageRef = db.collection("chat").document().collection("chatMessage").document();
+        // 채팅목록 DB
+        chatRef = db.collection("chat").document();
+        // 1:1 채팅방 DB
+        chatMessageRef = db.collection("chat").document().collection("chatMessage").document();
 
-
-
+        // db에 저장한 것 가지고오기
         db.collection("chat").document().collection("chatMessage").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -242,6 +245,71 @@ public class ChatRoomActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+    public void createChatDocumentAndAddMessage(String receiverId, String senderId, String createdAt, String message, String userImgUrl, String userNickname) {
+        // chatRef는 Firestore에서 채팅 데이터에 대한 참조를 나타냅니다.
+        // 채팅목록 DB
+        chatRef = db.collection("chat").document();
+        // 1:1 채팅방 DB
+        chatMessageRef = db.collection("chat").document().collection("chatMessage").document();
+
+        // "user" 필드에 추가할 유저 ID 배열을 만듭니다.
+        List<String> users = new ArrayList<>();
+        users.add(receiverId);
+        users.add(senderId);
+
+        // chatRef.document()를 사용하여 새로운 채팅 문서를 생성합니다.
+        chatRef = db.collection("chat").document();
+
+        // "user" 필드를 포함하는 데이터 맵을 생성합니다.
+        Map<String, Object> chatData = new HashMap<>();
+        chatData.put("user", users);
+
+        // chatRef.document()에 "user" 필드를 설정하고 성공/실패 리스너를 추가합니다.
+        chatRef.set(chatData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i("test", "저장 성공");
+
+                        // 채팅 문서가 생성되었으므로 "chatMessage" 컬렉션에 메시지를 추가합니다.
+                        addMessageToChatCollection(chatRef, createdAt, receiverId, senderId, message, userImgUrl, userNickname);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("test", "저장 실패");
+                    }
+                });
+    }
+
+    public void addMessageToChatCollection(DocumentReference chatDocumentRef, String createdAt, String receiverId, String senderId, String message, String userImgUrl, String userNickname) {
+        // chatDocumentRef는 Firestore에서 채팅 문서를 나타냅니다.
+
+        // "chatMessage" 컬렉션에 추가할 메시지 데이터를 만듭니다.
+        Map<String, Object> messageData = new HashMap<>();
+        messageData.put("createdAt", createdAt);
+        messageData.put("receiverId", receiverId);
+        messageData.put("senderId", senderId);
+        messageData.put("message", message);
+        messageData.put("userImgUrl", userImgUrl);
+        messageData.put("userNickname", userNickname);
+
+        // chatDocumentRef.collection("chatMessage")를 사용하여 "chatMessage" 컬렉션에 새로운 문서를 추가합니다.
+        chatDocumentRef.collection("chatMessage").add(messageData)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.i("test", "메시지 저장 성공");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("test", "메시지 저장 실패");
+                    }
+                });
     }
 
 

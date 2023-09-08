@@ -9,7 +9,7 @@ public class Chat {
     public String lastMessage;
     public String lastCreatedAt;
 
-    public Chat() {
+    public Chat(int senderId, int reciverId, String userNickname, String userImgUrl, String chatMessage, String s) {
     }
 
 

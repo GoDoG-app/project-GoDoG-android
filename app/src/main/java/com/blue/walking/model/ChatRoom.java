@@ -2,7 +2,8 @@ package com.blue.walking.model;
 
 public class ChatRoom {
     // 1:1채팅방
-    public int id;
+    public int senderId;
+    public int receiverId;
     public String userNickname;
     public String userImgUrl;
     public String Message;
@@ -11,18 +12,12 @@ public class ChatRoom {
     public ChatRoom() {
     }
 
-
-    public ChatRoom(int id, String userNickname, String userImgUrl) {
-        this.id = id;
+    public ChatRoom(int senderId, int receiverId, String userNickname, String userImgUrl, String message, String createdAt) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
         this.userNickname = userNickname;
         this.userImgUrl = userImgUrl;
-    }
-
-    public ChatRoom(int id, String userNickname, String userImgUrl, String Message, String CreatedAt) {
-        this.id = id;
-        this.userNickname = userNickname;
-        this.userImgUrl = userImgUrl;
-        this.Message = Message;
-        this.CreatedAt = CreatedAt;
+        Message = message;
+        CreatedAt = createdAt;
     }
 }

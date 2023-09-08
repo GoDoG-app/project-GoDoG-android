@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHolder>{
-
+    // 1:1채팅방
     Context context;
     ArrayList<ChatRoom> chatRoomArrayList;
 
@@ -44,8 +44,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
                 .load(chatRoom.userImgUrl)
                 .into(holder.imgUser);
         holder.txtUserName.setText(chatRoom.userNickname);
-        holder.txtTime.setText(chatRoom.LastCreatedAt);
-        holder.txtMessage.setText(chatRoom.lastMessage);
+        holder.txtTime.setText(chatRoom.CreatedAt);
+        holder.txtMessage.setText(chatRoom.Message);
 
     }
 

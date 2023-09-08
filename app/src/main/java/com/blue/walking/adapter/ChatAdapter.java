@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
-
+    // 채팅목록
     Context context;
     ArrayList<Chat> chatArrayList;
 
@@ -42,9 +42,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
                 .load(chat.userImgUrl)
                 .into(holder.imgUserUrl);
 
-        holder.txtMessage.setText(chat.message);
+        holder.txtMessage.setText(chat.lastMessage);
         holder.txtNickname.setText(chat.userNickname);
-        holder.txtTime.setText(chat.createdAt);
+        holder.txtTime.setText(chat.lastCreatedAt);
 
     }
 

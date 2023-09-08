@@ -215,6 +215,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         DocumentReference chatRef = db.collection("chat").document();
         DocumentReference chatMessageRef = db.collection("chat").document().collection("chatMessage").document();
 
+
+
         db.collection("chat").document().collection("chatMessage").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {

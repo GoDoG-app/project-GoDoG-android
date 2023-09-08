@@ -231,6 +231,9 @@ public class UserFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 산책 파트너(친구) 목록 보기
+                Intent intent;
+                intent = new Intent(getActivity(), FriendListActivity.class);
+                startActivity(intent);
 
             }
         });

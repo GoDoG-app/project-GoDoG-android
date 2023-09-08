@@ -96,6 +96,8 @@ public class CommuPostActivity extends AppCompatActivity {
     FirebaseFirestore db;
     Firebase firebase;
 
+    String documentId;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +186,7 @@ public class CommuPostActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // 어댑터 초기화
-        adapter = new CommnetAdapter(CommuPostActivity.this, firebaseArrayList);
+        adapter = new CommnetAdapter(CommuPostActivity.this, firebaseArrayList, postId);
         recyclerView.setAdapter(adapter);
 
 
@@ -253,15 +255,16 @@ public class CommuPostActivity extends AppCompatActivity {
         // 현재 시간 정보 가져오기
         Timestamp timestamp = Timestamp.now();
 
-        // Firebase Firestore에 댓글 추가
-        Firebase comment = new Firebase(userNickname, userImgUrl, userAddress, commentContent, timestamp.toDate(), timestamp.toDate());
-
-        db = FirebaseFirestore.getInstance();
-
         // "post_comments" 컬렉션에서 postId 문서를 생성 또는 가져옴
         DocumentReference postRef = db.collection("post_comments").document(String.valueOf(postId));
 
-        postRef.collection("comments").document()
+        String documentId = postRef.collection("comments").document().getId(); // 댓글 문서의 고유 ID를 생성 또는 가져옵니다.
+
+        // Firebase Firestore에 댓글 추가
+        Firebase comment = new Firebase(userNickname, userImgUrl, userAddress, commentContent, timestamp.toDate(), timestamp.toDate(), documentId);
+
+        postRef.collection("comments")
+                .document(documentId) // 생성한 documentId를 사용하여 댓글 도큐먼트를 추가합니다.
                 .set(comment)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -270,18 +273,15 @@ public class CommuPostActivity extends AppCompatActivity {
                         editComment.setText(""); // 댓글 입력창 초기화
                         Log.i("AAA", String.valueOf(firebaseArrayList.size()));
                         // TODO: 댓글 추가 후 화면 갱신 또는 필요한 작업 수행
-//                        adapter.addComment(comment);
 
                         // 댓글 수 업데이트
                         txtComment.setText("댓글 " + firebaseArrayList.size());
-
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // 댓글 추가 실패 처리
-
                     }
                 });
     }

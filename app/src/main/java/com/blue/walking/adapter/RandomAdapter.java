@@ -77,7 +77,7 @@ public class RandomAdapter extends RecyclerView.Adapter<RandomAdapter.ViewHolder
                     RandomFriend randomFriend = randomFriendArrayList.get(index);
 
                     Intent intent = new Intent(context, FriendActivity.class);
-                    intent.putExtra("randomFriend", randomFriend);
+                    intent.putExtra("Friend", randomFriend);
                     context.startActivity(intent);
 
                     Log.i("cardView", randomFriend+"친구");

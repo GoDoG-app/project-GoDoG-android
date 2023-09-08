@@ -2,8 +2,8 @@ package com.blue.walking;
 
 import static java.util.Calendar.getInstance;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
@@ -21,7 +21,7 @@ import com.blue.walking.api.UserApi;
 import com.blue.walking.model.FriendsInfo;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
-import com.blue.walking.model.RandomFriend;
+
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.bumptech.glide.Glide;
@@ -34,7 +34,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class FriendActivity extends AppCompatActivity {
+
+public class FriendActivityFromFriendList extends AppCompatActivity {
 
     /** 화면뷰 */
     Button btnChat;   // 채팅 보내기
@@ -60,15 +61,17 @@ public class FriendActivity extends AppCompatActivity {
     Button btnWalkList;    // 산책 기록
     Button btnCommuList;   // 게시글(커뮤니티)
 
-    int friendId;
     ArrayList<UserInfo> userInfoArrayList= new ArrayList<>();
     ArrayList<Pet> petArrayList = new ArrayList<>();
-    RandomFriend randomFriend;
+
+    FriendsInfo friendsInfo;
+
+    int friendId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friend);
+        setContentView(R.layout.activity_friend_from_friend_list);
 
         btnChat = findViewById(R.id.btnChat);
         imgBack = findViewById(R.id.imgBack);
@@ -95,16 +98,17 @@ public class FriendActivity extends AppCompatActivity {
         imgUser.setClipToOutline(true);  // 둥근 테두리 적용
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
 
-        // RandomFriend에서 받아온 id
-        randomFriend = (RandomFriend) getIntent().getSerializableExtra("Friend");
-        friendId = randomFriend.id;
+
+        // FriendListAdapter에서 받아온 id
+        friendsInfo = (FriendsInfo) getIntent().getSerializableExtra("friends");
+        friendId = friendsInfo.followeeId;
 
 
-        // 랜덤친구 정보
-        randomFriendInfoAPI();
+        // 유저 정보
+        FriendInfoAPI();
 
         // 펫정보
-        randomFriendPetInfoAPI();
+        FriendPetInfoAPI();
 
 
 
@@ -113,7 +117,7 @@ public class FriendActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // 채팅방으로 이동
                 Intent intent;
-                intent = new Intent(FriendActivity.this, ChatRoomActivity.class);
+                intent = new Intent(FriendActivityFromFriendList.this, ChatRoomActivity.class);
                 startActivity(intent);
             }
         });
@@ -126,9 +130,9 @@ public class FriendActivity extends AppCompatActivity {
             }
         });
     }
-    private void randomFriendInfoAPI(){
+    private void FriendInfoAPI(){
 
-        Retrofit retrofit1 = NetworkClient.getRetrofitClient(FriendActivity.this);
+        Retrofit retrofit1 = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
         UserApi api1 = retrofit1.create(UserApi.class);
         Call<UserList> call1 = api1.getFriendInfo(friendId);
         call1.enqueue(new Callback<UserList>() {
@@ -177,7 +181,7 @@ public class FriendActivity extends AppCompatActivity {
                         userInfo.setText("(" + gender + ", " + strAge + ")");
                         userComment.setText(userInfoArrayList.get(0).userOneliner);
                         userPlace.setText(userInfoArrayList.get(0).userAddress);
-                        Glide.with(FriendActivity.this)
+                        Glide.with(FriendActivityFromFriendList.this)
                                 .load(userInfoArrayList.get(0).userImgUrl)
                                 .into(imgUser);
 
@@ -193,9 +197,9 @@ public class FriendActivity extends AppCompatActivity {
         });
 
     }
-    private void randomFriendPetInfoAPI(){
+    private void FriendPetInfoAPI(){
 
-        Retrofit retrofit2 = NetworkClient.getRetrofitClient(FriendActivity.this);
+        Retrofit retrofit2 = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
         PetApi api2 = retrofit2.create(PetApi.class);
 
         Call<PetList> call2 = api2.getFriendPetInfo(friendId);
@@ -220,13 +224,13 @@ public class FriendActivity extends AppCompatActivity {
                         petNickname.setText(petArrayList.get(0).petName);
                         petInfo.setText("(" + gender + ", " + petArrayList.get(0).petAge + "살)");
                         petComment.setText(petArrayList.get(0).oneliner);
-                        Glide.with(FriendActivity.this).load(petArrayList.get(0).petProUrl).into(imgPet);
+                        Glide.with(FriendActivityFromFriendList.this).load(petArrayList.get(0).petProUrl).into(imgPet);
 
                     } else {
                         petNickname.setText("반려가족이 없습니다");
                         petInfo.setText("");
                         petComment.setText("");
-                        Glide.with(FriendActivity.this).load(R.drawable.group_26).into(imgPet);
+                        Glide.with(FriendActivityFromFriendList.this).load(R.drawable.group_26).into(imgPet);
                     }
                 }
             }
@@ -237,7 +241,5 @@ public class FriendActivity extends AppCompatActivity {
             }
         });
 
-
     }
-
 }

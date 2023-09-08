@@ -14,6 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blue.walking.R;
 import com.blue.walking.model.Firebase;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.w3c.dom.Text;
 
@@ -21,7 +27,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHolder>{
@@ -32,9 +40,12 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
     SimpleDateFormat sf;
     SimpleDateFormat df;
 
-    public CommnetAdapter(Context context, ArrayList<Firebase> firebaseArrayList) {
+    int postId;
+
+    public CommnetAdapter(Context context, ArrayList<Firebase> firebaseArrayList, int postId) {
         this.context = context;
         this.firebaseArrayList = firebaseArrayList;
+        this.postId = postId;
 
         // 여기에 넣으면 한번만 실행된대
         sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -64,6 +75,8 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
         holder.txtUserName.setText(firebase.userNickname);
         holder.txtPlace.setText(firebase.userAddress);
 
+        holder.txtLike.setText(String.valueOf(firebase.likeCount));
+
         // 댓글 작성 시간 설정
         Date date = firebase.createdAt; // 자바가 이해하는 시간으로 바꾸기
         String localTime = df.format(firebase.createdAt); // 자바가 이해한 시간을 사람이 이해할 수 있는 시간으로 바꾸기
@@ -92,7 +105,115 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
             holder.txtTime.setText(localTime.substring(6)); // 년 제외 몇월 몇일 몇시
         }
 
+        holder.imgLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // 좋아요 이미지를 클릭시
+                // 파이어베이스에 성공적으로 업데이트 되었다면 이미지 변경
+
+                // 좋아요 이미지 누르면 isLiked가 true,false 반복
+
+                // 파이어베이스에 isLiked가 ture면 색칠된 이미지 false면 색칠 안되어있는 이미지
+
+                // 파이어베이스에 likeCount는 색칠 안되어있을때(isLiked == fasle) 내가 누르면 +1
+                // 색칠 되어있을때(isLiked == true) 내가 누르면 -1
+
+                if (firebase.isLiked == false){
+
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    DocumentReference commentRef = db.collection("post_comments")
+                            .document(String.valueOf(postId)) // 업데이트하려는 댓글이 있는 포스트의 ID
+                            .collection("comments")
+                            .document(firebase.getDocumentId()); // 업데이트하려는 댓글의 ID
+                    // 업데이트할 데이터 생성
+                    Map<String, Object> updateData = new HashMap<>();
+                    updateData.put("isLiked", true); // 새로운 좋아요 상태를 true로 설정
+                    updateData.put("likeCount", FieldValue.increment(1));
+                    // Firestore 문서 업데이트
+                    commentRef.update(updateData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // 업데이트 성공
+                                    // 여기에서 UI 업데이트 또는 다른 작업을 수행할 수 있습니다.
+
+
+//                                    updateData.put("likeCount", FieldValue.increment(+1));
+                                    commentRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            if (documentSnapshot.exists()) {
+                                                // 'likeCount' 필드가 존재할 경우 값을 가져와서 txtLike에 설정
+                                                Long likeCount = documentSnapshot.getLong("likeCount");
+                                                if (likeCount != null) {
+                                                    holder.txtLike.setText(String.valueOf(likeCount));
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    holder.imgLike.setImageResource(R.drawable.baseline_favorite_24);
+
+
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // 업데이트 실패
+                                    Log.e("FirestoreUpdate", "Failed to update isLiked: " + e.getMessage());
+                                }
+                            });
+                }else{
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    DocumentReference commentRef = db.collection("post_comments")
+                            .document(String.valueOf(postId)) // 업데이트하려는 댓글이 있는 포스트의 ID
+                            .collection("comments")
+                            .document(firebase.getDocumentId()); // 업데이트하려는 댓글의 ID
+                    // 업데이트할 데이터 생성
+                    Map<String, Object> updateData = new HashMap<>();
+                    updateData.put("isLiked", false); // 새로운 좋아요 상태를 true로 설정
+                    updateData.put("likeCount", FieldValue.increment(-1));
+                    // Firestore 문서 업데이트
+                    commentRef.update(updateData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // 업데이트 성공
+                                    // 여기에서 UI 업데이트 또는 다른 작업을 수행할 수 있습니다.
+                                    commentRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            if (documentSnapshot.exists()) {
+                                                // 'likeCount' 필드가 존재할 경우 값을 가져와서 txtLike에 설정
+                                                Long likeCount = documentSnapshot.getLong("likeCount");
+                                                if (likeCount != null) {
+                                                    holder.txtLike.setText(String.valueOf(likeCount));
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    holder.imgLike.setImageResource(R.drawable.baseline_favorite_border_24);
+
+
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // 업데이트 실패
+                                    Log.e("FirestoreUpdate", "Failed to update isLiked: " + e.getMessage());
+                                }
+                            });
+
+                }
+
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {
@@ -127,8 +248,6 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
             imgLike = itemView.findViewById(R.id.imgLike);
             txtLike = itemView.findViewById(R.id.txtLike);
             txtComment2 = itemView.findViewById(R.id.txtComment2);
-
-            imgUser.setClipToOutline(true);  // 둥근 테두리 적용
 
         }
     }

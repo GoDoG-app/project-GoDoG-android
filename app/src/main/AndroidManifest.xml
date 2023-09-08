@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:targetSandboxVersion="1" >
+    android:targetSandboxVersion="1">
     <!-- 1. 인터넷 권한 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 2. 저장소 권한 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -26,7 +26,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Walking"
         android:usesCleartextTraffic="true"
-        tools:targetApi="30" >
+        tools:targetApi="30">
+        <activity
+            android:name=".FriendActivityFromFriendList"
+            android:exported="false" />
         <activity
             android:name=".MyPostActivity"
             android:exported="false" />
@@ -60,12 +63,15 @@
         <activity
             android:name=".UserUpdateActivity"
             android:exported="false" />
+        <activity
+            android:name=".FriendListActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.blue.walking.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/fileprovider" />
@@ -74,7 +80,7 @@
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -94,7 +100,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

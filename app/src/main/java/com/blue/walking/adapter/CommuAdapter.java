@@ -55,7 +55,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
     SimpleDateFormat sf;
     SimpleDateFormat df;
 
-    Post post;
+
 
     public CommuAdapter(Context context, ArrayList<Post> postArrayList) {
         this.context = context;
@@ -237,7 +237,7 @@ public class CommuAdapter extends RecyclerView.Adapter<CommuAdapter.ViewHolder>{
 
                     // 유저가 누른 포스트의 좋아요 유무 확인해서, API 호출
                     int index = getAdapterPosition();
-                    post = postArrayList.get(index);
+                    Post post = postArrayList.get(index);
 
                     Retrofit retrofit = NetworkClient.getRetrofitClient(context);
                     PostApi api = retrofit.create(PostApi.class);

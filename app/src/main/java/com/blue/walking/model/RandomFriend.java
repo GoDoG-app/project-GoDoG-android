@@ -1,13 +1,9 @@
 package com.blue.walking.model;
 
-public class RandomFriend {
+import java.io.Serializable;
 
-//                "id": 7,
-//                        "lat": 37.5492548,
-//                        "lng": 126.6773376,
-//                        "proImgUrl": "https://project4-walking-app.s3.amazonaws.com/2023-09-06T08_16_47_807696_7.jpg",
-//                        "nickname": "hora",
-//                        "distance": 1.4850563893424542
+public class RandomFriend implements Serializable {
+
 
     public int id;
     public double lat;

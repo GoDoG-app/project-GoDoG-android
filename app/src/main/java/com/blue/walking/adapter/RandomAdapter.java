@@ -1,6 +1,8 @@
 package com.blue.walking.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blue.walking.FriendActivity;
 import com.blue.walking.R;
 import com.blue.walking.model.RandomFriend;
 import com.bumptech.glide.Glide;
@@ -55,12 +59,32 @@ public class RandomAdapter extends RecyclerView.Adapter<RandomAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgRandomFriend;
         TextView txtRandomFriend;
+        CardView cardViewRandom;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imgRandomFriend = itemView.findViewById(R.id.imgRandomFriend);
             imgRandomFriend.setClipToOutline(true); // 둥근테두리 적용
             txtRandomFriend = itemView.findViewById(R.id.txtRandomFriend);
+            cardViewRandom = itemView.findViewById(R.id.cardViewRandom);
+            // 카드뷰를 눌렀을 때 -> 친구 정보로 이동
+            cardViewRandom.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    int index = getAdapterPosition();
+                    RandomFriend randomFriend = randomFriendArrayList.get(index);
+
+                    Intent intent = new Intent(context, FriendActivity.class);
+                    intent.putExtra("randomFriend", randomFriend);
+                    context.startActivity(intent);
+
+                    Log.i("cardView", randomFriend+"친구");
+
+
+                }
+            });
 
 
         }

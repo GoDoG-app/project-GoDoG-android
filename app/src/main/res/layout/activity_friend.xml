@@ -307,11 +307,11 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView22"
+                    android:id="@+id/txtFriendPet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="내 반려가족"
+                    android:text="친구 반려가족"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 

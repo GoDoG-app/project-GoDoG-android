@@ -45,7 +45,7 @@ public interface PetApi {
                             @Part ("petOneliner") RequestBody petOneliner);
 
 
-    @GET("/userpet/{petId}")
-    Call<PetList> getFriendPetInfo(@Path("petId") int id);
+    @GET("/userpet/{friendId}")
+    Call<PetList> getFriendPetInfo(@Path("friendId") int friendId);
 
 }

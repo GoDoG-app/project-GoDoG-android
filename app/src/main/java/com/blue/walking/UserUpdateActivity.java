@@ -389,7 +389,7 @@ public class UserUpdateActivity extends AppCompatActivity {
                 }
             }
 
-        // 이미지로 사진을 가져왔을 때의 결과 처리
+            // 이미지로 사진을 가져왔을 때의 결과 처리
         } else if (requestCode == 300) {
             Log.i("photo", "갤러리에서 이미지 가져오고 결과 처리");
 
@@ -430,7 +430,7 @@ public class UserUpdateActivity extends AppCompatActivity {
 
             // 네트워크로 보낸다.
 
-        // 카메라로 사진을 찍었을 때 결과 처리
+            // 카메라로 사진을 찍었을 때 결과 처리
         } else if (requestCode == 100) {
 
             Log.i("photo", "카메라에서 이미지 가져오기");

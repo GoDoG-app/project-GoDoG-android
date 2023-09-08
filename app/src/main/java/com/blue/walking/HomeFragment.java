@@ -24,12 +24,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blue.walking.adapter.RandomAdapter;
+import com.blue.walking.adapter.RecommendAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
 import com.blue.walking.api.RandomFriendAPI;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
+import com.blue.walking.model.ParkImage;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
 import com.blue.walking.model.RandomFriend;
@@ -43,6 +45,7 @@ import com.skt.tmap.TMapTapi;
 import com.skt.tmap.poi.TMapPOIItem;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -107,13 +110,6 @@ public class HomeFragment extends Fragment {
     TextView txtDistance;  // 총 거리
     TextView txtTime;   // 총 시간
 
-    ImageView imgPlace1;  // 산책로 추천1
-    TextView txtPlaceName1;  // 산책로 추천지 이름1
-    TextView txtPlace1;   // 산책로 추천지 주소1
-    ImageView imgPlace2;  // 산책로 추천2
-    TextView txtPlaceName2;  // 산책로 추천지 이름2
-    TextView txtPlace2;   // 산책로 추천지 주소2
-
     ImageView imgWalkPet1;  // 산책중인 친구1
     TextView txtWalkPet1;  // 산책중인 친구 이름1
 //    ImageView imgWalkPet2;  // 산책중인 친구2
@@ -131,6 +127,12 @@ public class HomeFragment extends Fragment {
     TextView txtNotices1;  // 공지사항 글1
     TextView txtNotices2;  // 공지사항 글2
 
+    // 산책 추천
+    RecyclerView walkingRecyclerView; // 산책 추천
+    RecommendAdapter recommendAdapter; // 산책 추천용 리사이클러뷰
+    ArrayList<Park> parkArrayList = new ArrayList<>(); // 공원 정보를 저장할 ArrayList
+
+
     // 친구추천
     RecyclerView recyclerViewRandom;
     ArrayList<RandomFriend> randomFriendArrayList = new ArrayList<>();
@@ -145,7 +147,13 @@ public class HomeFragment extends Fragment {
     double first_lat ; // 처음 위도
     double first_lng ; // 처음 경도
     TMapTapi tMapTapi; // 티맵 사용
-    RecyclerView RecommndRecyclerView; // 산책로 추천용
+    Park park;
+    String name;
+    // 공원 주소
+    String address;
+    // 공원 좌표
+    TMapPoint lat_lng;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -177,12 +185,6 @@ public class HomeFragment extends Fragment {
         imgPet = rootView.findViewById(R.id.imgPet);
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
 
-        imgPlace1 = rootView.findViewById(R.id.imgPlace1);
-        imgPlace1.setClipToOutline(true);  // 둥근 테두리 적용
-
-        imgPlace2 = rootView.findViewById(R.id.imgPlace2);
-        imgPlace2.setClipToOutline(true);  // 둥근 테두리 적용
-
         imgWalkPet1 = rootView.findViewById(R.id.imgWalkPet1);
         imgWalkPet1.setClipToOutline(true);  // 둥근 테두리 적용
 
@@ -196,6 +198,13 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         recyclerViewRandom.setLayoutManager(layoutManager);
 
+        // 산책 공원 추천 리사이클러뷰
+        walkingRecyclerView = rootView.findViewById(R.id.walkingRecyclerView);
+        walkingRecyclerView.setHasFixedSize(true);
+
+        // 리사이클러뷰 세로모드에 맞게 LinearLayoutManager 설정
+        LinearLayoutManager layoutManager1 = new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL, false);
+        walkingRecyclerView.setLayoutManager(layoutManager1);
 
         tMapTapi.setOnAuthenticationListenerCallback(new TMapTapi.OnAuthenticationListenerCallback() {
             @Override
@@ -231,15 +240,15 @@ public class HomeFragment extends Fragment {
                                 Log.i("SUCCESS", "유저 정보 불러오기 완료");
                                 for (int i = 0; i < userInfoArrayList.size(); i++) {
                                     Log.i("유저 정보", "유저 전체 정보: " + userInfoArrayList.get(i));
-                                    Log.i("유저 이름", "유저 정보 이름: " + userInfoArrayList.get(i).userNickname);
-                                    Log.i("유저 주소", "유저 정보 주소: " + userInfoArrayList.get(i).userAddress);
+//                                    Log.i("유저 이름", "유저 정보 이름: " + userInfoArrayList.get(i).userNickname);
+//                                    Log.i("유저 주소", "유저 정보 주소: " + userInfoArrayList.get(i).userAddress);
                                     Log.i("유저 위도", "유저 정보 위도: " + userInfoArrayList.get(i).lat);
                                     Log.i("유저 경도", "유저 정보 경도: " + userInfoArrayList.get(i).lng);
                                 }
 
                                 first_lat = userInfoArrayList.get(0).lat;
                                 first_lng = userInfoArrayList.get(0).lng;
-                                Log.i("최초 위치 ", "최초 위치 first_lat+lon :" + first_lat + " " + first_lng);
+                                Log.i("유저  위치 ", "유저 위치 :" + first_lat + " " + first_lng);
 
                                 // TMapData 객체 생성
                                 TMapData tMapData = new TMapData();
@@ -252,39 +261,43 @@ public class HomeFragment extends Fragment {
                                         if (arrayList != null && !arrayList.isEmpty()) {
                                             // arrayList가 null이 아니고 비어있지 않은 경우에만 처리
                                             Log.i("검색 결과", "검색 완료.");
-                                            ArrayList<Park> parkArrayList = new ArrayList<>(); // 공원 정보를 저장할 ArrayList
+
+                                            parkArrayList.clear(); // 공원 정보를 저장할 ArrayList
 
                                             // 검색 결과로 받은 공원 리스트 처리
                                             for (TMapPOIItem item : arrayList) {
                                                 // 공원 이름
-                                                String name = item.getPOIName();
+                                                name = item.getPOIName();
                                                 // 공원 주소
-                                                String address = item.getPOIAddress();
+                                                address = item.getPOIAddress();
                                                 // 공원 좌표
-                                                TMapPoint lat_lng = item.getPOIPoint();
-                                                // 필요한 정보 처리
-                                                Log.i("공원 정보", "이름: " + name + ", 주소: " + address +", 입구 좌표: " + lat_lng );
+                                                lat_lng = item.getPOIPoint();
 
+                                                // latitude와 longitude 값을 추출
+                                                double latitude = lat_lng.getLatitude();
+                                                double longitude = lat_lng.getLongitude();
+
+                                                // 필요한 정보 처리
+                                                Log.i("공원 정보", "이름: " + name + ", 주소: " + address +", 입구 좌표: " + latitude + ", " + longitude );
                                                 // Park 객체 생성 및 정보 저장
-                                                Park park = new Park(name, address, lat_lng);
+                                                park = new Park(name, address, latitude, longitude);
 
                                                 // Park 객체를 ArrayList에 추가
                                                 parkArrayList.add(park);
-
-                                                Log.i("park 데이터 확인, parkGetName : ", ""+park.getName());
                                             }
-                                            // for 루프 외부에서 parkArrayList를 출력
-                                            for (Park park : parkArrayList) {
-                                              Log.i("park 데이터 전체 확인", "이름: " + park.getName() + ", 주소: " + park.getAddress() + ", 입구 좌표: " + park.getLat_lng());
-                                            }
-//                                            // todo 데이터를 전달하는 프래그먼트 (필요 없을지도)
-//                                            Bundle bundle = new Bundle();
-//                                            bundle.putSerializable("parkList", parkArrayList);
-//                                            Walking_3 walking_3 = new Walking_3();
-//                                            walking_3.setArguments(bundle);
 
-                                            // parkArrayList에 들어있는 데이터 확인
-                                            Log.i("히히", "parkArrayList 크기: " + parkArrayList.size());
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    // parkArrayList에 들어있는 데이터 확인
+                                                    Log.i("히히", "parkArrayList 크기: " + parkArrayList.size());
+                                                    Log.i("히히", "parkArrayList 크기: " + park);
+                                                    // 어댑터에 데이터 넣기
+                                                    recommendAdapter = new RecommendAdapter(getActivity(), parkArrayList);
+                                                    // 어댑터 연결
+                                                    walkingRecyclerView.setAdapter(recommendAdapter);
+                                                }
+                                            });
                                         } else {
                                             // arrayList가 null 또는 비어있는 경우에 대한 처리
                                             Log.i("검색 결과", "검색 결과가 없습니다.");
@@ -293,13 +306,17 @@ public class HomeFragment extends Fragment {
                                 });
                             }
                         }
+
                     }
                     @Override
                     public void onFailure(Call<UserList> call, Throwable t) {
                         Log.e("ERROR", "유저 주소 불러오기 실패");
                     }
 
+
+
                 });
+
             }
             @Override
             public void SKTMapApikeyFailed(String s) {
@@ -307,7 +324,10 @@ public class HomeFragment extends Fragment {
                 // AppKey 인증 오류 처리를 여기에 추가
                 Log.e("TMAP KEY 실패 : ", "실패, Key 인증 실패.");
             }
+
         });
+
+
 
 
 
@@ -362,7 +382,7 @@ public class HomeFragment extends Fragment {
 
                     randomFriendArrayList.clear();
                     RandomFriendRes randomFriendRes = response.body();
-                    Log.i("test입니당", ""+randomFriendRes.items);
+                    Log.i("test", ""+randomFriendRes.items);
                     randomFriendArrayList.addAll(0, randomFriendRes.items);
                     randomAdapter = new RandomAdapter(getActivity(), randomFriendArrayList);
                     recyclerViewRandom.setAdapter(randomAdapter);
@@ -401,28 +421,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        imgPlace1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                Walking_3 walking_3 = new Walking_3();
-                // 프레그먼트 화면을 walking_3 로 활성화
-                transaction.replace(R.id.containers, walking_3);
-                transaction.commit();
-            }
-        });
-
-        imgPlace2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                Walking_3 walking_3 = new Walking_3();
-                // 프레그먼트 화면을 walking_3 로 활성화
-                transaction.replace(R.id.containers, walking_3);
-                transaction.commit();
-            }
-        });
-
 
         return rootView;
     }
@@ -441,5 +439,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
 
+    }
 }

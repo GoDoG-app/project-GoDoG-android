@@ -2,22 +2,27 @@ package com.blue.walking.model;
 
 import com.skt.tmap.TMapPoint;
 
-public class Park {
+import java.io.Serializable;
+
+public class Park implements Serializable {
 
     // 공원 이름
     String name ;
     // 공원 주소
     String address ;
     // 공원 좌표
-    TMapPoint lat_lng ;
+    double latitude;
+    double longitude;
 
     public Park(){
+
     }
 
-    public Park(String name, String address, TMapPoint lat_lng) {
+    public Park(String name, String address, double latitude, double longitude) {
         this.name = name;
         this.address = address;
-        this.lat_lng = lat_lng;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getName() {
@@ -36,11 +41,19 @@ public class Park {
         this.address = address;
     }
 
-    public TMapPoint getLat_lng() {
-        return lat_lng;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLat_lng(TMapPoint lat_lng) {
-        this.lat_lng = lat_lng;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

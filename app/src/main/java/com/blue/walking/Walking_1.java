@@ -101,36 +101,30 @@ public class Walking_1 extends Fragment {
     Chronometer chronometer; // 타이머
     ImageView btnLocation; // 현재 위치 이동 및 마커용 버튼
     ProgressBar progressBar; // 맵 로딩
-
     Button btnLine; // 경로 삭제
-
-
     boolean i = true;  // 산책 시작 이미지 변경에 사용
 
-
-
-    // 버튼 눌렀을 때 현재 위치
-    double btnLat; // 위도
-    double btnLng; // 경도
     // 실시간 현재 위치
     double lat; // 위도
     double lng; // 경도
-    boolean isLocationReady = false; // 위치 정보가 준비 되었는 지 여부
+    boolean locationReady = false; // 위치 정보가 준비 되었는 지 여부
+    boolean mapReady = false; // 맵이 준비 되었는지 확인
     // 내 위치를 받기
     LocationManager locationManager;
     LocationListener locationListener;
 
-    // 티맵 뷰 (지도 표시)
+    // 티맵 뷰 (지도 표시에 필요한 라이브러리)
     TMapView tMapView;
-    // 지도가 나타날 화면
+
+    // 지도가 나타날 화면 뷰
     FrameLayout tmapViewContainer;
 
-    // 폴리라인 ArrayList
-    ArrayList<TMapPoint> pointList = new ArrayList<>(); // 위치 정보가 준비되었는지 여부
+    // 폴리라인을 그리기 위한 ArrayList
+    ArrayList<TMapPoint> pointList = new ArrayList<>();
     TMapPolyLine line; // 폴리라인 객체
     TMapMarkerItem marker; // 마커 객체
     private static final int REQUEST_LOCATION_PERMISSION = 1; // 권한 요청 코드
-    boolean mapReady = false;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -173,11 +167,10 @@ public class Walking_1 extends Fragment {
             @Override
             public void onLocationChanged(@NonNull Location location) {
 
-
                 lat = location.getLatitude();
                 lng = location.getLongitude();
                 Log.i("위치 확인", "위도 + 경도 : " + lat + " " +lng);
-                isLocationReady = true;
+                locationReady = true;
 
                 //  완료라면 프로그레스바 숨김
                 progressBar.setVisibility(GONE);
@@ -197,10 +190,7 @@ public class Walking_1 extends Fragment {
                     marker.setTMapPoint(new TMapPoint(lat, lng));
                     tMapView.addTMapMarkerItem(marker);
                     mapReady = false;
-
                 }
-
-
             }
         };
 
@@ -213,8 +203,10 @@ public class Walking_1 extends Fragment {
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     -1,
-                    7,
+                    3,
                     locationListener);
+            // minTimeMs를 -1로 하고 minDistanceM을 양수로 하면 이동 거리(m)마다 위치를 가져온다.
+            // 반대로 minTimeMs를 양수로 하고 minDistanceM을 -1로 하면 MinTimeMs에 지정한 초 마다 위치를 가져온다.
         }
 
         // TmapView 객체(context로 하면 안나옴)
@@ -239,7 +231,6 @@ public class Walking_1 extends Fragment {
             @Override
             public void onMapReady() {
                 //todo 맵 로딩 완료 후 구현
-
 
                 mapReady = true;
 
@@ -267,14 +258,10 @@ public class Walking_1 extends Fragment {
                         tMapView.setZoomLevel(16); // 줌 레벨 설정
                     }
                 });
-
                 // 시작 버튼을 눌렀을 때
                 imgStart.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-
-//                        btnLocation.setVisibility(View.VISIBLE);
 
                         // 이전 경로 지우기 (라인 remove가 안되서..)
                         btnLine.setOnClickListener(new View.OnClickListener() {
@@ -284,7 +271,7 @@ public class Walking_1 extends Fragment {
                             }
                         });
 
-                        if(isLocationReady==true){
+                        if(locationReady==true){
 
                             if (i == true) {
                                 btnLine.setVisibility(GONE);
@@ -295,7 +282,6 @@ public class Walking_1 extends Fragment {
                                 i = false;
                                 chronometer.setBase(SystemClock.elapsedRealtime());  // 타이머 리셋
                                 chronometer.start();  // 타이머 재생
-
 
                             } else {
                                 // 산책 기록 저장 여부 물어보기
@@ -313,17 +299,12 @@ public class Walking_1 extends Fragment {
                                     "아직 로딩 중 입니다. 잠시만 기다려 주세요.",
                                     Snackbar.LENGTH_SHORT).show();
                         }
-
                     }
                 });
-
             }
-
         });
-
         return rootView;
     }
-
 
     public void gpsLine(){
 
@@ -367,7 +348,6 @@ public class Walking_1 extends Fragment {
         }
     }
 
-
 //     권한이 허용되지 않은 경우를 처리 (여기서는 위치권한)
 //     사용자가 권한 요청 대화 상자에서 권한을 허용하거나, 거부한 후 호출되는 콜백
 //     권한을 허용하지 않은 경우 권한 요청을 다시 수행하고, 권한이 허용되면 위치 업데이트를 요청
@@ -397,9 +377,7 @@ public class Walking_1 extends Fragment {
                             REQUEST_LOCATION_PERMISSION); // 권한 요청 코드 사용
                 } else {
                     // 권한이 이미 부여되었을 때
-
                 }
-
             } else {
                 // 권한을 부여하지 않았을 때
                 // 다시 권한을 요청하는 다이얼로그 표시
@@ -481,7 +459,6 @@ public class Walking_1 extends Fragment {
         });
         builder.show();
     }
-
 
     // 위치 리스너를 제거, 메모리 누수를 방지
     @Override

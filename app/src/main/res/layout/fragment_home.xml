@@ -193,102 +193,10 @@
                         app:srcCompat="@drawable/baseline_loop_24" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="horizontal"
-                    android:padding="1dp">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginRight="15dp">
-
-                        <ImageView
-                            android:id="@+id/imgPlace1"
-                            android:layout_width="165dp"
-                            android:layout_height="113dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/round_backgroud"
-                            android:scaleType="centerCrop"
-                            app:srcCompat="@drawable/park" />
-
-                        <TextView
-                            android:id="@+id/txtPlaceName1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginBottom="20dp"
-                            android:layout_weight="1"
-                            android:text="서곶근린공원"
-                            android:textColor="#FFFFFF"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/txtPlace1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignBottom="@id/imgPlace1"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginEnd="5dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_weight="1"
-                            android:text="인천 서구 심곡로 151 · 631m"
-                            android:textColor="#FFFFFF"
-                            android:textSize="12sp" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:id="@+id/imgPlace2"
-                            android:layout_width="165dp"
-                            android:layout_height="113dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/round_backgroud"
-                            android:scaleType="centerCrop"
-                            app:srcCompat="@drawable/park" />
-
-                        <TextView
-                            android:id="@+id/txtPlaceName2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginBottom="20dp"
-                            android:layout_weight="1"
-                            android:text="서곶근린공원"
-                            android:textColor="#FFFFFF"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/txtPlace2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignBottom="@id/imgPlace2"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginEnd="5dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_weight="1"
-                            android:text="인천 서구 심곡로 151 · 631m"
-                            android:textColor="#FFFFFF"
-                            android:textSize="12sp" />
-                    </RelativeLayout>
-
-                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/walkingRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
 
             </LinearLayout>
@@ -450,7 +358,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/txtFriendPet"
+                        android:id="@+id/textView22"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="18dp"

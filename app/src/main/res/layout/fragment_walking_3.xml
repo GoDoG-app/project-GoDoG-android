@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Walking_3">
@@ -88,12 +89,14 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.google.android.gms.maps.MapView
+                <FrameLayout
                     android:id="@+id/mapView1"
                     android:layout_width="match_parent"
                     android:layout_height="224dp"
                     android:layout_marginTop="20dp"
-                    android:background="#C5C5C5" />
+                    android:background="#C5C5C5">
+
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -153,12 +156,14 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.google.android.gms.maps.MapView
+                <FrameLayout
                     android:id="@+id/mapView2"
                     android:layout_width="match_parent"
                     android:layout_height="224dp"
                     android:layout_marginTop="20dp"
-                    android:background="#C5C5C5" />
+                    android:background="#C5C5C5">
+
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

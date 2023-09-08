@@ -28,6 +28,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="30">
         <activity
+            android:name=".Walking3"
+            android:exported="false" />
+        <activity
             android:name=".FriendActivityFromFriendList"
             android:exported="false" />
         <activity

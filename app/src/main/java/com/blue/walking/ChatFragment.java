@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,11 +110,11 @@ public class ChatFragment extends Fragment {
                     ArrayList<UserInfo> userInfoArrayList = new ArrayList<>();
                     userInfoArrayList.addAll(0, userList.info);
 
-                    ChatRoom chatRoom = new ChatRoom();
-                    chatRoom.senderId = userInfoArrayList.get(0).id;
-                    chatRoom.userImgUrl = userInfoArrayList.get(0).userImgUrl;
-                    chatRoom.userNickname = userInfoArrayList.get(0).userNickname;
-                    chatRoomArrayList.add(chatRoom);
+//                    ChatRoom chatRoom = new ChatRoom(id, userNickname, userImgUrl, chatMessage, serverTimestamp());
+//                    chatRoom.id = userInfoArrayList.get(0).id;
+//                    chatRoom.userImgUrl = userInfoArrayList.get(0).userImgUrl;
+//                    chatRoom.userNickname = userInfoArrayList.get(0).userNickname;
+//                    chatRoomArrayList.add(chatRoom);
 
                 }
             }

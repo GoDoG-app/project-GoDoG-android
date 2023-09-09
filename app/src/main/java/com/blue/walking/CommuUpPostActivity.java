@@ -72,6 +72,7 @@ public class CommuUpPostActivity extends AppCompatActivity {
     String category;
     String content;
     File photoFile; // 사진 들어있는 멤버변수 파일
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +144,7 @@ public class CommuUpPostActivity extends AppCompatActivity {
 
                 // 헤더에 세팅할 토큰 가져오기
                 SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-                String token = sp.getString(Config.ACCESS_TOKEN, "");
+                token = sp.getString(Config.ACCESS_TOKEN, "");
 
                 Log.i("token", "토큰 가져옴");
                 Log.i("token", token);

@@ -1,6 +1,5 @@
 package com.blue.walking.api;
 
-import com.blue.walking.model.KakaoUser;
 import com.blue.walking.model.ResultRes;
 import com.blue.walking.model.User;
 import com.blue.walking.model.UserList;
@@ -48,7 +47,7 @@ public interface UserApi {
 
     // 카카오 로그인 API
     @POST("/user/kakaologin")
-    Call<UserRes> kakaoLogin(@Body KakaoUser kakaoUser);
+    Call<UserRes> kakaoLogin(@Body User kakaoUser);
 
     // 특정 유저정보 API
     @GET("/user/{id}")

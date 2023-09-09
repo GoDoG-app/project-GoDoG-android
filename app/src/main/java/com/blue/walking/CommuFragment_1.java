@@ -166,7 +166,7 @@ public class CommuFragment_1 extends Fragment {
                 if (response.isSuccessful()){
                     PostList postList = response.body();
 
-                    Log.i("Call", "서버 실행 성공");
+                    Log.i("Call", "서버 실행 성공"+postList.items);
 
                     // 페이징처리
                     count = postList.count;

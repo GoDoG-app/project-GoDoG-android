@@ -1,5 +1,7 @@
 package com.blue.walking;
 
+import static com.google.firebase.firestore.FieldValue.serverTimestamp;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,15 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blue.walking.adapter.ChatAdapter;
 import com.blue.walking.adapter.ChatRoomAdapter;
+import com.blue.walking.adapter.RecommendAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
-import com.blue.walking.model.Chat;
 import com.blue.walking.model.ChatRoom;
 import com.blue.walking.model.RandomFriend;
-import com.blue.walking.model.User;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,6 +33,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -40,9 +41,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.ktx.Firebase;
 
-import java.lang.reflect.Array;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -64,19 +64,20 @@ public class ChatRoomActivity extends AppCompatActivity {
     Button btnPromise;  // 약속 잡기
     String token;
     RecyclerView recyclerView;
-    ChatAdapter adapter;
-    ArrayList<Chat> chatArrayList = new ArrayList<>();
+    ChatRoomAdapter adapter;
+    ArrayList<ChatRoom> chatRoomArrayList = new ArrayList<>();
     ArrayList<UserInfo> userInfoArrayList = new ArrayList<>();
-    Firebase firebase;
     FirebaseFirestore db;
-    Chat chat;
-    UserInfo userInfo2;
+    ChatRoom chatRoom;
     DocumentReference chatRef;
     DocumentReference chatMessageRef;
     RandomFriend randomFriend;
-    int reciverId;
-    int senderId;
-
+    int receiverId;
+    int id;
+    String userImgUrl;
+    String userNickname;
+    String chatMessage;
+    String roomName;
 
 
     @Override
@@ -88,19 +89,66 @@ public class ChatRoomActivity extends AppCompatActivity {
         btnPromise = findViewById(R.id.btnPromise);
         editChat = findViewById(R.id.editChat);
         imgSend = findViewById(R.id.imgSend);
+        txtUserName = findViewById(R.id.txtUserName);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(ChatRoomActivity.this));
 
+        // 친구 프로필에서 받아온 정보
+        randomFriend = (RandomFriend) getIntent().getSerializableExtra("randomFriend");
+        txtUserName.setText(randomFriend.nickname);
+        receiverId = randomFriend.id;
+
+        // 유저 정보 가져오기
+        Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
+        UserApi api = retrofit.create(UserApi.class);
+
+        SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<UserList> call = api.getUserInfo("Bearer " + token);
+
+        call.enqueue(new Callback<UserList>() {
+            @Override
+            public void onResponse(Call<UserList> call, Response<UserList> response) {
+                if (response.isSuccessful()) {
+                    UserList userList = response.body();
+                    ArrayList<UserInfo> userInfoArrayList = userList.info;
+                    if (!userInfoArrayList.isEmpty()) {
+                        UserInfo userInfo = userInfoArrayList.get(0);
+
+                        userImgUrl = userInfo.userImgUrl;
+                        userNickname = userInfo.userNickname;
+                        id = userInfo.id;
 
 
-        // 어댑터 초기화
-        adapter = new ChatAdapter(ChatRoomActivity.this, chatArrayList);
-        recyclerView.setAdapter(adapter);
 
-        // 파이어베이스 초기화
-        db = FirebaseFirestore.getInstance();
+
+                        // id 값을 설정한 후에 roomName 초기화
+                        if (id<receiverId){
+                            roomName = id + "_" + receiverId;
+                        } else {
+                            roomName = receiverId + "_" + id;
+                        }
+
+                        Log.i("roomName1", roomName + "");
+
+                        // 채팅 메시지 로드
+                        loadMessages(roomName);
+
+
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserList> call, Throwable t) {
+
+            }
+        });
+
 
         // 뒤로가기
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -121,15 +169,18 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
+
+
+
         imgSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                db.collection("chat").document().collection("chatList").get().addOnCompleteListener(ChatRoomActivity.this, new OnCompleteListener<QuerySnapshot>() {
+                db.collection("chat").document().collection("chatMessage")
+                        .get().addOnCompleteListener(ChatRoomActivity.this, new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()){
                             sendMessage();
-
                         } else {
 
                         }
@@ -139,14 +190,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
-        loadMessage();
-
 
     }
+
     public void sendMessage(){
 
+
         // 입력한 메세지 가져오기
-        String chatMessage = editChat.getText().toString().trim();
+        chatMessage = editChat.getText().toString().trim();
 
         if (chatMessage.isEmpty()){
             Snackbar.make(imgSend,
@@ -154,163 +205,174 @@ public class ChatRoomActivity extends AppCompatActivity {
                     Snackbar.LENGTH_SHORT).show();
             return;
         } else {
-            // 나와 채팅하는 유저정보 받아오기
-            randomFriend = (RandomFriend) getIntent().getSerializableExtra("randomFriend");
-            reciverId = randomFriend.id;
 
-            // 유저 정보 가져오기
-            Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
-            UserApi api = retrofit.create(UserApi.class);
+            Timestamp timestamp = Timestamp.now();
 
-            SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-            token = sp.getString(Config.ACCESS_TOKEN, "");
+            Log.i("test", id+userNickname+userImgUrl+chatMessage+timestamp.toDate());
 
-            Call<UserList> call = api.getUserInfo("Bearer " + token);
+            // 대화 상대의 user id를 배열로 저장
+            List<Integer> user = Arrays.asList(id, receiverId);
 
-            call.enqueue(new Callback<UserList>() {
-                @Override
-                public void onResponse(Call<UserList> call, Response<UserList> response) {
-                    if (response.isSuccessful()) {
-                        UserList userList = response.body();
-                        ArrayList<UserInfo> userInfoArrayList = userList.info;
-                        if (!userInfoArrayList.isEmpty()) {
-                            UserInfo userInfo = userInfoArrayList.get(0);
+            // Firestore에 저장할 데이터 생성
+            Map<String, Object> chatRoomData = new HashMap<>();
+            chatRoomData.put("user", user);
+            // Firestore에 데이터를 쓸 때 서버 타임스탬프를 할당
+            chatRoom = new ChatRoom(id, userNickname, userImgUrl, chatMessage, timestamp);
 
-                            String userImgUrl = userInfo.userImgUrl;
-                            String userNickname = userInfo.userNickname;
-                            senderId = userInfo.id;
+            DocumentReference chatDocRef = db.collection("chat").document(roomName);
+            Log.i("roomName2", roomName+"");
+            // 문서 참조를 사용하여 데이터 설정
+            chatDocRef.set(chatRoomData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            // 채팅 방 문서 생성 성공
+                            // chatMessage 컬렉션에 저장할 채팅 메시지 데이터 생성
+                            ChatRoom chatRoom = new ChatRoom(id, userNickname, userImgUrl, chatMessage, timestamp);
 
-                            chat = new Chat(senderId, reciverId, userNickname, userImgUrl, chatMessage, FieldValue.serverTimestamp().toString());
+                            // chatMessage 컬렉션에 새로운 문서 추가
+                            chatDocRef.collection("chatMessage")
+                                    .add(chatRoom)
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference messageDocRef) {
+                                            Log.i("test", "메시지 문서 생성 성공");
 
-                            chatMessageRef.collection("chat").document()
-                                    .collection("chatMessage").document()
-                                    .set(chat).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-
-
-                                    // 마지막 초기화
-                                    editChat.setText("");
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-
-                                }
-                            });
-
+                                            // 마지막 초기화
+                                            editChat.setText("");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i("test", "메시지 문서 생성 실패: " + e.getMessage());
+                                        }
+                                    });
                         }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<UserList> call, Throwable t) {
-
-                }
-            });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // 채팅 방 문서 생성 실패
+                        }
+                    });
 
         }
 
     }
-    public void loadMessage(){
 
-        // 채팅목록 DB
-        chatRef = db.collection("chat").document();
-        // 1:1 채팅방 DB
-        chatMessageRef = db.collection("chat").document().collection("chatMessage").document();
+    // Firestore에서 채팅 메시지를 가져와 리사이클러뷰에 표시하는 함수
+    private void loadMessages(String roomName) {
+        db = FirebaseFirestore.getInstance();
 
-        // db에 저장한 것 가지고오기
-        db.collection("chat").document().collection("chatMessage").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
-                    Toast.makeText(ChatRoomActivity.this,
-                            "메세지 로드 에러"+error,
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                // 리스트 초기화
-                chatArrayList.clear();
-
-                for (DocumentSnapshot document : value.getDocuments()) {
-                    chat = document.toObject(Chat.class);
-                    if (chat != null) {
-                        // 리스트에 추가
-                        chatArrayList.add(chat);
-                    }
-                }
-                // 인덱스는 0부터 시작하기 때문에 마지막 값을 가져오기 위해 -1을 함
-                recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-    public void createChatDocumentAndAddMessage(String receiverId, String senderId, String createdAt, String message, String userImgUrl, String userNickname) {
-        // chatRef는 Firestore에서 채팅 데이터에 대한 참조를 나타냅니다.
-        // 채팅목록 DB
-        chatRef = db.collection("chat").document();
-        // 1:1 채팅방 DB
-        chatMessageRef = db.collection("chat").document().collection("chatMessage").document();
-
-        // "user" 필드에 추가할 유저 ID 배열을 만듭니다.
-        List<String> users = new ArrayList<>();
-        users.add(receiverId);
-        users.add(senderId);
-
-        // chatRef.document()를 사용하여 새로운 채팅 문서를 생성합니다.
-        chatRef = db.collection("chat").document();
-
-        // "user" 필드를 포함하는 데이터 맵을 생성합니다.
-        Map<String, Object> chatData = new HashMap<>();
-        chatData.put("user", users);
-
-        // chatRef.document()에 "user" 필드를 설정하고 성공/실패 리스너를 추가합니다.
-        chatRef.set(chatData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        // chatMessage 컬렉션 내의 문서를 쿼리합니다.
+        db.collection("chat").document(roomName).collection("chatMessage")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.i("test", "저장 성공");
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Toast.makeText(ChatRoomActivity.this,
+                                    "메세지 로드 에러: " + error.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                        // 채팅 문서가 생성되었으므로 "chatMessage" 컬렉션에 메시지를 추가합니다.
-                        addMessageToChatCollection(chatRef, createdAt, receiverId, senderId, message, userImgUrl, userNickname);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("test", "저장 실패");
+                        // 리스트 초기화
+                        chatRoomArrayList.clear();
+
+                        // Firestore에서 가져온 데이터를 chatRoomArrayList에 추가합니다.
+                        for (DocumentSnapshot document : value.getDocuments()) {
+                            ChatRoom chatRoom = document.toObject(ChatRoom.class);
+                            if (chatRoom != null) {
+                                chatRoomArrayList.add(chatRoom);
+                            }
+                        }
+
+                        // 어댑터에 데이터 변경을 알립니다.
+                        adapter = new ChatRoomAdapter(ChatRoomActivity.this, chatRoomArrayList);
+                        // 어댑터 연결
+                        recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     }
                 });
     }
 
-    public void addMessageToChatCollection(DocumentReference chatDocumentRef, String createdAt, String receiverId, String senderId, String message, String userImgUrl, String userNickname) {
-        // chatDocumentRef는 Firestore에서 채팅 문서를 나타냅니다.
 
-        // "chatMessage" 컬렉션에 추가할 메시지 데이터를 만듭니다.
-        Map<String, Object> messageData = new HashMap<>();
-        messageData.put("createdAt", createdAt);
-        messageData.put("receiverId", receiverId);
-        messageData.put("senderId", senderId);
-        messageData.put("message", message);
-        messageData.put("userImgUrl", userImgUrl);
-        messageData.put("userNickname", userNickname);
+//    수정전
+//    public void sendMessage(){
+//
+//        // 입력한 메세지 가져오기
+//        chatMessage = editChat.getText().toString().trim();
+//
+//        if (chatMessage.isEmpty()){
+//            Snackbar.make(imgSend,
+//                    "텍스트를 입력하세요.",
+//                    Snackbar.LENGTH_SHORT).show();
+//            return;
+//        } else {
+//            // 나와 채팅하는 유저정보 받아오기
+//            receiverId = randomFriend.id;
+//
+//            // 유저 정보 가져오기
+//            Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
+//            UserApi api = retrofit.create(UserApi.class);
+//
+//            SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+//            token = sp.getString(Config.ACCESS_TOKEN, "");
+//
+//            Call<UserList> call = api.getUserInfo("Bearer " + token);
+//
+//            call.enqueue(new Callback<UserList>() {
+//                @Override
+//                public void onResponse(Call<UserList> call, Response<UserList> response) {
+//                    if (response.isSuccessful()) {
+//                        UserList userList = response.body();
+//                        ArrayList<UserInfo> userInfoArrayList = userList.info;
+//                        if (!userInfoArrayList.isEmpty()) {
+//                            UserInfo userInfo = userInfoArrayList.get(0);
+//
+//                            userImgUrl = userInfo.userImgUrl;
+//                            userNickname = userInfo.userNickname;
+//                            id = userInfo.id;
+//                            Log.i("test", id+userNickname+userImgUrl+chatMessage+ serverTimestamp());
+//
+//
+//                            chatRoom = new ChatRoom(id, userNickname, userImgUrl, chatMessage, serverTimestamp().toString());
+//                            String roomName = id+"_"+receiverId;
+//
+//                            // chatMessage 컬렉션에 새로운 문서 추가
+//                            db.collection("chat").document(roomName).collection("chatMessage")
+//                                    .add(chatRoom)
+//                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                                        @Override
+//                                        public void onSuccess(DocumentReference messageDocRef) {
+//                                            Log.i("test", "메시지 문서 생성 성공");
+//                                            chatRoom = new ChatRoom(id, userNickname, userImgUrl, chatMessage, serverTimestamp().toString());
+//                                            // 마지막 초기화
+//                                            editChat.setText("");
+//                                        }
+//                                    })
+//                                    .addOnFailureListener(new OnFailureListener() {
+//                                        @Override
+//                                        public void onFailure(@NonNull Exception e) {
+//                                            Log.i("test", "메시지 문서 생성 실패: " + e.getMessage());
+//                                        }
+//                                    });
+//
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<UserList> call, Throwable t) {
+//
+//                }
+//            });
+//
+//        }
+//
+//    }
 
-        // chatDocumentRef.collection("chatMessage")를 사용하여 "chatMessage" 컬렉션에 새로운 문서를 추가합니다.
-        chatDocumentRef.collection("chatMessage").add(messageData)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.i("test", "메시지 저장 성공");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("test", "메시지 저장 실패");
-                    }
-                });
-    }
 
 
 }

@@ -159,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this, (oAuthToken, error) -> {
                     if (error != null) {
                         // 로그인 실패
-                        Log.e("aaa", "로그인 실패", error);
+                        Log.e("aaa", "로그인 실패"+error);
                     } else if (oAuthToken != null) {
                         Log.i("aaa", "로그인 성공"+oAuthToken);
                         kakoLogin();
@@ -211,22 +211,22 @@ public class LoginActivity extends AppCompatActivity {
                     Retrofit retrofit = NetworkClient.getRetrofitClient(LoginActivity.this);
                     UserApi api = retrofit.create(UserApi.class);
 
-                    KakaoUser kakaoUser = new KakaoUser();
+                    User user2 = new User();
 
                     kakaoId = String.valueOf(user.getId());
                     kakaoEmail = user.getKakaoAccount().getEmail();
                     nickname = user.getKakaoAccount().getProfile().getNickname();
 
-                    kakaoUser.kakaoId = kakaoId;
-                    kakaoUser.email = kakaoEmail;
-                    kakaoUser.nickname = nickname;
-                    kakaoUser.loginType = 1;
+                    user2.kakaoId = kakaoId;
+                    user2.email = kakaoEmail;
+                    user2.nickname = nickname;
+                    user2.loginType = 1;
 
                     Log.i("kakao", kakaoId + kakaoEmail + nickname + loginType);
 
                     showProgress();
 
-                    Call<UserRes> call = api.kakaoLogin(kakaoUser);
+                    Call<UserRes> call = api.kakaoLogin(user2);
                     call.enqueue(new Callback<UserRes>() {
                         @Override
                         public void onResponse(Call<UserRes> call, Response<UserRes> response) {

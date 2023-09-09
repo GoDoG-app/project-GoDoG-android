@@ -11,10 +11,15 @@ public class User {
     public double lat;
     public double lng;
 
+    public int loginType;
+    public String kakaoId;
+
 
     public User(){
 
     }
+
+
 
     public User(String email, String password, String nickname, int gender, String birth, String address, double lat, double lng) {
         this.email = email;
@@ -32,5 +37,10 @@ public class User {
         this.password = password;
     }
 
-
+    public User(String email, String nickname, int loginType, String kakaoId) {
+        this.email = email;
+        this.nickname = nickname;
+        this.loginType = loginType;
+        this.kakaoId = kakaoId;
+    }
 }

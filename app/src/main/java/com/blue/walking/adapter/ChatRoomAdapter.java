@@ -44,8 +44,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
                 .load(chatRoom.userImgUrl)
                 .into(holder.imgUser);
         holder.txtUserName.setText(chatRoom.userNickname);
-        holder.txtTime.setText(chatRoom.CreatedAt);
-        holder.txtMessage.setText(chatRoom.Message);
+        holder.txtTime.setText("");
+        holder.txtMessage.setText(chatRoom.message);
 
     }
 

@@ -1,23 +1,28 @@
 package com.blue.walking.model;
 
-public class ChatRoom {
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class ChatRoom implements Serializable {
     // 1:1채팅방
-    public int senderId;
-    public int receiverId;
+    public int id;
     public String userNickname;
     public String userImgUrl;
-    public String Message;
-    public String CreatedAt;
+    public String message;
+    public Object createdAt;
 
     public ChatRoom() {
     }
 
-    public ChatRoom(int senderId, int receiverId, String userNickname, String userImgUrl, String message, String createdAt) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+    public ChatRoom(int id, String userNickname, String userImgUrl, String message, Object createdAt) {
+        this.id = id;
         this.userNickname = userNickname;
         this.userImgUrl = userImgUrl;
-        Message = message;
-        CreatedAt = createdAt;
+        this.message = message;
+        this.createdAt = createdAt;
     }
+
 }

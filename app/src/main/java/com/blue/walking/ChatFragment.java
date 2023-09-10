@@ -7,15 +7,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.blue.walking.adapter.ChatAdapter;
 import com.blue.walking.adapter.ChatRoomAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
+import com.blue.walking.model.Chat;
 import com.blue.walking.model.ChatRoom;
+import com.blue.walking.model.RandomFriend;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -74,13 +78,16 @@ public class ChatFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-
     }
+
     String token;
     RecyclerView recyclerView;
-    ChatRoomAdapter adapter;
-
-    ArrayList<ChatRoom> chatRoomArrayList = new ArrayList<>();
+    ChatAdapter adapter;
+    ArrayList<Chat> chatArrayList = new ArrayList<>();
+    int id;
+    String userImgUrl;
+    String userNickname;
+    String chatMessage;
 
 
     @Override
@@ -89,9 +96,11 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_chat, container, false);
 
+        // 토큰 받아오기(레트로핏 위해서)
         SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME,getActivity().MODE_PRIVATE);
         token = sp.getString(Config.ACCESS_TOKEN, "");
 
+        // 리사이클러뷰 초기화
         recyclerView = rootView.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -105,17 +114,15 @@ public class ChatFragment extends Fragment {
             @Override
             public void onResponse(Call<UserList> call, Response<UserList> response) {
                 if (response.isSuccessful()){
-
                     UserList userList= response.body();
-                    ArrayList<UserInfo> userInfoArrayList = new ArrayList<>();
-                    userInfoArrayList.addAll(0, userList.info);
-
-//                    ChatRoom chatRoom = new ChatRoom(id, userNickname, userImgUrl, chatMessage, serverTimestamp());
-//                    chatRoom.id = userInfoArrayList.get(0).id;
-//                    chatRoom.userImgUrl = userInfoArrayList.get(0).userImgUrl;
-//                    chatRoom.userNickname = userInfoArrayList.get(0).userNickname;
-//                    chatRoomArrayList.add(chatRoom);
-
+                    // 유저 정보 가져오기
+                    ArrayList<UserInfo> userInfoArrayList = userList.info;
+                    if (!userInfoArrayList.isEmpty()) {
+                        UserInfo userInfo = userInfoArrayList.get(0);
+                        userImgUrl = userInfo.userImgUrl;
+                        userNickname = userInfo.userNickname;
+                        id = userInfo.id;
+                    }
                 }
             }
 
@@ -125,32 +132,6 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        // Firestore 인스턴스 생성
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Firestore에서 데이터 읽기
-        db.collection("chat")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        chatRoomArrayList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Firestore 문서에서 필요한 데이터 추출
-
-
-//                            // ChatRoom 객체를 chatroomarraylist에 추가
-//                            chatRoomArrayList.add(chatRoom);
-
-                        }
-
-                    } else {
-                        // Firestore에서 데이터를 읽어오지 못한 경우에 대한 처리
-                        Exception e = task.getException();
-                        if (e != null) {
-                            // 오류 처리
-                        }
-                    }
-                });
 
         return rootView;
     }

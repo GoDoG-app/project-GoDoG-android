@@ -1,7 +1,5 @@
 package com.blue.walking;
 
-import static com.google.firebase.firestore.FieldValue.serverTimestamp;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blue.walking.adapter.ChatRoomAdapter;
-import com.blue.walking.adapter.RecommendAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
@@ -37,13 +34,11 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,11 +62,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ChatRoomAdapter adapter;
     ArrayList<ChatRoom> chatRoomArrayList = new ArrayList<>();
-    ArrayList<UserInfo> userInfoArrayList = new ArrayList<>();
     FirebaseFirestore db;
     ChatRoom chatRoom;
-    DocumentReference chatRef;
-    DocumentReference chatMessageRef;
     RandomFriend randomFriend;
     int receiverId;
     int id;
@@ -101,7 +93,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         txtUserName.setText(randomFriend.nickname);
         receiverId = randomFriend.id;
 
-        // 유저 정보 가져오기
+         // 유저 정보 가져오기
         Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
         UserApi api = retrofit.create(UserApi.class);
 
@@ -291,6 +283,8 @@ public class ChatRoomActivity extends AppCompatActivity {
                         adapter = new ChatRoomAdapter(ChatRoomActivity.this, chatRoomArrayList);
                         // 어댑터 연결
                         recyclerView.setAdapter(adapter);
+                        // 리사이클러뷰 어레이 리스트의 크기의 -1 위치로 이동
+                        recyclerView.scrollToPosition(chatRoomArrayList.size()-1);
                         adapter.notifyDataSetChanged();
                     }
                 });

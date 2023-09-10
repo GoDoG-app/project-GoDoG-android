@@ -30,10 +30,10 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ChatRoomAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.chat_row, parent, false);
-        return new ViewHolder(view);
+                .inflate(R.layout.chat_message_row, parent, false);
+        return new ChatRoomAdapter.ViewHolder(view);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
 
         Glide.with(context)
                 .load(chatRoom.userImgUrl)
-                .into(holder.imgUser);
-        holder.txtUserName.setText(chatRoom.userNickname);
+                .into(holder.imgUserUrl);
+        holder.txtNickname.setText(chatRoom.userNickname);
         holder.txtTime.setText("");
         holder.txtMessage.setText(chatRoom.message);
 
@@ -56,8 +56,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imgUser;
-        TextView txtUserName;
+        ImageView imgUserUrl;
+        TextView txtNickname;
         TextView txtMessage;
         TextView txtTime;
 
@@ -65,8 +65,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            imgUser = itemView.findViewById(R.id.imgUser);
-            txtUserName = itemView.findViewById(R.id.txtUserName);
+            imgUserUrl = itemView.findViewById(R.id.imgUserUrl);
+            txtNickname = itemView.findViewById(R.id.txtNickname);
             txtMessage = itemView.findViewById(R.id.txtMessage);
             txtTime = itemView.findViewById(R.id.txtTime);
 

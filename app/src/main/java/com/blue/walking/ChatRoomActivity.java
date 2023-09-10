@@ -40,6 +40,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.sql.Date;
@@ -96,7 +97,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(ChatRoomActivity.this));
 
         // 친구 프로필에서 받아온 정보
-        randomFriend = (RandomFriend) getIntent().getSerializableExtra("randomFriend");
+        randomFriend = (RandomFriend) getIntent().getSerializableExtra("friend");
         txtUserName.setText(randomFriend.nickname);
         receiverId = randomFriend.id;
 
@@ -123,12 +124,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                         id = userInfo.id;
 
 
-
-
                         // id 값을 설정한 후에 roomName 초기화
                         if (id<receiverId){
                             roomName = id + "_" + receiverId;
-                        } else {
+                        } else if(id>receiverId) {
                             roomName = receiverId + "_" + id;
                         }
 
@@ -266,7 +265,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // chatMessage 컬렉션 내의 문서를 쿼리합니다.
-        db.collection("chat").document(roomName).collection("chatMessage")
+        db.collection("chat").document(roomName).collection("chatMessage").orderBy("createdAt", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {

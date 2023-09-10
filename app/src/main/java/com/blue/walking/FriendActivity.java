@@ -98,6 +98,7 @@ public class FriendActivity extends AppCompatActivity {
         // RandomFriend에서 받아온 id
         randomFriend = (RandomFriend) getIntent().getSerializableExtra("Friend");
         friendId = randomFriend.id;
+        Log.i("test", randomFriend.nickname+"");
 
 
         // 랜덤친구 정보
@@ -113,7 +114,7 @@ public class FriendActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // 채팅방으로 이동
                 Intent intent = new Intent(FriendActivity.this, ChatRoomActivity.class);
-                intent.putExtra("randomFriend", randomFriend);
+                intent.putExtra("friend", randomFriend);
                 startActivity(intent);
             }
         });

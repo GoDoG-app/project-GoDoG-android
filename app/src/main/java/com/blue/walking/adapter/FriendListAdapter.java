@@ -60,7 +60,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
         return friendsInfoArrayList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imgUser;
         TextView txtName;
@@ -74,7 +74,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
             imgUser = itemView.findViewById(R.id.imgUser);
             txtName = itemView.findViewById(R.id.txtName);
             txtOneliner = itemView.findViewById(R.id.txtOneliner);
-            cardView =itemView.findViewById(R.id.cardView);
+            cardView = itemView.findViewById(R.id.cardView);
 
             imgUser.setClipToOutline(true);  // 둥근 테두리 적용
 
@@ -90,6 +90,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
                     intent = new Intent(context, FriendActivityFromFriendList.class);
                     intent.putExtra("friends", friendsInfo);
                     context.startActivity(intent);
+
 
                 }
             });

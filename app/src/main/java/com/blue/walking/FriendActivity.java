@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,16 +16,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blue.walking.api.FriendsAPi;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
 import com.blue.walking.api.UserApi;
+import com.blue.walking.config.Config;
+import com.blue.walking.model.Friends;
 import com.blue.walking.model.FriendsInfo;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
 import com.blue.walking.model.RandomFriend;
+import com.blue.walking.model.ResultRes;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.bumptech.glide.Glide;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,6 +71,10 @@ public class FriendActivity extends AppCompatActivity {
     ArrayList<Pet> petArrayList = new ArrayList<>();
     RandomFriend randomFriend;
 
+    boolean i = true;
+
+    String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +97,9 @@ public class FriendActivity extends AppCompatActivity {
         petInfo = findViewById(R.id.petInfo);
         petComment = findViewById(R.id.petComment);
 
+        // 친구 맺기
+        btnFollower = findViewById(R.id.btnFollower);
+
 
         // 프로그래스바(온도) 기본값
         progressBar = findViewById(R.id.progressBar);
@@ -106,9 +119,10 @@ public class FriendActivity extends AppCompatActivity {
 
         // 펫정보
         randomFriendPetInfoAPI();
-
-
-
+        
+        // 친구 관계 확인
+        isFriendShip();
+        
         btnChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +138,28 @@ public class FriendActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        // 친구맺기
+        btnFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(i == true){
+
+                    AddFriend();
+                    i = false;
+
+
+                }else {
+
+                    DeleteFriend();
+                    i = true;
+
+
+                }
+
             }
         });
     }
@@ -238,6 +274,121 @@ public class FriendActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    private void AddFriend(){
+
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivity.this);
+        FriendsAPi api = retrofit.create(FriendsAPi.class);
+
+        SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<ResultRes> call = api.postFollowee("Bearer " + token,friendId);
+
+        call.enqueue(new Callback<ResultRes>() {
+            @Override
+            public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
+
+                if(response.isSuccessful()){
+
+                    Snackbar.make(btnFollower,
+                            randomFriend.nickname + "님을 친구로 등록하였습니다",Snackbar.LENGTH_SHORT).show();
+
+                    btnFollower.setText("친구 끊기");
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResultRes> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void DeleteFriend(){
+
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivity.this);
+        FriendsAPi api = retrofit.create(FriendsAPi.class);
+
+        SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Call<ResultRes> call = api.deleteFollowee("Bearer " + token,friendId);
+
+        call.enqueue(new Callback<ResultRes>() {
+            @Override
+            public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
+
+                if(response.isSuccessful()){
+
+                    Snackbar.make(btnFollower,
+                            randomFriend.nickname + "님과 친구를 끊었습니다",Snackbar.LENGTH_SHORT).show();
+
+                    btnFollower.setText("친구 등록");
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResultRes> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    // 해당 프로필의 유저와 친구인지 아닌지 확인
+    private void isFriendShip(){
+
+        // 토큰 발급
+        SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivity.this);
+
+        FriendsAPi api = retrofit.create(FriendsAPi.class);
+
+        Call<Friends> call = api.getFriends("Bearer " + token);
+
+        call.enqueue(new Callback<Friends>() {
+            @Override
+            public void onResponse(Call<Friends> call, Response<Friends> response) {
+
+                if(response.isSuccessful()){
+                    Friends friends = response.body();
+                    if(friends != null && friends.count > 0){
+                        // 친구 관계가 있음
+                        for ( FriendsInfo items : friends.items){
+                            if (items.followeeId == friendId){
+
+                                i = false;
+                                btnFollower.setText("친구 끊기");
+                                break;
+
+                            }
+
+                        }
+
+                    }else {
+                        // 친구 관계가 없음
+                        i = true;
+                        btnFollower.setText("친구 등록");
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Friends> call, Throwable t) {
+
+            }
+        });
 
     }
 

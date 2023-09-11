@@ -21,6 +21,7 @@ import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
+import com.blue.walking.model.Friends;
 import com.blue.walking.model.FriendsInfo;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
@@ -122,6 +123,9 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
 
         // 펫정보
         FriendPetInfoAPI();
+
+        // 친구 관계 확인
+        isFriendShip();
 
 
 
@@ -295,6 +299,9 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
 
                 if(response.isSuccessful()){
 
+                    Snackbar.make(btnFollower,
+                            friendsInfo.nickname + "님을 친구로 등록하였습니다",Snackbar.LENGTH_SHORT).show();
+
                     btnFollower.setText("친구 끊기");
 
                 }
@@ -325,6 +332,9 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
 
                 if(response.isSuccessful()){
 
+                    Snackbar.make(btnFollower,
+                            friendsInfo.nickname + "님과 친구를 끊었습니다",Snackbar.LENGTH_SHORT).show();
+
                     btnFollower.setText("친구 등록");
 
                 }
@@ -338,5 +348,56 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
         });
 
     }
+
+    // 해당 프로필의 유저와 친구인지 아닌지 확인
+    private void isFriendShip(){
+
+        // 토큰 발급
+        SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+        token = sp.getString(Config.ACCESS_TOKEN, "");
+
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
+
+        FriendsAPi api = retrofit.create(FriendsAPi.class);
+
+        Call<Friends> call = api.getFriends("Bearer " + token);
+
+        call.enqueue(new Callback<Friends>() {
+            @Override
+            public void onResponse(Call<Friends> call, Response<Friends> response) {
+
+                if(response.isSuccessful()){
+                    Friends friends = response.body();
+                    if(friends != null && friends.count > 0){
+                        // 친구 관계가 있음
+                        for ( FriendsInfo items : friends.items){
+                            if (items.followeeId == friendId){
+
+                                i = false;
+                                btnFollower.setText("친구 끊기");
+                                break;
+
+                            }
+
+                        }
+
+                    }else {
+                        // 친구 관계가 없음
+                        i = true;
+                        btnFollower.setText("친구 등록");
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Friends> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+
 
 }

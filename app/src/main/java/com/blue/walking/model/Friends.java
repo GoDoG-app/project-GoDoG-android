@@ -7,4 +7,6 @@ public class Friends {
     public String result;
     public int count;
     public ArrayList<FriendsInfo> items;
+
+
 }

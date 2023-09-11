@@ -2,6 +2,7 @@ package com.blue.walking;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -51,6 +52,35 @@ public class FriendListActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
         token = sp.getString(Config.ACCESS_TOKEN, "");
 
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                finish();
+
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.i("ONRESUME","ONRESUME 실행됨");
+
+
+        FriendList();
+
+
+    }
+
+    private void FriendList(){
+
+        friendsInfoArrayList.clear();
+
         Retrofit retrofit = NetworkClient.getRetrofitClient(FriendListActivity.this);
 
         FriendsAPi api = retrofit.create(FriendsAPi.class);
@@ -62,6 +92,8 @@ public class FriendListActivity extends AppCompatActivity {
             public void onResponse(Call<Friends> call, Response<Friends> response) {
 
                 if(response.isSuccessful()){
+
+
 
                     Friends friends = response.body();
 
@@ -80,16 +112,6 @@ public class FriendListActivity extends AppCompatActivity {
 
             }
         });
-
-        imgBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                finish();
-
-            }
-        });
-
 
     }
 

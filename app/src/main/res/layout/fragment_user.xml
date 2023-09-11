@@ -392,7 +392,7 @@
                     android:layout_marginRight="10dp"
                     android:backgroundTint="#FFFFFF"
                     android:gravity="left"
-                    android:text="산책 파트너 목록                           >"
+                    android:text="산책 파트너 목록  >"
                     android:textColor="#000000"
                     android:textSize="20sp" />
 
@@ -404,7 +404,7 @@
                     android:layout_marginRight="10dp"
                     android:backgroundTint="#FFFFFF"
                     android:gravity="left"
-                    android:text="산책 기록                                     >"
+                    android:text="산책 기록  >"
                     android:textColor="#000000"
                     android:textSize="20dp" />
 
@@ -416,7 +416,7 @@
                     android:layout_marginRight="10dp"
                     android:backgroundTint="#FFFFFF"
                     android:gravity="left"
-                    android:text="내가 쓴 글(커뮤니티)                     >"
+                    android:text="내가 쓴 글(커뮤니티)  >"
                     android:textColor="#000000"
                     android:textSize="20sp" />
             </LinearLayout>

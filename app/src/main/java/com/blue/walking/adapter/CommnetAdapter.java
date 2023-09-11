@@ -249,6 +249,7 @@ public class CommnetAdapter extends RecyclerView.Adapter<CommnetAdapter.ViewHold
             txtLike = itemView.findViewById(R.id.txtLike);
             txtComment2 = itemView.findViewById(R.id.txtComment2);
 
+            imgUser.setClipToOutline(true);
         }
     }
 

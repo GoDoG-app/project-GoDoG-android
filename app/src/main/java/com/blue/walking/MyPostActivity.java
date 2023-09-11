@@ -50,7 +50,7 @@ public class MyPostActivity extends AppCompatActivity {
 
                 int itemId = item.getItemId();
                 if (itemId == R.id.post) {
-                    // 홈
+                    // 작성글
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.containers, myPostFragment_1)
@@ -58,7 +58,7 @@ public class MyPostActivity extends AppCompatActivity {
                     return true;
 
                 } else if (itemId == R.id.Comment) {
-                    // 커뮤니티
+                    // 댓글
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.containers, myPostFragment_2)

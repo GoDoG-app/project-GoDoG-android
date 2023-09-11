@@ -90,6 +90,8 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
             txtPlace1 = itemView.findViewById(R.id.txtPlace1);
             cardView = itemView.findViewById(R.id.cardView);
 
+            imgPlace1.setClipToOutline(true);
+
             cardView.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("ResourceType")
                 @Override

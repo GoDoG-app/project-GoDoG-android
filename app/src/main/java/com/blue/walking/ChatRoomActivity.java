@@ -3,6 +3,7 @@ package com.blue.walking;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -128,8 +129,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                         // 채팅 메시지 로드
                         loadMessages(roomName);
 
-
-
                     }
                 }
             }
@@ -159,6 +158,8 @@ public class ChatRoomActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
 
 
 

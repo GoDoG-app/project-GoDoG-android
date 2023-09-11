@@ -259,7 +259,7 @@ public class HomeFragment extends Fragment {
                                 TMapData tMapData = new TMapData();
                                 // 내 위치 설정
                                 TMapPoint myLocation = new TMapPoint(first_lat, first_lng);
-                                tMapData.findAroundNamePOI(myLocation, "공원", 5, 20, new TMapData.OnFindAroundNamePOIListener() {
+                                tMapData.findAroundNamePOI(myLocation, "공원", 5, 30, new TMapData.OnFindAroundNamePOIListener() {
                                     @Override
                                     public void onFindAroundNamePOI(ArrayList<TMapPOIItem> arrayList) {
 
@@ -291,6 +291,7 @@ public class HomeFragment extends Fragment {
                                                 parkArrayList.add(park);
                                             }
 
+                                            // 번들에 담아서 보낸다?
                                             getActivity().runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {

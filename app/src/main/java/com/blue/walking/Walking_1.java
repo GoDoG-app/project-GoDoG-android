@@ -125,6 +125,8 @@ public class Walking_1 extends Fragment {
     TMapMarkerItem marker; // 마커 객체
     private static final int REQUEST_LOCATION_PERMISSION = 1; // 권한 요청 코드
 
+    double distance = 0.0 ;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -135,6 +137,7 @@ public class Walking_1 extends Fragment {
         imgStart = rootView.findViewById(R.id.imgStart);
         btnReset = rootView.findViewById(R.id.btnReset);
         chronometer = rootView.findViewById(R.id.chronometer);
+        txtDistance = rootView.findViewById(R.id.txtDistance);
         // 지도가 나타날 화면
         tmapViewContainer = rootView.findViewById(R.id.tmapViewContainer);
         // 현재 위치 버튼
@@ -190,6 +193,7 @@ public class Walking_1 extends Fragment {
                     marker.setTMapPoint(new TMapPoint(lat, lng));
                     tMapView.addTMapMarkerItem(marker);
                     mapReady = false;
+
                 }
             }
         };
@@ -203,7 +207,7 @@ public class Walking_1 extends Fragment {
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     -1,
-                    3,
+                    4,
                     locationListener);
             // minTimeMs를 -1로 하고 minDistanceM을 양수로 하면 이동 거리(m)마다 위치를 가져온다.
             // 반대로 minTimeMs를 양수로 하고 minDistanceM을 -1로 하면 MinTimeMs에 지정한 초 마다 위치를 가져온다.
@@ -336,6 +340,8 @@ public class Walking_1 extends Fragment {
             marker.setId("marker1");
             marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
 
+            Log.d("라인길이","라인 거리"+line.getDistance());
+
             // bitMap 이미지 수정 하드코딩
 //                Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),
 //                        image);
@@ -345,6 +351,14 @@ public class Walking_1 extends Fragment {
             // 현재 위치에 마커 추가
             marker.setTMapPoint(new TMapPoint(lat, lng));
             tMapView.addTMapMarkerItem(marker);
+
+            distance = (distance + 0.004);
+            if (distance<1.0){
+                txtDistance.setText(Math.round(distance*1000)+"m");
+            }else{
+                txtDistance.setText(String.format("%.2fkm", distance));
+            }
+            Log.d("이동거리","현재 걸은 거리: "+distance);
         }
     }
 

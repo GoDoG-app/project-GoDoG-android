@@ -86,18 +86,15 @@ public class Walking3 extends AppCompatActivity {
         TMapPoint endPoint =  new TMapPoint(endLat, endLng); // 도착지
         TMapPoint middlePoint = getMidPoint(startPoint, endPoint); // 중간 지점 계산
 
-
         // 랜덤 포인트를 ArrayList(경유지)에 넣기
         ArrayList<TMapPoint> passList = new ArrayList<>();
         double randomRadius = 0.0015; // 반경 설정 (임의로 조정)
-        double randomAngle = Math.toRadians(new Random().nextDouble() * 360.0);
+        double randomAngle = Math.toRadians(new Random().nextDouble() * 30.0); //반경 각도
         double randomLatOffset = randomRadius * Math.cos(randomAngle);
         double randomLngOffset = randomRadius * Math.sin(randomAngle);
         TMapPoint randomPoint = new TMapPoint(endLat + randomLatOffset, endLng + randomLngOffset);
-        passList.add(endPoint); // 경유지에 유저가 선택한 공원
         passList.add(randomPoint); // 랜덤 포인트 가까운거리
-
-
+        passList.add(endPoint); // 경유지에 유저가 선택한 공원
 
         mapView1 = findViewById(R.id.mapView1);
         mapView2 = findViewById(R.id.mapView2);
@@ -113,9 +110,6 @@ public class Walking3 extends AppCompatActivity {
         txtRegion.setText(userInfo.userAddress);
         txtPlace1.setText(park.getName()+"(빠른 경로)");
         txtPlace2.setText(park.getName()+"(느린 경로)");
-
-
-
 
         // 경로 추천용 두개의 지도
         // TmapView1 객체(context로 하면 안나옴)
@@ -152,19 +146,35 @@ public class Walking3 extends AppCompatActivity {
                                 tMapPolyLine.setLineWidth(3); // 경로 폴리라인 두께
                                 tMapView1.addTMapPolyLine(tMapPolyLine);
 
-                                double distance = tMapPolyLine.getDistance(); // 총 거리 (미터)
-                                Log.i("거리", "distance" + distance);
-                                double time = tMapPolyLine.getDistance() / 1000.0 / 5.0; // 예상 시간 (시간, 평균 보행 속도 5km/h 기준)
+                                // 거리 구하기
+                                double dist1 = calculateDistance(startLat, startLng, randomPoint.getLatitude(), randomPoint.getLongitude());
+                                double dist2 = calculateDistance(randomPoint.getLatitude(), randomPoint.getLongitude(), endLat, endLng );
+                                double dist3 = calculateDistance(endLat, endLng, startLat, startLng);
+                                double totalDistance = dist1 + dist2 + dist3;
 
-                                // UI 업데이트를 메인 스레드에서 실행
+                                // 소요 시간 구하기
+                                double walkingSpeedKmph = 3.0; // 시속 3km
+                                double walkingSpeedKmPerMinute = walkingSpeedKmph / 60.0; // 분 단위 속도로 변환
+                                double walkingTimeMinutes = totalDistance / walkingSpeedKmPerMinute;
+
+                                // 시간을 시간과 분으로 분리
+                                int walkingHours = (int) walkingTimeMinutes / 60;
+                                int walkingMinutes = (int) walkingTimeMinutes % 60;
+
+                                String walkingTime;
+                                if (walkingHours > 0) {
+                                    walkingTime = walkingHours + "시간 " + walkingMinutes + "분";
+                                } else {
+                                    walkingTime = walkingMinutes + "분";
+                                }
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        txtTime1.setText(String.valueOf(time));
-                                        txtKm1.setText(String.valueOf(distance/1000.0));
+                                        // UI 업데이트 코드를 메인 스레드에서 실행
+                                        txtKm1.setText(String.format("%.1f km", totalDistance));
+                                        txtTime1.setText(walkingTime);
                                     }
                                 });
-
                             }
                         });
             }
@@ -173,12 +183,12 @@ public class Walking3 extends AppCompatActivity {
         // 랜덤 포인트 생성 (중간 지점 주변)
         ArrayList<TMapPoint> passList1 = new ArrayList<>();
         double randomRadius1 = 0.0030; // 반경 설정 (임의로 조정)
-        double randomAngle1 = Math.toRadians(new Random().nextDouble() * 360.0);
+        double randomAngle1 = Math.toRadians(30 + new Random().nextDouble() * 30.0);
         double randomLatOffset1 = randomRadius1 * Math.cos(randomAngle1);
         double randomLngOffset1 = randomRadius1 * Math.sin(randomAngle1);
-        TMapPoint randomPoint1 = new TMapPoint(startLat + randomLatOffset1, startLng + randomLngOffset1);
-        passList1.add(endPoint); // 경유지에 유저가 선택한 공원
+        TMapPoint randomPoint1 = new TMapPoint(endLat + randomLatOffset1, endLng + randomLngOffset1);
         passList1.add(randomPoint1); // 랜덤포인트(경유지) 추가 먼거리
+        passList1.add(endPoint); // 경유지에 유저가 선택한 공원
 
         tMapView2.setOnMapReadyListener(new TMapView.OnMapReadyListener() {
             @Override
@@ -201,50 +211,39 @@ public class Walking3 extends AppCompatActivity {
                                 tMapPolyLine.setLineWidth(3); // 경로 폴리라인 두께
                                 tMapView2.addTMapPolyLine(tMapPolyLine);
 
-                                double distance = tMapPolyLine.getDistance(); // 총 거리 (미터)
-                                double time = tMapPolyLine.getDistance() / 1000.0 / 5.0; // 예상 시간 (시간, 평균 보행 속도 5km/h 기준)
+                                // 거리 구하기
+                                double dist1 = calculateDistance(startLat, startLng, randomPoint1.getLatitude(), randomPoint1.getLongitude());
+                                double dist2 = calculateDistance(randomPoint1.getLatitude(), randomPoint1.getLongitude(), endLat, endLng );
+                                double dist3 = calculateDistance(endLat, endLng, startLat, startLng);
+                                double totalDistance = dist1 + dist2 + dist3;
 
-                                // UI 업데이트를 메인 스레드에서 실행
+                                // 소요 시간 구하기
+                                double walkingSpeedKmph = 3.0; // 시속 3km
+                                double walkingSpeedKmPerMinute = walkingSpeedKmph / 60.0; // 분 단위 속도로 변환
+                                double walkingTimeMinutes = totalDistance / walkingSpeedKmPerMinute;
+
+                                // 시간을 시간과 분으로 분리
+                                int walkingHours = (int) walkingTimeMinutes / 60;
+                                int walkingMinutes = (int) walkingTimeMinutes % 60;
+
+                                String walkingTime;
+                                if (walkingHours > 0) {
+                                    walkingTime = walkingHours + "시간 " + walkingMinutes + "분";
+                                } else {
+                                    walkingTime = walkingMinutes + "분";
+                                }
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        txtTime2.setText(String.valueOf(time));
-                                        txtKm2.setText(String.valueOf(distance));
+                                        // UI 업데이트 코드를 메인 스레드에서 실행
+                                        txtKm2.setText(String.format("%.1f km", totalDistance));
+                                        txtTime2.setText(walkingTime);
                                     }
                                 });
-
                             }
                 });
            }
         });
-
-//        OkHttpClient client = new OkHttpClient();
-//
-//        MediaType mediaType = MediaType.parse("application/json");
-//        RequestBody body = RequestBody.create(mediaType,
-//                "{\"startX\":126.92365493654832," +
-//                        "\"startY\":37.556770374096615," +
-//                        "\"angle\":20," +
-//                        "\"speed\":30," +
-//                        "\"endPoiId\":\"10001\"," +
-//                        "\"endX\":126.92432158129688," +
-//                        "\"endY\":37.55279861528311," +
-//                        "\"passList\":\"126.92774822,37.55395475_126.92577620,37.55337145\",\"reqCoordType\":\"WGS84GEO\",\"startName\":\"%EC%B6%9C%EB%B0%9C\",\"endName\":\"%EB%8F%84%EC%B0%A9\",\"searchOption\":\"0\",\"resCoordType\":\"WGS84GEO\",\"sort\":\"index\"}");
-//        Request request = new Request.Builder()
-//                .url("https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function")
-//                .post(body)
-//                .addHeader("accept", "application/json")
-//                .addHeader("content-type", "application/json")
-//                .addHeader("appKey", Config.getAppKey())
-//                .build();
-//
-//        try {
-//            Response response = client.newCall(request).execute();
-//
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
 
         mapView1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,10 +292,48 @@ public class Walking3 extends AppCompatActivity {
         });
         builder.show();
     }
+
     // 출발지와 도착지의 중간 지점을 계산하는 메서드
     private TMapPoint getMidPoint(TMapPoint startPoint, TMapPoint endPoint) {
         double midLat = (startPoint.getLatitude() + endPoint.getLatitude()) / 2;
         double midLon = (startPoint.getLongitude() + endPoint.getLongitude()) / 2;
         return new TMapPoint(midLat, midLon);
+    }
+
+    // 좌표 간의 거리를 구하는 메서드
+    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371; // 지구 반지름 (단위: km)
+        double dLat = deg2rad(lat2 - lat1);
+        double dLon = deg2rad(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c; // 두 지점 간의 거리 (단위: km)
+        // 거리를 소수점 한 자리까지 포맷팅 ( 100m 단위도 KM 로 보여주기)
+        return Math.round(distance * 10.0) / 10.0;
+    }
+
+    // 각도를 라디안으로 변환하는 메서드
+    public static double deg2rad(double deg) {
+        return deg * (Math.PI / 180);
+    }
+
+    // 중간 지점과 endpoint 사이의 방향을 계산하는 메서드
+    private double calculateDirection(TMapPoint middlePoint, TMapPoint endPoint) {
+        double lat1 = Math.toRadians(middlePoint.getLatitude());
+        double lon1 = Math.toRadians(middlePoint.getLongitude());
+        double lat2 = Math.toRadians(endPoint.getLatitude());
+        double lon2 = Math.toRadians(endPoint.getLongitude());
+
+        double dLon = lon2 - lon1;
+
+        double y = Math.sin(dLon) * Math.cos(lat2);
+        double x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+        double initialBearing = Math.atan2(y, x);
+
+        // 방위각을 도 단위로 변환
+        return Math.toDegrees(initialBearing);
     }
 }

@@ -234,7 +234,7 @@ public class ChatFragment extends Fragment {
                                                                         userNickname = userInfoArrayList.get(0).userNickname;
 
                                                                         // Chat 객체 생성 및 정보 저장
-                                                                        Chat chat = new Chat(document.getId(), userNickname, userImgUrl, lastMessage, lastCreatedAt);
+                                                                        Chat chat = new Chat(friendId, userNickname, userImgUrl, lastMessage, lastCreatedAt+"");
                                                                         chatArrayList.add(chat);
 
                                                                         // 모든 문서를 처리했을 때 UI 업데이트

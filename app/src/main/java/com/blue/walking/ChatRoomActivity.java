@@ -22,6 +22,7 @@ import com.blue.walking.adapter.ChatRoomAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
+import com.blue.walking.model.Chat;
 import com.blue.walking.model.ChatRoom;
 import com.blue.walking.model.RandomFriend;
 import com.blue.walking.model.UserInfo;
@@ -72,6 +73,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     String userNickname;
     String chatMessage;
     String roomName;
+    Chat chat;
 
 
     @Override
@@ -91,8 +93,19 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         // 친구 프로필에서 받아온 정보
         randomFriend = (RandomFriend) getIntent().getSerializableExtra("friend");
-        txtUserName.setText(randomFriend.nickname);
-        receiverId = randomFriend.id;
+        chat = (Chat) getIntent().getSerializableExtra("chat");
+
+        if (randomFriend != null) {
+            // "friend" extra가 있을 때 실행되는 코드
+            txtUserName.setText(randomFriend.nickname);
+            receiverId = randomFriend.id;
+            Log.i("test", randomFriend.id+"");
+        } else if (chat != null) {
+            // "chat" extra가 있을 때 실행되는 코드
+            txtUserName.setText(chat.userNickname);
+            receiverId = chat.id;
+            Log.i("test", chat.id+"");
+        }
 
          // 유저 정보 가져오기
         Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
@@ -116,7 +129,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                         userNickname = userInfo.userNickname;
                         id = userInfo.id;
 
-
+                        Log.i("roomName1", id+"ㅎㅎ"+receiverId+"");
                         // id 값을 설정한 후에 roomName 초기화
                         if (id<receiverId){
                             roomName = id + "_" + receiverId;

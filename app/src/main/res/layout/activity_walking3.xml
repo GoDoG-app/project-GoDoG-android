@@ -65,7 +65,7 @@
                 android:id="@+id/textView31"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="현재위치 : "
+                android:text="내 위치 :"
                 android:textColor="#000000"
                 android:textSize="15dp" />
 
@@ -116,7 +116,7 @@
                         android:textSize="15dp" />
 
                     <TextView
-                        android:id="@+id/textView34"
+                        android:id="@+id/txtRoute1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="소요시간 : "
@@ -173,7 +173,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/textView33"
+                        android:id="@+id/txtPlace2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
@@ -183,7 +183,7 @@
                         android:textSize="15dp" />
 
                     <TextView
-                        android:id="@+id/textView37"
+                        android:id="@+id/txtRoute2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="소요시간 : "

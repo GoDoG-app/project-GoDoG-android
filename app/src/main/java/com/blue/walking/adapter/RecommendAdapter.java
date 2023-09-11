@@ -15,6 +15,7 @@ import com.blue.walking.R;
 import com.blue.walking.Walking3;
 import com.blue.walking.model.Park;
 import com.blue.walking.model.ParkImage;
+import com.blue.walking.model.UserInfo;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.Random;
@@ -23,10 +24,12 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
 
     Context context;
     ArrayList<Park> parkArrayList; // 공원 정보가 들어 있는 ArrayList
+    ArrayList<UserInfo> userInfoArrayList;
 
-    public RecommendAdapter(Context context, ArrayList<Park> parkArrayList) {
+    public RecommendAdapter(Context context, ArrayList<Park> parkArrayList, ArrayList<UserInfo> userInfoArrayList) {
         this.context = context;
         this.parkArrayList = parkArrayList;
+        this.userInfoArrayList = userInfoArrayList;
     }
 
     @NonNull
@@ -94,11 +97,13 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                     // 유저가 클릭한 카드뷰 데이터의 인덱스
                     int index = getAdapterPosition();
                     Park park = parkArrayList.get(index);
+                    UserInfo userInfo = userInfoArrayList.get(0);
 
                     // 유저가 클릭한 카드뷰의 데이터를 다음 액티비티로 전달하고 화면도 해당 액티비티로 이동
                     Intent intent = new Intent(context, Walking3.class);
                     // intent에 담을 데이터 (데이터가 있는 클래스가 Serializable을 구현해야함 )
                     intent.putExtra("walkingRoute", park);
+                    intent.putExtra("userInfo", userInfo);
                     context.startActivity(intent);
 
 //                    // 프래그먼트 간의 데이터 전달 인텐트 권장하지 않는다함

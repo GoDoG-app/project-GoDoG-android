@@ -31,7 +31,6 @@ import com.blue.walking.api.RandomFriendAPI;
 import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
-import com.blue.walking.model.ParkImage;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
 import com.blue.walking.model.RandomFriend;
@@ -45,7 +44,6 @@ import com.skt.tmap.TMapTapi;
 import com.skt.tmap.poi.TMapPOIItem;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -249,6 +247,13 @@ public class HomeFragment extends Fragment {
                                 first_lat = userInfoArrayList.get(0).lat;
                                 first_lng = userInfoArrayList.get(0).lng;
                                 Log.i("유저  위치 ", "유저 위치 :" + first_lat + " " + first_lng);
+//
+//                                UserInfo userInfo = userInfoArrayList.get(0);
+//                                Intent intent = new Intent(getActivity(), Walking3.class);
+//                                intent.putExtra("userInfo", userInfo);
+//                                Log.i("ㅇ","ㅇ"+userInfo.userAddress);
+//                                startActivity(intent);
+
 
                                 // TMapData 객체 생성
                                 TMapData tMapData = new TMapData();
@@ -293,9 +298,10 @@ public class HomeFragment extends Fragment {
                                                     Log.i("히히", "parkArrayList 크기: " + parkArrayList.size());
                                                     Log.i("히히", "parkArrayList 크기: " + park);
                                                     // 어댑터에 데이터 넣기
-                                                    recommendAdapter = new RecommendAdapter(getActivity(), parkArrayList);
+                                                    recommendAdapter = new RecommendAdapter(getActivity(), parkArrayList, userInfoArrayList);
                                                     // 어댑터 연결
                                                     walkingRecyclerView.setAdapter(recommendAdapter);
+
                                                 }
                                             });
                                         } else {

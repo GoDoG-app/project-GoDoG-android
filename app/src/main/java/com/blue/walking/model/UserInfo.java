@@ -1,8 +1,9 @@
 package com.blue.walking.model;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 
-public class UserInfo {
+// Serializable : 데이터를 직렬화 한다.
+public class UserInfo implements Serializable {
 
 //    {
 //        "result": "success",

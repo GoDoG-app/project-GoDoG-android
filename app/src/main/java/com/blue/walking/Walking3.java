@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
+import com.blue.walking.model.UserInfo;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
 import com.skt.tmap.TMapView;
@@ -38,6 +39,7 @@ public class Walking3 extends AppCompatActivity {
     TextView txtKm2;    // 두번째 산책로 거리
 
     Park park;
+    UserInfo userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +49,17 @@ public class Walking3 extends AppCompatActivity {
         // 유저가 선택한 공원 정보 데이터 받기
         Intent intent = getIntent();
         if (intent != null) {
+            userInfo = (UserInfo) getIntent().getSerializableExtra("userInfo");
             park = (Park) getIntent().getSerializableExtra("walkingRoute");
             }
-        Log.e("공원정보 로그", "잘받았음?" + park);
+        Log.e("공원정보 로그", "잘받았음?" + park.getName());
+
+        if (userInfo != null) {
+            Log.e("UserInfo ", "User lat_lng : " + userInfo.lat + "_" + userInfo.lng);
+        } else {
+            // userInfo가 null인 경우 처리
+            Log.e("UserInfo", "UserInfo null");
+        }
 
 
         mapView1 = findViewById(R.id.mapView1);
@@ -80,14 +90,21 @@ public class Walking3 extends AppCompatActivity {
                 // todo 맵이 준비 되었다면 여기서 작성
 
                 // 에러 방지용 더미 변수
-                double startLat = 37.5455; // 출발지
-                double startLng = 126.6758;
-
-                double endLat = 37.5475394; // 도착지
-                double endLng = 126.6665509;
+//                double startLat = 37.5455; // 출발지
+//                double startLng = 126.6758;
+//
+//                double endLat = 37.5475394; // 도착지
+//                double endLng = 126.6665509;
 
 //        passList.add(new TMapPoint( 37.5455, 126.6758)); // 경유지 서구청
 //        passList.add(new TMapPoint( 37.5475394, 126.6665509)); // 경유지 아시아드
+
+                double startLat = userInfo.lat; // 출발지
+                double startLng = userInfo.lng;
+
+                double endLat = park.getLatitude(); // 도착지
+                double endLng = park.getLongitude();
+
 
                 // 추천 경로 그리기 1번
                 ArrayList<TMapPoint> passList = new ArrayList<>();
@@ -96,11 +113,16 @@ public class Walking3 extends AppCompatActivity {
                 TMapPoint endPoint =  new TMapPoint(endLat, endLng); // 도착지
 
                 // searchOption string 0: 추천 (기본값), 4: 추천+대로우선, 10: 최단, 30: 최단거리+계단제외
-
                 tMapData1.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
                         startPoint, endPoint, null, 0, new TMapData.OnFindPathDataWithTypeListener() {
                             @Override
                             public void onFindPathDataWithType(TMapPolyLine tMapPolyLine) {
+//                                // 중간 지점 계산
+                                TMapPoint middlePoint = getMidPoint(startPoint, endPoint);
+
+                                // 중간 지점을 지도의 중심으로 설정.
+                                tMapView1.setCenterPoint(middlePoint.getLatitude(), middlePoint.getLongitude());
+                                tMapView1.setZoomLevel(17); // 줌 레벨 설정
 
                                 tMapPolyLine.setLineColor(Color.DKGRAY); // 경로 폴리라인 색상
                                 tMapPolyLine.setLineWidth(3); // 경로 폴리라인 두께
@@ -167,5 +189,11 @@ public class Walking3 extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+    // 출발지와 도착지의 중간 지점을 계산하는 메서드
+    private TMapPoint getMidPoint(TMapPoint startPoint, TMapPoint endPoint) {
+        double midLat = (startPoint.getLatitude() + endPoint.getLatitude()) / 2;
+        double midLon = (startPoint.getLongitude() + endPoint.getLongitude()) / 2;
+        return new TMapPoint(midLat, midLon);
     }
 }

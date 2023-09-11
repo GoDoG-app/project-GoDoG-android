@@ -59,4 +59,11 @@ public interface PostApi {
                                  @Query("limit")int limit,
                                  @Header("Authorization") String token);
 
+    // 특정 유저 게시물 가져오기 API
+    @GET("/posting/{friendId}/list")
+    Call<PostList> getFriendPostList(@Path("friendId") int friendId,
+                                     @Query("offset")int offset,
+                                     @Query("limit")int limit,
+                                     @Header("Authorization") String token);
+
 }

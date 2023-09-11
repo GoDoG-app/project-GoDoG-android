@@ -1,10 +1,7 @@
 package com.blue.walking.adapter;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +13,10 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blue.walking.CommuPostActivity;
+import com.blue.walking.FriendActivity;
 import com.blue.walking.R;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.UserApi;
-import com.blue.walking.config.Config;
 import com.blue.walking.model.Firebase;
 import com.blue.walking.model.Post;
 import com.blue.walking.model.UserInfo;
@@ -42,24 +39,24 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentAdapter.ViewHolder>{
+public class FriendCommentAdapter extends RecyclerView.Adapter<FriendCommentAdapter.ViewHolder>{
 
     Context context;
-    ArrayList<Post> myPostArrayList;
+    ArrayList<Post> friendPostArrayList;
+    int friendId;
+    String user;
 
     // 시간 로컬타임 변수들을 멤버변수로 뺌
     SimpleDateFormat sf;
     SimpleDateFormat df;
 
-    String token;
-    String user;
-
     List<String> commentList = new ArrayList<>(); // "comments" 서브컬렉션의 댓글을 저장할 리스트
     ArrayList<UserInfo> userInfoArrayList = new ArrayList<>();
 
-    public MyCommentAdapter(Context context, ArrayList<Post> myPostArrayList) {
+    public FriendCommentAdapter(Context context, ArrayList<Post> friendPostArrayList, int friendId) {
         this.context = context;
-        this.myPostArrayList = myPostArrayList;
+        this.friendPostArrayList = friendPostArrayList;
+        this.friendId = friendId;
 
         // 여기에 넣으면 한번만 실행된대
         sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -70,31 +67,29 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentAdapter.View
 
     @NonNull
     @Override
-    public MyCommentAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FriendCommentAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.mycomment_row, parent, false);
-        return new MyCommentAdapter.ViewHolder(view);
+        return new FriendCommentAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyCommentAdapter.ViewHolder holder, int position) {
-        Post post = myPostArrayList.get(position);
+    public void onBindViewHolder(@NonNull FriendCommentAdapter.ViewHolder holder, int position) {
+        Post post = friendPostArrayList.get(position);
 
         // Firebase Firestore 인스턴스 가져오기
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String postId = String.valueOf(post.post_id);
 
+        Retrofit retrofit1 = NetworkClient.getRetrofitClient(context);
+        UserApi api1 = retrofit1.create(UserApi.class);
 
-        SharedPreferences sp = context.getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
-        token = sp.getString(Config.ACCESS_TOKEN, "");
+        Log.i("user","친구 정보 API 실행");
 
-        Retrofit retrofit = NetworkClient.getRetrofitClient(context);
-        UserApi api = retrofit.create(UserApi.class);
+        Call<UserList> call1 = api1.getFriendInfo(friendId);
+        Log.i("friendId", friendId+"");
 
-        Log.i("user","내 정보 API 실행");
-
-        Call<UserList> call = api.getUserInfo("Bearer " + token);
-        call.enqueue(new Callback<UserList>() {
+        call1.enqueue(new Callback<UserList>() {
             @Override
             public void onResponse(Call<UserList> call, Response<UserList> response) {
                 if (response.isSuccessful()){
@@ -174,22 +169,22 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentAdapter.View
                                     }
                                 }
                             });
-
                 } else {
-                    Log.i("user", "내 정보 불러오기 실패");
+                    Log.i("user", "친구 정보 불러오기 실패");
                 }
             }
 
             @Override
             public void onFailure(Call<UserList> call, Throwable t) {
-                Log.i("user", "내 정보 불러오기 실패");
+                Log.i("user", "친구 정보 불러오기 실패");
             }
         });
+
     }
 
     @Override
     public int getItemCount() {
-        return myPostArrayList.size();
+        return friendPostArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -202,7 +197,6 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentAdapter.View
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             cardView = itemView.findViewById(R.id.cardView);
             txtCategory = itemView.findViewById(R.id.txtCategory);
             txtTime = itemView.findViewById(R.id.txtTime);
@@ -215,7 +209,7 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentAdapter.View
                 public void onClick(View v) {
                     // 몇번째 카드뷰를 눌렀는지 확인
                     int index = getAdapterPosition();
-                    Post post = myPostArrayList.get(index);
+                    Post post = friendPostArrayList.get(index);
 
                     // 보내주기
                     Intent intent;

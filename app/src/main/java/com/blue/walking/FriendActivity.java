@@ -84,6 +84,8 @@ public class FriendActivity extends AppCompatActivity {
         imgBack = findViewById(R.id.imgBack);
         imgUser = findViewById(R.id.imgUser);
         imgPet = findViewById(R.id.imgPet);
+        btnCommuList = findViewById(R.id.btnCommuList);
+        btnWalkList = findViewById(R.id.btnWalkList);
 
         // 유저정보
         userNickname = findViewById(R.id.userNickname);
@@ -162,6 +164,17 @@ public class FriendActivity extends AppCompatActivity {
 
             }
         });
+
+        btnCommuList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(FriendActivity.this, FriendPostActivity.class);
+                intent.putExtra("friendId", randomFriend); // 아이디 값도 보내줌
+                startActivity(intent);
+            }
+        });
+
     }
     private void randomFriendInfoAPI(){
 

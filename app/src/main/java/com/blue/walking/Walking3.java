@@ -1,6 +1,8 @@
 package com.blue.walking;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,46 +17,43 @@ import android.widget.TextView;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
 import com.blue.walking.model.UserInfo;
-import com.google.android.gms.maps.model.LatLng;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
 import com.skt.tmap.TMapView;
 import com.skt.tmap.overlay.TMapPolyLine;
 
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
 public class Walking3 extends AppCompatActivity {
 
-
-    ImageView imgLoop;  // 산책로 새로고침
     TextView txtRegion;  // 현재 위치 주소
 
     FrameLayout mapView1; // 1번 산책로 지도
     TextView txtPlace1; // 1번 산책지 이름
     TextView txtRoute1; // 1번 산책지 첫 번째 경로 이름
-    TextView txtTime1;  // 첫번째 산책로 이동 시간
-    TextView txtKm1;    // 첫번째 산책로 거리
+    TextView txtTime1;  // 1번 산책로 소요 시간
+    TextView txtKm1;    // 1번 산책로 거리
+    ImageView imgRoute1;  // 1번 산책경로 버튼
 
-    FrameLayout mapView2;   // 두번째 산책로 지도
+    FrameLayout mapView2; // 2번 지도
     TextView txtPlace2; // 2번 산책지 이름
     TextView txtRoute2; // 2번 산책지 두 번째 경로 이름
-    TextView txtTime2;  // 두번째 산책로 이동 시간
-    TextView txtKm2;    // 두번째 산책로 거리
+    TextView txtTime2;  // 2번 산책로 소요 시간
+    TextView txtKm2;    // 2번 산책로 거리
+    ImageView imgRoute2;  // 2번 산책경로 버튼
 
     Park park; // 유저가 선택한 공원 정보
     UserInfo userInfo; // 유저의 정보
-    double startLat; // 유저의 출발지
+    double startLat; // 유저의 출발지 & 도착지
     double startLng;
-    double endLat; // 유저의 도착지
+    double endLat; // 공원 위도 경도
     double endLng;
+
+    // 경로 1,2의 라인
+    TMapPolyLine tMapPolyLine1;
+    TMapPolyLine tMapPolyLine2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +106,8 @@ public class Walking3 extends AppCompatActivity {
         txtTime2 = findViewById(R.id.txtTime2);
         txtKm1 = findViewById(R.id.txtKm1);
         txtKm2 = findViewById(R.id.txtKm2);
+        imgRoute1 = findViewById(R.id.imgRoute1);
+        imgRoute2 = findViewById(R.id.imgRoute2);
         txtRegion.setText(userInfo.userAddress);
         txtPlace1.setText(park.getName()+"(빠른 경로)");
         txtPlace2.setText(park.getName()+"(느린 경로)");
@@ -126,7 +127,7 @@ public class Walking3 extends AppCompatActivity {
         // FrameLayout에 TmapView 추가.
         mapView2.addView(tMapView2);
 
-
+        tMapPolyLine1 = new TMapPolyLine();
         tMapView1.setOnMapReadyListener(new TMapView.OnMapReadyListener() {
             @Override
             public void onMapReady() {
@@ -136,15 +137,19 @@ public class Walking3 extends AppCompatActivity {
                 tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
                         startPoint, startPoint, passList, 0, new TMapData.OnFindPathDataWithTypeListener() {
                             @Override
-                            public void onFindPathDataWithType(TMapPolyLine tMapPolyLine) {
+                            public void onFindPathDataWithType(TMapPolyLine tMapPolyLine1) {
 
                                 // 중간 지점을 지도의 중심으로 설정.
                                 tMapView1.setCenterPoint(middlePoint.getLatitude(), middlePoint.getLongitude());
                                 tMapView1.setZoomLevel(15); // 줌 레벨 설정
 
-                                tMapPolyLine.setLineColor(Color.DKGRAY); // 경로 폴리라인 색상
-                                tMapPolyLine.setLineWidth(3); // 경로 폴리라인 두께
-                                tMapView1.addTMapPolyLine(tMapPolyLine);
+                                tMapPolyLine1.setLineColor(Color.DKGRAY); // 경로 폴리라인 색상
+                                tMapPolyLine1.setLineWidth(3); // 경로 폴리라인 두께
+                                tMapView1.addTMapPolyLine(tMapPolyLine1);
+                                Log.d("폴리의 값1", "폴리1"+tMapPolyLine1);
+                                Log.d("폴리의 값1", "폴리1pointList"+tMapPolyLine1.getLinePointList());
+                                Log.d("폴리의 값1", "폴리1passList"+tMapPolyLine1.getPassPointList());
+
 
                                 // 거리 구하기
                                 double dist1 = calculateDistance(startLat, startLng, randomPoint.getLatitude(), randomPoint.getLongitude());
@@ -173,12 +178,27 @@ public class Walking3 extends AppCompatActivity {
                                         // UI 업데이트 코드를 메인 스레드에서 실행
                                         txtKm1.setText(String.format("%.1f km", totalDistance));
                                         txtTime1.setText(walkingTime);
+                                        imgRoute1.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+
+                                                showAlertDialog1();
+                                            }
+                                        });
                                     }
                                 });
+
+
                             }
                         });
             }
         });
+
+
+        Log.d("폴리의 값2", "폴리1"+tMapPolyLine1);
+        Log.d("폴리의 값2", "폴리1pointList"+tMapPolyLine1.getLinePointList());
+        Log.d("폴리의 값2", "폴리1passList"+tMapPolyLine1.getPassPointList());
+
 
         // 랜덤 포인트 생성 (중간 지점 주변)
         ArrayList<TMapPoint> passList1 = new ArrayList<>();
@@ -190,6 +210,7 @@ public class Walking3 extends AppCompatActivity {
         passList1.add(randomPoint1); // 랜덤포인트(경유지) 추가 먼거리
         passList1.add(endPoint); // 경유지에 유저가 선택한 공원
 
+        tMapPolyLine2 = new TMapPolyLine();
         tMapView2.setOnMapReadyListener(new TMapView.OnMapReadyListener() {
             @Override
             public void onMapReady() {
@@ -199,17 +220,16 @@ public class Walking3 extends AppCompatActivity {
                 tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
                         startPoint, startPoint, passList1, 0, new TMapData.OnFindPathDataWithTypeListener() {
                             @Override
-                            public void onFindPathDataWithType(TMapPolyLine tMapPolyLine) {
-                                // 중간 지점 계산
-                                TMapPoint middlePoint = getMidPoint(startPoint, endPoint);
+                            public void onFindPathDataWithType(TMapPolyLine tMapPolyLine2) {
 
                                 // 중간 지점을 지도의 중심으로 설정.
                                 tMapView2.setCenterPoint(middlePoint.getLatitude(), middlePoint.getLongitude());
                                 tMapView2.setZoomLevel(15); // 줌 레벨 설정
 
-                                tMapPolyLine.setLineColor(Color.DKGRAY); // 경로 폴리라인 색상
-                                tMapPolyLine.setLineWidth(3); // 경로 폴리라인 두께
-                                tMapView2.addTMapPolyLine(tMapPolyLine);
+                                tMapPolyLine2.setLineColor(Color.DKGRAY); // 경로 폴리라인 색상
+                                tMapPolyLine2.setLineWidth(3); // 경로 폴리라인 두께
+                                tMapView2.addTMapPolyLine(tMapPolyLine2);
+                                Log.d("폴리의 값", "폴리2"+tMapPolyLine2);
 
                                 // 거리 구하기
                                 double dist1 = calculateDistance(startLat, startLng, randomPoint1.getLatitude(), randomPoint1.getLongitude());
@@ -238,48 +258,105 @@ public class Walking3 extends AppCompatActivity {
                                         // UI 업데이트 코드를 메인 스레드에서 실행
                                         txtKm2.setText(String.format("%.1f km", totalDistance));
                                         txtTime2.setText(walkingTime);
+                                        imgRoute2.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                showAlertDialog2();
+                                            }
+                                        });
                                     }
                                 });
+
                             }
                 });
            }
         });
 
-        mapView1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                showAlertDialog();
-            }
-        });
-
-        mapView2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                showAlertDialog();
-            }
-        });
     }
-
-    // 알러트 다이얼로그
-    private void showAlertDialog() {
+    // 알러트 다이얼로그1
+    private void showAlertDialog1() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("[안내]");
         builder.setMessage("산책을 시작하시겠습니까?");
-
         builder.setCancelable(false); // 아래 둘 중 한개의 버튼을 꼭 누르게 해줌(외각을 클릭해도 안사라지게)
-
         // 긍정버튼
         builder.setPositiveButton("시작", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                // 지도 프래그먼트로 보내줄 준비
-//                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//                WalkingFragment walkingFragment = new WalkingFragment();
-//                // 프레그먼트 화면을 walkingFragment 로 활성화
-//                transaction.replace(R.id.containers, walkingFragment);
-//                // 꼭 commit 을 해줘야 바뀜
-//                transaction.commit();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 경로 좌표 리스트 추출
+                        ArrayList<TMapPoint> linePointList1 = new ArrayList<>(tMapPolyLine1.getLinePointList());
+                        ArrayList<TMapPoint> passPointList1 = new ArrayList<>(tMapPolyLine1.getPassPointList());
+                        // 데이터를 담을 Bundle 생성
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Line", linePointList1); // tMapPolyLine1을 직렬화하여 Bundle에 추가
+                        bundle.putSerializable("line1", passPointList1);
+//
+                        // WalkingFragment에 데이터 전달
+                        WalkingFragment walkingFragment = WalkingFragment.newInstance(linePointList1, passPointList1);
+
+
+                        // 프래그먼트를 화면에 추가 또는 대체
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.conta3, walkingFragment); // R.id.containers는 프래그먼트를 표시할 레이아웃의 ID
+                        transaction.commit();
+
+                        // Walking1 프래그먼트 생성
+//                        WalkingFragment walkingFragment = new WalkingFragment();
+//                        walkingFragment.setArguments(bundle); // Bundle을 프래그먼트에 전달
+//                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                        // 프레그먼트 화면을 walking_1 로 활성화
+//                        transaction.replace(R.id.contaa, walkingFragment); // 프래그먼트가 표시될 레이아웃의 ID
+//                        // 꼭 commit 을 해줘야 바뀜
+//                        transaction.commit();
+                    }
+                });
+
+            }
+        });
+        // 부정버튼
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+    // 알러트 다이얼로그2
+    private void showAlertDialog2() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("[안내]");
+        builder.setMessage("산책을 시작하시겠습니까?");
+        builder.setCancelable(false); // 아래 둘 중 한개의 버튼을 꼭 누르게 해줌(외각을 클릭해도 안사라지게)
+        // 긍정버튼
+        builder.setPositiveButton("시작", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 경로 좌표 리스트 추출
+                        TMapPolyLine pathPoints2 = tMapPolyLine2;
+                        // 데이터를 담을 Bundle 생성
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Line2", (Serializable) pathPoints2); // tMapPolyLine1을 직렬화하여 Bundle에 추가
+                        // Walking1 프래그먼트 생성
+                        WalkingFragment walkingFragment = new WalkingFragment();
+                        walkingFragment.setArguments(bundle); // Bundle을 프래그먼트에 전달
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        // 프레그먼트 화면을 walking_1 로 활성화
+                        transaction.replace(R.id.conta3, walkingFragment); // 프래그먼트가 표시될 레이아웃의 ID
+                        // 꼭 commit 을 해줘야 바뀜
+                        transaction.commit();
+                    }
+                });
+
             }
         });
 
@@ -287,7 +364,6 @@ public class Walking3 extends AppCompatActivity {
         builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                return;
             }
         });
         builder.show();
@@ -325,15 +401,12 @@ public class Walking3 extends AppCompatActivity {
         double lon1 = Math.toRadians(middlePoint.getLongitude());
         double lat2 = Math.toRadians(endPoint.getLatitude());
         double lon2 = Math.toRadians(endPoint.getLongitude());
-
         double dLon = lon2 - lon1;
-
         double y = Math.sin(dLon) * Math.cos(lat2);
         double x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-
         double initialBearing = Math.atan2(y, x);
-
         // 방위각을 도 단위로 변환
         return Math.toDegrees(initialBearing);
     }
+
 }

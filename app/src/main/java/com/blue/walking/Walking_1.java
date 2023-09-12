@@ -23,6 +23,7 @@ import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -88,6 +89,7 @@ public class Walking_1 extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
@@ -127,6 +129,7 @@ public class Walking_1 extends Fragment {
 
     double distance = 0.0 ;
 
+    TMapPolyLine tMapPolyLine1 ;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -146,6 +149,15 @@ public class Walking_1 extends Fragment {
         progressBar = rootView.findViewById(R.id.progressBar);
 
         btnLine = rootView.findViewById(R.id.btnLine);
+
+        // Walking1 프래그먼트에서 데이터 받기
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            tMapPolyLine1 = (TMapPolyLine) bundle.getSerializable("Line");
+            if (tMapPolyLine1 != null){
+                Log.d("티폴티폴티폴", "성공" + "잘 가져옴");
+            }
+        }
 
         // 권한(permission)상태 확인
         if (ContextCompat.checkSelfPermission(getActivity(),
@@ -235,6 +247,12 @@ public class Walking_1 extends Fragment {
             @Override
             public void onMapReady() {
                 //todo 맵 로딩 완료 후 구현
+
+                if (tMapPolyLine1 != null){
+                    tMapPolyLine1.setLineColor(Color.BLUE);
+                    tMapView.addTMapPolyLine(tMapPolyLine1);
+                }
+
 
                 mapReady = true;
 
@@ -328,7 +346,7 @@ public class Walking_1 extends Fragment {
 
             // 새로운 폴리라인 생성 및 추가
             line = new TMapPolyLine("path1", pointList);
-            line.setLineColor(Color.BLUE);
+            line.setLineColor(Color.RED);
             tMapView.addTMapPolyLine(line);
 
             // 지도 중심점 표시
@@ -358,7 +376,7 @@ public class Walking_1 extends Fragment {
             }else{
                 txtDistance.setText(String.format("%.2fkm", distance));
             }
-            Log.d("이동거리","현재 걸은 거리: "+distance);
+            Log.d("이동 거리","현재 걸은 거리: "+distance);
         }
     }
 
@@ -481,5 +499,6 @@ public class Walking_1 extends Fragment {
         // 위치 리스너 제거
         locationManager.removeUpdates(locationListener);
     }
+
 
 }

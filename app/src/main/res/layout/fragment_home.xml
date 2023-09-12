@@ -183,14 +183,6 @@
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/imgLoop2"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginTop="23dp"
-                        android:layout_marginRight="18dp"
-                        android:layout_weight="0"
-                        app:srcCompat="@drawable/baseline_loop_24" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView

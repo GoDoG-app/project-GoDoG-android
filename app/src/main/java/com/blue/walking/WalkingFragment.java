@@ -18,6 +18,10 @@ import android.widget.TextView;
 import com.google.android.gms.maps.MapView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.skt.tmap.TMapPoint;
+import com.skt.tmap.overlay.TMapPolyLine;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +60,16 @@ public class WalkingFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    public static WalkingFragment newInstance(ArrayList<TMapPoint> linePointList1, ArrayList<TMapPoint> passPointList) {
+        WalkingFragment fragment = new WalkingFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("Line", linePointList1);
+        args.putSerializable("line1", passPointList);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,4 +135,5 @@ public class WalkingFragment extends Fragment {
 
         return rootView;
     }
+
 }

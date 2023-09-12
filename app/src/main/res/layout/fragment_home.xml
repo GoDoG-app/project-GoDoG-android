@@ -335,14 +335,15 @@
                         android:layout_weight="1"
                         app:srcCompat="@drawable/baseline_search_24" />
 
-                    <EditText
-                        android:id="@+id/editSearch"
+                    <TextView
+                        android:id="@+id/txtSearch"
                         android:layout_width="280dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
                         android:hint="유저명을 입력하세요"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
 

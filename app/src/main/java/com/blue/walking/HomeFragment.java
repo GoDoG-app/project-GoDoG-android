@@ -114,7 +114,7 @@ public class HomeFragment extends Fragment {
 //    TextView txtWalkPet2;  // 산책중인 친구 이름2
 
 
-    EditText editSearch;  // 유저 검색
+    TextView txtSearch;  // 유저 검색
 
     ImageView imgCommunity;  // 커뮤니티 +
     TextView txtCommunity1;  // 커뮤니티 글1
@@ -188,6 +188,8 @@ public class HomeFragment extends Fragment {
 
 //        imgWalkPet2 = rootView.findViewById(R.id.imgWalkPet2);
 //        imgWalkPet2.setClipToOutline(true);  // 둥근 테두리 적용
+
+        txtSearch = rootView.findViewById(R.id.txtSearch);
 
         // 친구추천 리사이클러뷰 초기화
         recyclerViewRandom = rootView.findViewById(R.id.recyclerViewRandom);
@@ -425,6 +427,17 @@ public class HomeFragment extends Fragment {
                 transaction.replace(R.id.containers, walkingFragment);
                 // 꼭 commit 을 해줘야 바뀜
                 transaction.commit();
+            }
+        });
+
+
+        txtSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getActivity(),SearchActivity.class);
+                startActivity(intent);
+
             }
         });
 

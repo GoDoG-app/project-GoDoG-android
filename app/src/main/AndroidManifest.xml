@@ -28,6 +28,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="30">
         <activity
+            android:name=".FriendActivityFromSearch"
+            android:exported="false" />
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false" />
+        <activity
             android:name=".FriendPostActivity"
             android:exported="false" />
         <activity

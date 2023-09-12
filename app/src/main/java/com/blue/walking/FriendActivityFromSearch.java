@@ -4,7 +4,6 @@ import static java.util.Calendar.getInstance;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
 import com.blue.walking.api.FriendsAPi;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
@@ -25,8 +23,9 @@ import com.blue.walking.model.Friends;
 import com.blue.walking.model.FriendsInfo;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
-
+import com.blue.walking.model.RandomFriend;
 import com.blue.walking.model.ResultRes;
+import com.blue.walking.model.SearchUserItems;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.bumptech.glide.Glide;
@@ -40,8 +39,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-
-public class FriendActivityFromFriendList extends AppCompatActivity {
+public class FriendActivityFromSearch extends AppCompatActivity {
 
     /** 화면뷰 */
     Button btnChat;   // 채팅 보내기
@@ -67,27 +65,26 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
     Button btnWalkList;    // 산책 기록
     Button btnCommuList;   // 게시글(커뮤니티)
 
-
+    int friendId;
     ArrayList<UserInfo> userInfoArrayList= new ArrayList<>();
     ArrayList<Pet> petArrayList = new ArrayList<>();
+    SearchUserItems searchUserItems;
 
-    FriendsInfo friendsInfo;
-
-    int friendId;
+    boolean i = true;
 
     String token;
-
-    boolean i = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friend_from_friend_list);
+        setContentView(R.layout.activity_friend_from_search);
 
         btnChat = findViewById(R.id.btnChat);
         imgBack = findViewById(R.id.imgBack);
         imgUser = findViewById(R.id.imgUser);
         imgPet = findViewById(R.id.imgPet);
+        btnCommuList = findViewById(R.id.btnCommuList);
+        btnWalkList = findViewById(R.id.btnWalkList);
 
         // 유저정보
         userNickname = findViewById(R.id.userNickname);
@@ -100,7 +97,7 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
         petNickname = findViewById(R.id.petNickname);
         petInfo = findViewById(R.id.petInfo);
         petComment = findViewById(R.id.petComment);
-        
+
         // 친구 맺기
         btnFollower = findViewById(R.id.btnFollower);
 
@@ -113,29 +110,26 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
 
 
-        // FriendListAdapter에서 받아온 id
-        friendsInfo = (FriendsInfo) getIntent().getSerializableExtra("friends");
-        friendId = friendsInfo.followeeId;
+        // SearchUserAdapter에서 받아오는 데이터
+        searchUserItems = (SearchUserItems) getIntent().getSerializableExtra("search");
+        friendId = searchUserItems.id;
 
 
-        // 유저 정보
-        FriendInfoAPI();
+        // 랜덤친구 정보
+        randomFriendInfoAPI();
 
         // 펫정보
-        FriendPetInfoAPI();
+        randomFriendPetInfoAPI();
 
         // 친구 관계 확인
         isFriendShip();
-
-
 
         btnChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 채팅방으로 이동
-                Intent intent;
-                intent = new Intent(FriendActivityFromFriendList.this, ChatRoomActivity.class);
-                intent.putExtra("friend2", friendsInfo);
+                Intent intent = new Intent(FriendActivityFromSearch.this, ChatRoomActivity.class);
+                intent.putExtra("friend3", searchUserItems);
                 startActivity(intent);
             }
         });
@@ -158,10 +152,12 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
                     AddFriend();
                     i = false;
 
+
                 }else {
 
                     DeleteFriend();
                     i = true;
+
 
                 }
 
@@ -172,18 +168,16 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent;
-                intent = new Intent(FriendActivityFromFriendList.this, FriendPostActivity.class);
-                intent.putExtra("friendId", friendsInfo); // 아이디 값도 보내줌
+                intent = new Intent(FriendActivityFromSearch.this, FriendPostActivity.class);
+                intent.putExtra("friendId", searchUserItems); // 아이디 값도 보내줌
                 startActivity(intent);
             }
         });
 
     }
+    private void randomFriendInfoAPI(){
 
-
-    private void FriendInfoAPI(){
-
-        Retrofit retrofit1 = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
+        Retrofit retrofit1 = NetworkClient.getRetrofitClient(FriendActivityFromSearch.this);
         UserApi api1 = retrofit1.create(UserApi.class);
         Call<UserList> call1 = api1.getFriendInfo(friendId);
         call1.enqueue(new Callback<UserList>() {
@@ -232,7 +226,7 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
                         userInfo.setText("(" + gender + ", " + strAge + ")");
                         userComment.setText(userInfoArrayList.get(0).userOneliner);
                         userPlace.setText(userInfoArrayList.get(0).userAddress);
-                        Glide.with(FriendActivityFromFriendList.this)
+                        Glide.with(FriendActivityFromSearch.this)
                                 .load(userInfoArrayList.get(0).userImgUrl)
                                 .into(imgUser);
 
@@ -248,9 +242,9 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
         });
 
     }
-    private void FriendPetInfoAPI(){
+    private void randomFriendPetInfoAPI(){
 
-        Retrofit retrofit2 = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
+        Retrofit retrofit2 = NetworkClient.getRetrofitClient(FriendActivityFromSearch.this);
         PetApi api2 = retrofit2.create(PetApi.class);
 
         Call<PetList> call2 = api2.getFriendPetInfo(friendId);
@@ -275,13 +269,13 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
                         petNickname.setText(petArrayList.get(0).petName);
                         petInfo.setText("(" + gender + ", " + petArrayList.get(0).petAge + "살)");
                         petComment.setText(petArrayList.get(0).oneliner);
-                        Glide.with(FriendActivityFromFriendList.this).load(petArrayList.get(0).petProUrl).into(imgPet);
+                        Glide.with(FriendActivityFromSearch.this).load(petArrayList.get(0).petProUrl).into(imgPet);
 
                     } else {
                         petNickname.setText("반려가족이 없습니다");
                         petInfo.setText("");
                         petComment.setText("");
-                        Glide.with(FriendActivityFromFriendList.this).load(R.drawable.group_26).into(imgPet);
+                        Glide.with(FriendActivityFromSearch.this).load(R.drawable.group_26).into(imgPet);
                     }
                 }
             }
@@ -292,11 +286,12 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
             }
         });
 
+
     }
 
     private void AddFriend(){
 
-        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivityFromSearch.this);
         FriendsAPi api = retrofit.create(FriendsAPi.class);
 
         SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
@@ -311,7 +306,7 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
                 if(response.isSuccessful()){
 
                     Snackbar.make(btnFollower,
-                            friendsInfo.nickname + "님을 친구로 등록하였습니다",Snackbar.LENGTH_SHORT).show();
+                            searchUserItems.nickname + "님을 친구로 등록하였습니다",Snackbar.LENGTH_SHORT).show();
 
                     btnFollower.setText("친구 끊기");
 
@@ -329,7 +324,7 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
 
     private void DeleteFriend(){
 
-        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivityFromSearch.this);
         FriendsAPi api = retrofit.create(FriendsAPi.class);
 
         SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
@@ -344,7 +339,7 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
                 if(response.isSuccessful()){
 
                     Snackbar.make(btnFollower,
-                            friendsInfo.nickname + "님과 친구를 끊었습니다",Snackbar.LENGTH_SHORT).show();
+                            searchUserItems.nickname + "님과 친구를 끊었습니다",Snackbar.LENGTH_SHORT).show();
 
                     btnFollower.setText("친구 등록");
 
@@ -367,7 +362,7 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
         token = sp.getString(Config.ACCESS_TOKEN, "");
 
-        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivityFromFriendList.this);
+        Retrofit retrofit = NetworkClient.getRetrofitClient(FriendActivityFromSearch.this);
 
         FriendsAPi api = retrofit.create(FriendsAPi.class);
 
@@ -408,7 +403,5 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
         });
 
     }
-
-
 
 }

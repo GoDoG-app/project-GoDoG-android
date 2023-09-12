@@ -24,7 +24,9 @@ import com.blue.walking.api.UserApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Chat;
 import com.blue.walking.model.ChatRoom;
+import com.blue.walking.model.FriendsInfo;
 import com.blue.walking.model.RandomFriend;
+import com.blue.walking.model.SearchUserItems;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -67,6 +69,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     FirebaseFirestore db;
     ChatRoom chatRoom;
     RandomFriend randomFriend;
+    FriendsInfo friendsInfo;
+    SearchUserItems searchUserItems;
     int receiverId;
     int id;
     String userImgUrl;
@@ -95,6 +99,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         // 친구 프로필에서 받아온 정보
         randomFriend = (RandomFriend) getIntent().getSerializableExtra("friend");
         chat = (Chat) getIntent().getSerializableExtra("chat");
+        friendsInfo = (FriendsInfo) getIntent().getSerializableExtra("friend2"); // FriendActivityFromFriendList
+        searchUserItems = (SearchUserItems) getIntent().getSerializableExtra("friend3"); // FriendActivityFromSearch
 
         if (randomFriend != null) {
             // "friend" extra가 있을 때 실행되는 코드
@@ -106,7 +112,18 @@ public class ChatRoomActivity extends AppCompatActivity {
             txtUserName.setText(chat.userNickname);
             receiverId = chat.id;
             Log.i("test", chat.id+"");
+        } else if (friendsInfo != null){
+            // "friendsInfo" extra가 있을 때 실행되는 코드
+            txtUserName.setText(friendsInfo.nickname);
+            receiverId = friendsInfo.id;
+            Log.i("test", friendsInfo.id+"");
+        } else if (searchUserItems != null){
+            // "searchUserItems" extra가 있을 때 실행되는 코드
+            txtUserName.setText(searchUserItems.nickname);
+            receiverId = searchUserItems.id;
+            Log.i("test", searchUserItems.id+"");
         }
+
         db = FirebaseFirestore.getInstance();
          // 유저 정보 가져오기
         Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);

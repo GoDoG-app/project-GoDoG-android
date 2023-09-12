@@ -90,6 +90,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(ChatRoomActivity.this));
+        recyclerView.setItemViewCacheSize(chatRoomArrayList.size());
 
         // 친구 프로필에서 받아온 정보
         randomFriend = (RandomFriend) getIntent().getSerializableExtra("friend");
@@ -106,7 +107,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             receiverId = chat.id;
             Log.i("test", chat.id+"");
         }
-
+        db = FirebaseFirestore.getInstance();
          // 유저 정보 가져오기
         Retrofit retrofit = NetworkClient.getRetrofitClient(ChatRoomActivity.this);
         UserApi api = retrofit.create(UserApi.class);
@@ -157,7 +158,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                onBackPressed();
+
             }
         });
 

@@ -47,6 +47,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Chat chat = chatArrayList.get(position);
 
+
+
         // 시간 변환
         String timestampString = chat.lastCreatedAt;
 
@@ -80,12 +82,26 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         holder.txtMessage.setText(chat.lastMessage);
         holder.txtUserName.setText(chat.userNickname);
         holder.txtTime.setText(formattedTime);
+
+
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return chatArrayList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return chatArrayList.size();
     }
 
     @Override
     public int getItemCount() {
         return chatArrayList.size();
     }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 

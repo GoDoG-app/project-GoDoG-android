@@ -212,35 +212,43 @@ public class ChatFragment extends Fragment {
                                                     // 다른 사용자의 ID를 출력 또는 처리할 수 있습니다.
                                                     for (Long otherUserId : otherUserIds) {
                                                         int otherUserIntId = otherUserId.intValue();
-                                                        Log.i("OtherUser", "User ID: " + otherUserId);
                                                         if (otherUserIntId != id) {
-                                                            friendId = otherUserIntId;
-                                                            Log.i("OtherUser", "firend : " + friendId);
+                                                            int currentFriendId = otherUserIntId; // 현재 사용자의 friendId를 저장합니다.
+
                                                             Retrofit retrofit1 = NetworkClient.getRetrofitClient(getActivity());
                                                             UserApi api1 = retrofit1.create(UserApi.class);
 
-                                                            Call<UserList> call1 = api1.getFriendInfo(friendId);
-                                                            Log.i("friendId", friendId + "");
+                                                            Call<UserList> call1 = api1.getFriendInfo(currentFriendId);
+
                                                             call1.enqueue(new Callback<UserList>() {
                                                                 @Override
                                                                 public void onResponse(Call<UserList> call, Response<UserList> response) {
                                                                     if (response.isSuccessful()) {
-                                                                        dismissProgress();
-                                                                        userInfoArrayList.clear(); // 초기화
+                                                                        userInfoArrayList.clear();
 
                                                                         UserList userList = response.body();
-                                                                        userInfoArrayList.addAll(userList.info);
+                                                                        userInfoArrayList.addAll(0, userList.info);
                                                                         userImgUrl = userInfoArrayList.get(0).userImgUrl;
                                                                         userNickname = userInfoArrayList.get(0).userNickname;
 
-                                                                        // Chat 객체 생성 및 정보 저장
-                                                                        Chat chat = new Chat(friendId, userNickname, userImgUrl, lastMessage, lastCreatedAt+"");
-                                                                        chatArrayList.add(chat);
+                                                                        lastMessage = null;
+                                                                        lastCreatedAt = null;
 
-                                                                        // 모든 문서를 처리했을 때 UI 업데이트
+                                                                        if (lastMessage == null || lastCreatedAt == null ||
+                                                                                !lastMessage.equals(subDocument.getString("message")) ||
+                                                                                !lastCreatedAt.equals(subDocument.getTimestamp("createdAt"))) {
+                                                                            lastMessage = subDocument.getString("message");
+                                                                            lastCreatedAt = subDocument.getTimestamp("createdAt");
+                                                                        }
+
+                                                                        Chat chat = new Chat(currentFriendId, userNickname, userImgUrl, lastMessage, lastCreatedAt + "");
+                                                                        chatArrayList.add(chat);
+                                                                        Log.i("hihi", chat.lastCreatedAt + chat.lastMessage + chat.id);
+
                                                                         documentsProcessed++;
                                                                         if (documentsProcessed == totalDocuments) {
                                                                             updateUI();
+                                                                            dismissProgress();
                                                                         }
                                                                     }
                                                                 }

@@ -65,6 +65,7 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChatRoom chatRoom = chatRoomArrayList.get(position);
 
+
         // 시간 변환
         Timestamp timestamp = (Timestamp) chatRoom.createdAt;
         Date timestampDate = timestamp.toDate();
@@ -111,6 +112,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
                             // 메시지를 작성한 사용자가 다른 사용자인 경우 왼쪽 정렬
                             setLeftAlignment(holder);
                         }
+                    } else{
+
                     }
                 }
 
@@ -121,6 +124,7 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
 
             }
         });
+
     }
 
             // 오른쪽 정렬을 설정하는 메서드
@@ -168,9 +172,18 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.ViewHo
         // 메시지 배경색 초기화
         holder.txtMessage.setBackgroundColor(Color.parseColor("#E1E1E1"));
     }
-
     @Override
     public int getItemCount() {
+        return chatRoomArrayList.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return chatRoomArrayList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
         return chatRoomArrayList.size();
     }
 

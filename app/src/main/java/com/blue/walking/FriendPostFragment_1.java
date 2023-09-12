@@ -146,6 +146,8 @@ public class FriendPostFragment_1 extends Fragment {
     }
 
     private void getNetworkData() {
+        friendPostArrayList.clear();
+
         /** 특정 유저 게시물 가져오는 API */
         Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
 

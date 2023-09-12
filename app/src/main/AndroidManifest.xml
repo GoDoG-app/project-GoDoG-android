@@ -9,11 +9,9 @@
     <uses-permission android:name="android.permission.CAMERA" /> <!-- 4. 위치 권한 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -27,6 +25,9 @@
         android:theme="@style/Theme.Walking"
         android:usesCleartextTraffic="true"
         tools:targetApi="30">
+        <activity
+            android:name=".WalkingRecoActivity"
+            android:exported="false" />
         <activity
             android:name=".FriendActivityFromSearch"
             android:exported="false" />
@@ -78,7 +79,6 @@
         <activity
             android:name=".FriendListActivity"
             android:exported="false" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.blue.walking.fileprovider"
@@ -88,17 +88,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/fileprovider" />
         </provider>
-
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="oauth"
                     android:scheme="kakao80e37f349a16fcd565298d9e9591c338" />
@@ -115,10 +112,8 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

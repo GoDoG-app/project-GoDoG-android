@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,10 +16,16 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.blue.walking.api.NetworkClient;
+import com.blue.walking.api.WalkingApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
+import com.blue.walking.model.ResultRes;
+import com.blue.walking.model.User;
 import com.blue.walking.model.UserInfo;
+import com.blue.walking.model.WalkingList;
 import com.google.gson.Gson;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
@@ -28,6 +35,11 @@ import com.skt.tmap.overlay.TMapPolyLine;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class Walking3 extends AppCompatActivity {
 
@@ -65,6 +77,7 @@ public class Walking3 extends AppCompatActivity {
     TMapPoint endPoint;
     TMapPoint randomPoint1;
     TMapPoint randomPoint2;
+    String token;
 
 
     @Override

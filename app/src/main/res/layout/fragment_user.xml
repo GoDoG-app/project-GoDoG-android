@@ -229,6 +229,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/round_background2"
                         android:gravity="center"
+                        android:text="친절해요"
                         android:textColor="#000000"
                         android:textSize="15sp"
                         app:cornerRadius="5dp" />
@@ -241,6 +242,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/round_background2"
                         android:gravity="center"
+                        android:text="약속시간을 잘 지켜요"
                         android:textColor="#000000"
                         android:textSize="15sp" />
                 </LinearLayout>

@@ -22,6 +22,9 @@ import android.widget.TextView;
 import com.blue.walking.config.Config;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.skt.tmap.TMapPoint;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,10 +40,16 @@ public class MainActivity extends AppCompatActivity {
 
     String token;
 
+    ArrayList<TMapPoint> linePointList1 = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        linePointList1 = (ArrayList<TMapPoint>) getIntent().getSerializableExtra("put");
+        Log.i("test", linePointList1+"");
+
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         homeFragment = new HomeFragment();

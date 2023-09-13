@@ -128,31 +128,32 @@
 
                         <TextView
                             android:id="@+id/txtCount"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="0 회"
+                            android:text="1"
                             android:textColor="#000000"
                             android:textSize="15sp" />
 
                         <TextView
                             android:id="@+id/txtDistance"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="0 km"
+                            android:text="1"
                             android:textColor="#000000"
                             android:textSize="15sp" />
 
                         <TextView
                             android:id="@+id/txtTime"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="00:00"
+                            android:text="1"
                             android:textColor="#000000"
                             android:textSize="15sp" />
                     </LinearLayout>

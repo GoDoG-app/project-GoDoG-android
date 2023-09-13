@@ -29,6 +29,7 @@ import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
 import com.blue.walking.api.RandomFriendAPI;
 import com.blue.walking.api.UserApi;
+import com.blue.walking.api.WalkingApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
 import com.blue.walking.model.Pet;
@@ -37,6 +38,8 @@ import com.blue.walking.model.RandomFriend;
 import com.blue.walking.model.RandomFriendRes;
 import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
+import com.blue.walking.model.WalkingList;
+import com.blue.walking.model.WalkingRes;
 import com.bumptech.glide.Glide;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
@@ -151,6 +154,7 @@ public class HomeFragment extends Fragment {
     String address;
     // 공원 좌표
     TMapPoint lat_lng;
+    ArrayList<WalkingList> walkingLists = new ArrayList<>();
 
 
     @Override
@@ -179,6 +183,9 @@ public class HomeFragment extends Fragment {
                     REQUEST_LOCATION_PERMISSION); // 권한 요청 코드 사용
         }
         txtStart = rootView.findViewById(R.id.txtStart);
+        txtCount = rootView.findViewById(R.id.txtCount);
+        txtTime = rootView.findViewById(R.id.txtTime);
+        txtDistance = rootView.findViewById(R.id.txtDistance);
 
         imgPet = rootView.findViewById(R.id.imgPet);
         imgPet.setClipToOutline(true);  // 둥근 테두리 적용
@@ -369,6 +376,58 @@ public class HomeFragment extends Fragment {
                         txtStart.setText(petArrayList.get(0).petName + "와 산책을 시작해보세요~");
                         Log.i("pet", petArrayList.get(0).petProUrl);
                         Glide.with(getActivity()).load(petArrayList.get(0).petProUrl).into(imgPet);
+
+                        Retrofit retrofit3 = NetworkClient.getRetrofitClient(getActivity());
+                        WalkingApi api3 = retrofit3.create(WalkingApi.class);
+
+                        Call<WalkingRes> call3 = api3.getMyWalkingList("Bearer "+token);
+                        call3.enqueue(new Callback<WalkingRes>() {
+                            @Override
+                            public void onResponse(Call<WalkingRes> call, Response<WalkingRes> response) {
+                                if (response.isSuccessful()){
+                                    WalkingRes walkingList = response.body();
+                                    Log.i("test22", ""+response.body());
+                                    walkingLists.addAll(walkingList.items);
+                                    // 카운트
+                                    txtCount.setText(walkingList.count+"회");
+
+                                    // 시간
+                                    Log.i("카운트", ""+walkingList.count);
+                                    int totalTime = 0;
+                                    for (WalkingList walkingItem : walkingLists) {
+                                        int timeInSeconds = (int) walkingItem.time; // time 데이터를 초 단위로 가져옴
+                                        totalTime += timeInSeconds;
+                                        // 초를 시, 분, 초로 분해
+                                        int hours = totalTime / 3600;  // 1 시간은 3600 초입니다.
+                                        int minutes = (totalTime % 3600) / 60;  // 1 분은 60 초입니다.
+                                        int seconds = totalTime % 60;
+
+                                        // 시간, 분, 초를 HH:mm:ss 형식의 문자열로 포맷
+                                        String timeStr = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                                        txtTime.setText(timeStr);
+                                        Log.i("시간", timeStr+"");
+                                    }
+
+                                    // 거리
+                                    double totalDistance = 0;
+                                    for (WalkingList walkingItem : walkingLists) {
+                                        double distance = walkingItem.distance;
+                                        totalDistance += distance;
+
+                                    }
+
+                                    txtDistance.setText(totalDistance+"km");
+                                    Log.i("거리", totalDistance+"");
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<WalkingRes> call, Throwable t) {
+
+                            }
+                        });
                     }
                 }
             }
@@ -395,6 +454,7 @@ public class HomeFragment extends Fragment {
                     randomFriendArrayList.addAll(0, randomFriendRes.items);
                     randomAdapter = new RandomAdapter(getActivity(), randomFriendArrayList);
                     recyclerViewRandom.setAdapter(randomAdapter);
+                    randomAdapter.notifyDataSetChanged();
 
                 } else {
 

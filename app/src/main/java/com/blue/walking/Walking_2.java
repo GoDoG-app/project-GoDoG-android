@@ -20,14 +20,15 @@ import android.widget.TextView;
 
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
+import com.blue.walking.api.WalkingApi;
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Pet;
 import com.blue.walking.model.PetList;
+import com.blue.walking.model.WalkingList;
+import com.blue.walking.model.WalkingRes;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -94,6 +95,7 @@ public class Walking_2 extends Fragment {
 
     String token;
     ArrayList<Pet> petArrayList = new ArrayList<>();
+    ArrayList<WalkingList> walkingLists = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -146,6 +148,57 @@ public class Walking_2 extends Fragment {
                         txtName.setText(petArrayList.get(0).petName + "의 산책 기록");
                         Glide.with(Walking_2.this).load(petArrayList.get(0).petProUrl).into(imgPet);
 
+                        Retrofit retrofit2 = NetworkClient.getRetrofitClient(getActivity());
+                        WalkingApi api2 = retrofit2.create(WalkingApi.class);
+
+                        Call<WalkingRes> call2 = api2.getMyWalkingList("Bearer "+token);
+                        call2.enqueue(new Callback<WalkingRes>() {
+                            @Override
+                            public void onResponse(Call<WalkingRes> call, Response<WalkingRes> response) {
+                                if (response.isSuccessful()){
+                                    WalkingRes walkingList = response.body();
+                                    Log.i("test22", ""+response.body());
+                                    walkingLists.addAll(walkingList.items);
+                                    // 카운트
+                                    txtCount.setText(walkingList.count+"회");
+
+                                    // 시간
+                                    Log.i("test22", ""+walkingList.count);
+                                    int totalTime = 0;
+                                    for (WalkingList walkingItem : walkingLists) {
+                                        int timeInSeconds = (int) walkingItem.time; // time 데이터를 초 단위로 가져옴
+                                        totalTime += timeInSeconds;
+                                        // 초를 시, 분, 초로 분해
+                                        int hours = totalTime / 3600;  // 1 시간은 3600 초입니다.
+                                        int minutes = (totalTime % 3600) / 60;  // 1 분은 60 초입니다.
+                                        int seconds = totalTime % 60;
+
+                                        // 시간, 분, 초를 HH:mm:ss 형식의 문자열로 포맷
+                                        String timeStr = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                                        txtTime.setText(timeStr);
+                                    }
+
+                                    // 거리
+                                    double totalDistance = 0;
+                                    for (WalkingList walkingItem : walkingLists) {
+                                        double distance = walkingItem.distance;
+                                        totalDistance += distance;
+
+                                    }
+
+                                    txtDistance.setText(totalDistance+"km");
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<WalkingRes> call, Throwable t) {
+
+                            }
+                        });
+
+
                     } else {
                         return;
                     }
@@ -183,4 +236,5 @@ public class Walking_2 extends Fragment {
 
         return rootView;
     }
+
 }

@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -35,7 +36,15 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.blue.walking.api.NetworkClient;
+import com.blue.walking.api.UserApi;
+import com.blue.walking.api.WalkingApi;
 import com.blue.walking.config.Config;
+import com.blue.walking.model.ResultRes;
+import com.blue.walking.model.User;
+import com.blue.walking.model.UserInfo;
+import com.blue.walking.model.UserList;
+import com.blue.walking.model.WalkingList;
 import com.google.android.gms.maps.MapView;
 import com.google.android.material.snackbar.Snackbar;
 import com.skt.tmap.TMapPoint;
@@ -44,6 +53,11 @@ import com.skt.tmap.overlay.TMapMarkerItem;
 import com.skt.tmap.overlay.TMapPolyLine;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 /**
@@ -101,6 +115,9 @@ public class Walking_1 extends Fragment {
     MapView mapView;  // 지도 화면
     ImageView imgStart;  // 산책 시작
     TextView txtDistance;  // 산책 거리
+    String token;
+    ArrayList<UserInfo> userInfoArrayList= new ArrayList<>();
+    Double time; // 타이머 정치 초
     Button btnReset;  // 산책 초기화
     TextView txtPlace;  // 산책로 추천을 통해 산책하기를 시작했을때, 나오는 추천 장소 이름
     Chronometer chronometer; // 타이머
@@ -315,6 +332,12 @@ public class Walking_1 extends Fragment {
                                 btnReset.setVisibility(View.GONE); // 초기화 버튼 숨기기
                                 btnLine.setVisibility(View.VISIBLE); // 경로 삭제 버튼 띄우기
                                 chronometer.stop();
+                                // 현재 타이머 초 저장
+                                String chronometerText = chronometer.getText().toString();
+                                String[] timeParts = chronometerText.split(":");
+                                int hours = Integer.parseInt(timeParts[0]);
+                                int minutes = Integer.parseInt(timeParts[1]);
+                                time = Double.valueOf((hours * 60) + minutes);
                             }
                         }else{
                             Snackbar.make(imgStart,
@@ -436,7 +459,54 @@ public class Walking_1 extends Fragment {
         builder.setPositiveButton("저장", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // 저장했을때
+                // 산책기록 저장
+                SharedPreferences sp = getActivity().getSharedPreferences(Config.PREFERENCE_NAME, MODE_PRIVATE);
+                token = sp.getString(Config.ACCESS_TOKEN, "");
+                Retrofit retrofit1 = NetworkClient.getRetrofitClient(getActivity());
+                UserApi api1 = retrofit1.create(UserApi.class);
+                Call<UserList> call1 = api1.getUserInfo("Bearer "+token);
+                call1.enqueue(new Callback<UserList>() {
+                    @Override
+                    public void onResponse(Call<UserList> call1, Response<UserList> response) {
+                        if (response.isSuccessful()) {
+
+                            userInfoArrayList.clear(); // 초기화
+
+                            UserList userList = response.body();
+                            userInfoArrayList.addAll(userList.info);
+
+                            // 서버에서 받아온 데이터를 리스트에 넣고, 각각 적용시키기
+                            if (userInfoArrayList.size() != 0) {
+                                // 리스트의 사이즈가 0이 아닐때만 화면에 적용 실행
+                                int userId = userInfoArrayList.get(0).id;
+                                Log.i("test", "성공"+time+" "+distance+" "+userId);
+                                Retrofit retrofit = NetworkClient.getRetrofitClient(getActivity());
+                                WalkingApi api = retrofit.create(WalkingApi.class);
+                                WalkingList walkingList = new WalkingList(userId, time, distance);
+                                Call<ResultRes> call = api.getWalkingList("Bearer "+token, walkingList);
+                                call.enqueue(new Callback<ResultRes>() {
+                                    @Override
+                                    public void onResponse(Call<ResultRes> call, Response<ResultRes> response) {
+                                        if (response.isSuccessful()){
+                                            Log.i("test", "성공"+time+distance+userId);
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResultRes> call, Throwable t) {
+                                        Log.i("test", "실패"+time+distance+userId);
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserList> call1, Throwable t) {
+
+                    }
+                });
 
                 // 스낵바 메세지
                 Snackbar.make(imgStart,

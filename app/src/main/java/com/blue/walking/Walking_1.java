@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -152,11 +153,6 @@ public class Walking_1 extends Fragment {
 
         btnLine = rootView.findViewById(R.id.btnLine);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.POLY_LINE, MODE_PRIVATE);
-        String linePoint = sharedPreferences.getString("linePoint", "");
-//        String second1 = sharedPreferences.getString("Second", "");
-        Log.d("스트링라인", linePoint);
-
 
         // 권한(permission)상태 확인
         if (ContextCompat.checkSelfPermission(getActivity(),
@@ -199,7 +195,10 @@ public class Walking_1 extends Fragment {
                     // 최초 마커, 마커 생성 및 설정
                     marker = new TMapMarkerItem();
                     marker.setId("marker");
-                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+                    // 마커 이미지 지정 및 설정
+                    Bitmap myMarker = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.mymarker);
+                    myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90,false);
+                    marker.setIcon(myMarker); // 마커 표시
                     // 최초 위치에 마커 추가
                     marker.setTMapPoint(new TMapPoint(lat, lng));
                     tMapView.addTMapMarkerItem(marker);
@@ -270,7 +269,9 @@ public class Walking_1 extends Fragment {
                         tMapView.removeAllTMapMarkerItem();// 이전 마커 삭제
                         marker = new TMapMarkerItem(); // 마커 객체 초기화
                         marker.setId("marker1"); // 마커 이름 지정
-                        marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi)); // 마커 아이콘
+                        // 마커 이미지 지정 및 설정
+                        Bitmap myMarker = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.mymarker);
+                        myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90,false);
                         marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 표시할 위치
                         tMapView.addTMapMarkerItem(marker); // 마커 적용
 
@@ -355,7 +356,9 @@ public class Walking_1 extends Fragment {
             // 마커 생성 및 설정
             marker = new TMapMarkerItem();
             marker.setId("marker1");
-            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+            // 마커 이미지 지정 및 설정
+            Bitmap myMarker = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.mymarker);
+            myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90,false);
 
             Log.d("라인길이","라인 거리"+line.getDistance());
 

@@ -25,6 +25,7 @@ import com.blue.walking.config.Config;
 import com.blue.walking.model.Chat;
 import com.blue.walking.model.ChatRoom;
 import com.blue.walking.model.FriendsInfo;
+import com.blue.walking.model.Promise;
 import com.blue.walking.model.RandomFriend;
 import com.blue.walking.model.SearchUserItems;
 import com.blue.walking.model.UserInfo;
@@ -79,6 +80,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     String roomName;
     Chat chat;
 
+    UserInfo userInfo; // 내 정보
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +104,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         chat = (Chat) getIntent().getSerializableExtra("chat");
         friendsInfo = (FriendsInfo) getIntent().getSerializableExtra("friend2"); // FriendActivityFromFriendList
         searchUserItems = (SearchUserItems) getIntent().getSerializableExtra("friend3"); // FriendActivityFromSearch
+
+
 
         if (randomFriend != null) {
             // "friend" extra가 있을 때 실행되는 코드
@@ -141,7 +146,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     UserList userList = response.body();
                     ArrayList<UserInfo> userInfoArrayList = userList.info;
                     if (!userInfoArrayList.isEmpty()) {
-                        UserInfo userInfo = userInfoArrayList.get(0);
+                        userInfo = userInfoArrayList.get(0);
 
                         userImgUrl = userInfo.userImgUrl;
                         userNickname = userInfo.userNickname;
@@ -187,6 +192,15 @@ public class ChatRoomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent;
                 intent = new Intent(ChatRoomActivity.this, ChatPromiseActivity.class);
+//                int id;
+//                String userImgUrl;
+//                String userNickname;
+//                String roomName;
+                intent.putExtra("id",id);
+                intent.putExtra("userImgUrl",userImgUrl);
+                intent.putExtra("userNickname",userNickname);
+                intent.putExtra("roomName",roomName);
+                intent.putExtra("receiverId",receiverId);
                 startActivity(intent);
             }
         });

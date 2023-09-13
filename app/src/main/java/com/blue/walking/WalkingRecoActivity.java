@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,27 +25,19 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.blue.walking.config.Config;
-import com.google.android.gms.maps.MapView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
 import com.skt.tmap.TMapView;
 import com.skt.tmap.overlay.TMapMarkerItem;
 import com.skt.tmap.overlay.TMapPolyLine;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class WalkingRecoActivity extends AppCompatActivity {
-    MapView mapView;  // 지도 화면
     ImageView imgStart;  // 산책 시작
     TextView txtDistance;  // 산책 거리
     Button btnReset;  // 산책 초기화
-    TextView txtPlace;  // 산책로 추천을 통해 산책하기를 시작했을때, 나오는 추천 장소 이름
     Chronometer chronometer; // 타이머
     ImageView btnLocation; // 현재 위치 이동 및 마커용 버튼
     ProgressBar progressBar; // 맵 로딩
@@ -74,16 +65,13 @@ public class WalkingRecoActivity extends AppCompatActivity {
     TMapPolyLine line; // 폴리라인 객체
     TMapMarkerItem marker; // 마커 객체
     private static final int REQUEST_LOCATION_PERMISSION = 1; // 권한 요청 코드
-
-    double distance = 0.0;
-    TMapPolyLine tMapPolyLine;
-
-    ArrayList<TMapPoint> linePointList = new ArrayList<>();
-    ArrayList<TMapPoint> passPointList = new ArrayList<>();
-
+    double distance = 0.0; // 거리
+    // 추천 경로
     TMapPoint startPoint;
     TMapPoint endPoint;
     TMapPoint randomPoint;
+    // 맵 초기화 관련 boolean
+    boolean reset = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,45 +95,31 @@ public class WalkingRecoActivity extends AppCompatActivity {
         // AppKey 가져오기
         tMapView.setSKTMapApiKey(Config.getAppKey());
 
-        // Intent에서 데이터를 가져옵니다.
-        Intent intent = getIntent();
-        if (intent!=null) {
-            double startPointLat = getIntent().getDoubleExtra("startPointLat", 0.0);
-            double startPointLng = getIntent().getDoubleExtra("startPointLng", 0.0);
-            double endPointLat = getIntent().getDoubleExtra("endPointLat", 0.0);
-            double endPointLng = getIntent().getDoubleExtra("endPointLng", 0.0);
-            double randomPointLat = getIntent().getDoubleExtra("randomPointLat", 0.0);
-            double randomPointLng = getIntent().getDoubleExtra("randomPointLng", 0.0);
-            Log.d("받은 데이터 로그", "start"+startPointLat+startPointLng);
+        if (reset==true){
+            // Intent에서 데이터를 가져옵니다.
+            Intent intent = getIntent();
+            if (intent!=null) {
+                double startPointLat = getIntent().getDoubleExtra("startPointLat", 0.0);
+                double startPointLng = getIntent().getDoubleExtra("startPointLng", 0.0);
+                double endPointLat = getIntent().getDoubleExtra("endPointLat", 0.0);
+                double endPointLng = getIntent().getDoubleExtra("endPointLng", 0.0);
+                double randomPointLat = getIntent().getDoubleExtra("randomPointLat", 0.0);
+                double randomPointLng = getIntent().getDoubleExtra("randomPointLng", 0.0);
+                Log.d("받은 데이터 로그", "start"+startPointLat+startPointLng);
 
-            // TMapPoint로 변환.
-            startPoint = new TMapPoint(startPointLat, startPointLng);
-            endPoint = new TMapPoint(endPointLat, endPointLng);
-            randomPoint = new TMapPoint(randomPointLat, randomPointLng);
-        }else{
-            Log.d("받을 데이터 없음", "데이터를 확인하세요");
+                // TMapPoint로 변환.
+                startPoint = new TMapPoint(startPointLat, startPointLng);
+                endPoint = new TMapPoint(endPointLat, endPointLng);
+                randomPoint = new TMapPoint(randomPointLat, randomPointLng);
+            }else{
+                Log.d("받을 데이터 없음", "데이터를 확인하세요");
+            }
         }
+
         // 경유지 (새로 루트 한다..)
         ArrayList<TMapPoint> passList = new ArrayList<>();
         passList.add(randomPoint);
 
-
-//        // Walking3에서 보낸 경로 좌표 데이터 받기
-//        Intent intent = getIntent();
-//        if (intent != null) {
-//            String lineJson = intent.getStringExtra("lineJson");
-//            String passJson = intent.getStringExtra("passJson");
-//            Log.d("받은 lineJson 데이터", "" + lineJson);
-//            Log.d("받은 passJson 데이터", "" + passJson);
-//            // lineJson, passJson을 ArrayList로 변환
-//            Type listType = new TypeToken<ArrayList<TMapPoint>>() {
-//            }.getType();
-//            linePointList = new Gson().fromJson(lineJson, listType);
-//            passPointList = new Gson().fromJson(passJson, listType);
-//            Log.d("바꾼 linePointList 데이터", "" + linePointList);
-//            Log.d("바꾼 passPointList 데이터", "" + passPointList);
-//            Log.d("passPointList", passPointList.toString());
-//        }
 
         // 권한(permission)상태 확인
         if (ContextCompat.checkSelfPermission(this,
@@ -188,7 +162,7 @@ public class WalkingRecoActivity extends AppCompatActivity {
                     // 최초 마커, 마커 생성 및 설정
                     marker = new TMapMarkerItem();
                     marker.setId("marker1");
-                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+                    marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.group_26));
                     // 최초 위치에 마커 추가
                     marker.setTMapPoint(new TMapPoint(lat, lng));
                     tMapView.addTMapMarkerItem(marker);
@@ -275,10 +249,10 @@ public class WalkingRecoActivity extends AppCompatActivity {
                                         "현재 위치 가져오는 중. 잠시만 기다려 주세요.",
                                         Snackbar.LENGTH_SHORT).show();
                             }else{
-                                tMapView.removeAllTMapMarkerItem();// 이전 마커 삭제
+                                tMapView.removeTMapMarkerItem("marker1");
                                 marker = new TMapMarkerItem(); // 마커 객체 초기화
                                 marker.setId("marker1"); // 마커 이름 지정
-                                marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi)); // 마커 아이콘
+                                marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.group_26)); // 마커 아이콘
                                 marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 표시할 위치
                                 tMapView.addTMapMarkerItem(marker); // 마커 적용
 
@@ -370,7 +344,7 @@ public class WalkingRecoActivity extends AppCompatActivity {
             // 마커 생성 및 설정
             marker = new TMapMarkerItem();
             marker.setId("marker1");
-            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.group_26));
 
             Log.d("라인길이", "라인 거리" + line.getDistance());
 
@@ -478,23 +452,31 @@ public class WalkingRecoActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                // 폴리라인 및 마커를 제거합니다.
-                tMapView.removeAllTMapPolyLine();
-                tMapView.removeTMapPolygon("path1");
-                tMapView.removeAllTMapMarkerItem();
-                tMapView.removeTMapMarkerItem("marker");
-                tMapView.removeTMapMarkerItem("marker1");
+                reset = false;
 
-                // 지도 중심점과 줌 레벨을 초기화합니다.
-                tMapView.setCenterPoint(lat, lng); // 초기 중심점 설정 (lat와 lng는 초기 중심점 좌표)
-                tMapView.setZoomLevel(16); // 초기 줌 레벨 설정 (원하는 값으로 변경)
+                finish();//인텐트 종료
+                overridePendingTransition(0, 0);//인텐트 효과 없애기
+                Intent intent = getIntent(); //인텐트
+                startActivity(intent); //액티비티 열기
+                overridePendingTransition(0, 0);//인텐트 효과 없애기
 
-                // 마커 생성 및 설정
-                marker = new TMapMarkerItem();
-                marker.setId("marker1");
-                marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
-                marker.setTMapPoint(new TMapPoint(lat, lng));
-                tMapView.addTMapMarkerItem(marker);
+//                // 폴리라인 및 마커를 제거합니다.
+//                tMapView.removeAllTMapPolyLine();
+//                tMapView.removeTMapPolygon("path1");
+//                tMapView.removeAllTMapMarkerItem();
+//                tMapView.removeTMapMarkerItem("marker");
+//                tMapView.removeTMapMarkerItem("marker1");
+//
+//                // 지도 중심점과 줌 레벨을 초기화합니다.
+//                tMapView.setCenterPoint(lat, lng); // 초기 중심점 설정 (lat와 lng는 초기 중심점 좌표)
+//                tMapView.setZoomLevel(16); // 초기 줌 레벨 설정 (원하는 값으로 변경)
+//
+//                // 마커 생성 및 설정
+//                marker = new TMapMarkerItem();
+//                marker.setId("marker1");
+//                marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi));
+//                marker.setTMapPoint(new TMapPoint(lat, lng));
+//                tMapView.addTMapMarkerItem(marker);
 
                 // 스낵바 메세지
                 Snackbar.make(btnMapReset,

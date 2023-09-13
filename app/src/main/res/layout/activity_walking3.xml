@@ -105,12 +105,11 @@
                     <ImageView
                         android:id="@+id/imgRoute1"
                         android:layout_width="60dp"
-                        android:layout_height="50dp"
+                        android:layout_height="40dp"
                         android:layout_marginLeft="350dp"
-                        android:layout_marginTop="15dp"
-                        android:text="선택"
+                        android:layout_marginTop="20dp"
                         android:textSize="13sp"
-                        app:srcCompat="@drawable/baseline_play_arrow_24" />
+                        app:srcCompat="@drawable/startimage" />
 
                 </RelativeLayout>
 
@@ -188,12 +187,12 @@
                     <ImageView
                         android:id="@+id/imgRoute2"
                         android:layout_width="60dp"
-                        android:layout_height="50dp"
+                        android:layout_height="40dp"
                         android:layout_marginLeft="350dp"
-                        android:layout_marginTop="15dp"
-                        android:text="선택"
+                        android:layout_marginTop="20dp"
                         android:textSize="13sp"
-                        app:srcCompat="@drawable/baseline_play_arrow_24" />
+                        app:srcCompat="@drawable/startimage" />
+
                 </RelativeLayout>
 
                 <LinearLayout

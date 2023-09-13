@@ -1,11 +1,15 @@
 package com.blue.walking.config;
 
+import com.skt.tmap.TMapPoint;
+import com.skt.tmap.overlay.TMapPolyLine;
+
+import java.util.ArrayList;
+
 public class Config {
 
     public static final String PREFERENCE_NAME = "walking";
 
     public static final String ACCESS_TOKEN = "accessToken";
-
     public static final String HOST = "https://vjh2nj92xk.execute-api.ap-northeast-2.amazonaws.com";
 
     // static final을 사용하여 상수로 지정.
@@ -19,4 +23,6 @@ public class Config {
     public static String getKakaoAppKey(){
         return KAKAO_APP_KEY;
     }
+
+    public static final String POLY_LINE = "poly";
 }

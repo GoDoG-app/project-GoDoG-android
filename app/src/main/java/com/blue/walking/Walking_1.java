@@ -1,11 +1,13 @@
 package com.blue.walking;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -150,14 +152,11 @@ public class Walking_1 extends Fragment {
 
         btnLine = rootView.findViewById(R.id.btnLine);
 
-        // Walking1 프래그먼트에서 데이터 받기
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            tMapPolyLine1 = (TMapPolyLine) bundle.getSerializable("Line");
-            if (tMapPolyLine1 != null){
-                Log.d("티폴티폴티폴", "성공" + "잘 가져옴");
-            }
-        }
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.POLY_LINE, MODE_PRIVATE);
+        String linePoint = sharedPreferences.getString("linePoint", "");
+//        String second1 = sharedPreferences.getString("Second", "");
+        Log.d("스트링라인", linePoint);
+
 
         // 권한(permission)상태 확인
         if (ContextCompat.checkSelfPermission(getActivity(),

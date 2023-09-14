@@ -164,6 +164,7 @@ public class Walking_2 extends Fragment {
                         call2.enqueue(new Callback<WalkingRes>() {
                             @Override
                             public void onResponse(Call<WalkingRes> call, Response<WalkingRes> response) {
+
                                 if (response.isSuccessful()){
                                     // 이전데이터 초기화
                                     walkingLists.clear();

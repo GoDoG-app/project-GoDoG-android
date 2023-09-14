@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -37,6 +40,7 @@ import com.blue.walking.model.UserInfo;
 import com.blue.walking.model.UserList;
 import com.blue.walking.model.WalkingList;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.snackbar.Snackbar;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
@@ -79,9 +83,6 @@ public class WalkingRecoActivity extends AppCompatActivity {
     // 지도가 나타날 화면 뷰
     FrameLayout tmapViewContainer;
 
-    // 네비바
-    BottomNavigationView bottomNavigationView;
-
     // 폴리라인을 그리기 위한 ArrayList
     ArrayList<TMapPoint> pointList = new ArrayList<>();
     TMapPolyLine line; // 폴리라인 객체
@@ -92,6 +93,8 @@ public class WalkingRecoActivity extends AppCompatActivity {
     TMapPoint startPoint;
     TMapPoint endPoint;
     TMapPoint randomPoint;
+
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,20 +122,20 @@ public class WalkingRecoActivity extends AppCompatActivity {
 
         // Intent에서 데이터를 가져옵니다.
         Intent intent = getIntent();
-        if (intent!=null) {
+        if (intent != null) {
             double startPointLat = getIntent().getDoubleExtra("startPointLat", 0.0);
             double startPointLng = getIntent().getDoubleExtra("startPointLng", 0.0);
             double endPointLat = getIntent().getDoubleExtra("endPointLat", 0.0);
             double endPointLng = getIntent().getDoubleExtra("endPointLng", 0.0);
             double randomPointLat = getIntent().getDoubleExtra("randomPointLat", 0.0);
             double randomPointLng = getIntent().getDoubleExtra("randomPointLng", 0.0);
-            Log.d("받은 데이터 로그", "start"+startPointLat+startPointLng);
+            Log.d("받은 데이터 로그", "start" + startPointLat + startPointLng);
 
             // TMapPoint로 변환.
             startPoint = new TMapPoint(startPointLat, startPointLng);
             endPoint = new TMapPoint(endPointLat, endPointLng);
             randomPoint = new TMapPoint(randomPointLat, randomPointLng);
-        }else{
+        } else {
             Log.d("받을 데이터 없음", "데이터를 확인하세요");
         }
 
@@ -183,8 +186,8 @@ public class WalkingRecoActivity extends AppCompatActivity {
                     marker = new TMapMarkerItem();
                     marker.setId("marker1");
                     // 마커 이미지 지정 및 설정
-                    Bitmap myMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.mymarker);
-                    myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90,false);
+                    Bitmap myMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.mymarker);
+                    myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90, false);
                     marker.setIcon(myMarker); // 마커 표시
                     // 최초 위치에 마커 추가
                     marker.setTMapPoint(new TMapPoint(lat, lng));
@@ -218,7 +221,7 @@ public class WalkingRecoActivity extends AppCompatActivity {
             }
         });
 
-        if(tMapView!=null){
+        if (tMapView != null) {
 
             // tmapViewContainer(FrameLayout)에 TmapView 추가.
             tmapViewContainer.addView(tMapView);
@@ -238,19 +241,19 @@ public class WalkingRecoActivity extends AppCompatActivity {
                                 @Override
                                 public void onFindPathDataWithType(TMapPolyLine tMapPolyLine) {
                                     tMapPolyLine.setLineColor(Color.BLUE); // 경로 폴리라인 색상
-                                    tMapPolyLine.setLineWidth(3); // 경로 폴리라인 두께
+                                    tMapPolyLine.setLineWidth(5); // 경로 폴리라인 두께
                                     tMapView.addTMapPolyLine(tMapPolyLine);
                                 }
                             });
                     tMapView.removeAllTMapMarkerItem();// 이전 마커 삭제
 
                     // 마커에 표시할 이미지 크기 조절
-                    Bitmap startMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.startmarker);
-                    startMarker = Bitmap.createScaledBitmap(startMarker, 90, 90,false);
-                    Bitmap turnMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.turnmarker);
-                    turnMarker = Bitmap.createScaledBitmap(turnMarker, 60, 60,false);
-                    Bitmap finishMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.finishmarker);
-                    finishMarker = Bitmap.createScaledBitmap(finishMarker, 90, 90,false);
+                    Bitmap startMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.startmarker);
+                    startMarker = Bitmap.createScaledBitmap(startMarker, 90, 90, false);
+                    Bitmap turnMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.turnmarker);
+                    turnMarker = Bitmap.createScaledBitmap(turnMarker, 60, 60, false);
+                    Bitmap finishMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.finishmarker);
+                    finishMarker = Bitmap.createScaledBitmap(finishMarker, 90, 90, false);
 
                     TMapMarkerItem markerStart = new TMapMarkerItem(); // 마커 객체 초기화
                     TMapMarkerItem markerRandom = new TMapMarkerItem(); // 마커 객체 초기화
@@ -283,13 +286,13 @@ public class WalkingRecoActivity extends AppCompatActivity {
                                 Snackbar.make(btnLocation,
                                         "현재 위치 가져오는 중. 잠시만 기다려 주세요.",
                                         Snackbar.LENGTH_SHORT).show();
-                            }else{
+                            } else {
                                 tMapView.removeTMapMarkerItem("marker1");
                                 marker = new TMapMarkerItem(); // 마커 객체 초기화
                                 marker.setId("marker1"); // 마커 이름 지정
                                 // 마커 이미지 지정 및 설정
-                                Bitmap myMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.mymarker);
-                                myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90,false);
+                                Bitmap myMarker = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.mymarker);
+                                myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90, false);
                                 marker.setIcon(myMarker); // 마커 표시
                                 marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 표시할 위치
                                 tMapView.addTMapMarkerItem(marker); // 마커 적용
@@ -345,7 +348,7 @@ public class WalkingRecoActivity extends AppCompatActivity {
 //                    // 경로 그리기
 //                    tMapView.addTMapPolyLine(tMapPolyLine);
 
-                    if (i==true) {
+                    if (i == true) {
                         // 지도 초기화(이전 경로 삭제 및 현 위치 중심+마커)
                         btnMapReset.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -357,13 +360,6 @@ public class WalkingRecoActivity extends AppCompatActivity {
                 }
             });
         }
-        bottomNavigationView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(WalkingRecoActivity.this, WalkingNoteActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
 
@@ -384,7 +380,7 @@ public class WalkingRecoActivity extends AppCompatActivity {
             // 새로운 폴리라인 생성 및 추가
             line = new TMapPolyLine("path1", pointList);
             line.setLineColor(Color.RED);
-            line.setLineWidth(4); // 두께 설정
+            line.setLineWidth(5); // 두께 설정
             tMapView.addTMapPolyLine(line);
 
             // 지도 중심점 표시

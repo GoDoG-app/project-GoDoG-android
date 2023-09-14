@@ -2,8 +2,6 @@ package com.blue.walking;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -265,6 +263,7 @@ public class Walking_1 extends Fragment {
 
                 if (tMapPolyLine1 != null){
                     tMapPolyLine1.setLineColor(Color.BLUE);
+                    tMapPolyLine1.setLineWidth(5);
                     tMapView.addTMapPolyLine(tMapPolyLine1);
                 }
 
@@ -369,6 +368,7 @@ public class Walking_1 extends Fragment {
 
             // 새로운 폴리라인 생성 및 추가
             line = new TMapPolyLine("path1", pointList);
+            line.setLineWidth(5);
             line.setLineColor(Color.RED);
             tMapView.addTMapPolyLine(line);
 
@@ -382,18 +382,10 @@ public class Walking_1 extends Fragment {
             // 마커 이미지 지정 및 설정
             Bitmap myMarker = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.mymarker);
             myMarker = Bitmap.createScaledBitmap(myMarker, 90, 90,false);
+            marker.setIcon(myMarker); // 마커 아이콘 적용
 
-            Log.d("라인길이","라인 거리"+line.getDistance());
-
-            // bitMap 이미지 수정 하드코딩
-//                Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),
-//                        image);
-//                bitmap = Bitmap.createScaledBitmap(bitmap, 50, 50,false);
-
-
-            // 현재 위치에 마커 추가
-            marker.setTMapPoint(new TMapPoint(lat, lng));
-            tMapView.addTMapMarkerItem(marker);
+            marker.setTMapPoint(new TMapPoint(lat, lng)); // 마커 위치
+            tMapView.addTMapMarkerItem(marker); // 마커 추가
 
             distance = (distance + 0.004);
             if (distance<1.0){
@@ -405,7 +397,7 @@ public class Walking_1 extends Fragment {
         }
     }
 
-//     권한이 허용되지 않은 경우를 처리 (여기서는 위치권한)
+    //     권한이 허용되지 않은 경우를 처리 (여기서는 위치권한)
 //     사용자가 권한 요청 대화 상자에서 권한을 허용하거나, 거부한 후 호출되는 콜백
 //     권한을 허용하지 않은 경우 권한 요청을 다시 수행하고, 권한이 허용되면 위치 업데이트를 요청
     @Override

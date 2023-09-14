@@ -316,7 +316,7 @@ public class ChatPromiseActivity extends AppCompatActivity {
 
                         // 시군구동 합쳐서 보여주기
                         address = sido+" "+sigungu+" "+hname;
-                        txtPlace.setText(address);
+                        txtPlace.setText(fullAddr);
 
                         // 위도 경도 구하기
                         Geocoder geocoder = new Geocoder(this, Locale.getDefault());

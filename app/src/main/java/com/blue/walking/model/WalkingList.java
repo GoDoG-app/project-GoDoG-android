@@ -6,6 +6,7 @@ public class WalkingList {
     public int petId;
     public double time;
     public double distance;
+    public String createdAt;
 
     public WalkingList(){
 
@@ -15,5 +16,12 @@ public class WalkingList {
         this.id = id;
         this.time = time;
         this.distance = distance;
+    }
+
+    public WalkingList(int id, double time, double distance, String createdAt) {
+        this.id = id;
+        this.time = time;
+        this.distance = distance;
+        this.createdAt = createdAt;
     }
 }

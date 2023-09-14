@@ -18,6 +18,8 @@ import android.widget.CalendarView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blue.walking.adapter.ChatRoomAdapter;
+import com.blue.walking.adapter.WalkingAdapter;
 import com.blue.walking.api.NetworkClient;
 import com.blue.walking.api.PetApi;
 import com.blue.walking.api.WalkingApi;
@@ -28,7 +30,11 @@ import com.blue.walking.model.WalkingList;
 import com.blue.walking.model.WalkingRes;
 import com.bumptech.glide.Glide;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -92,10 +98,13 @@ public class Walking_2 extends Fragment {
     TextView txtDate;   // 산책일지 날짜
     CalendarView calendarView;  // 달력
     RecyclerView recyclerView;  // 산책일지 목록 띄우는 리사이클러뷰
+    ArrayList<WalkingList> walkingListArrayList = new ArrayList<>();
+    WalkingAdapter adapter;
 
     String token;
     ArrayList<Pet> petArrayList = new ArrayList<>();
     ArrayList<WalkingList> walkingLists = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -188,6 +197,17 @@ public class Walking_2 extends Fragment {
 
                                     txtDistance.setText(totalDistance+"km");
 
+                                    walkingListArrayList = walkingLists;
+                                    // 어댑터에 데이터 변경을 알립니다.
+                                    adapter = new WalkingAdapter(getActivity(), walkingListArrayList);
+                                    // 어댑터 연결
+                                    recyclerView.setAdapter(adapter);
+                                    // 리사이클러뷰 어레이 리스트의 크기의 -1 위치로 이동
+                                    recyclerView.scrollToPosition(walkingListArrayList.size()-1);
+                                    adapter.notifyDataSetChanged();
+
+
+
 
                                 }
                             }
@@ -220,21 +240,26 @@ public class Walking_2 extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                month = month+1;
+                month = month + 1;
                 String month2;
-                if (month < 10){
-                    month2 = "0"+month;
-                }else {
-                    month2 = ""+month;
+                if (month < 10) {
+                    month2 = "0" + month;
+                } else {
+                    month2 = "" + month;
                 }
 
                 String date = year + "." + (month2);
-                txtDate.setText(date+" 산책일지");
+                txtDate.setText(date + " 산책일지");
+
+
             }
         });
 
 
+
+
         return rootView;
     }
+
 
 }

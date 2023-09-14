@@ -385,6 +385,9 @@ public class HomeFragment extends Fragment {
                             @Override
                             public void onResponse(Call<WalkingRes> call, Response<WalkingRes> response) {
                                 if (response.isSuccessful()){
+                                    // 이전데이터 초기화
+                                    walkingLists.clear();
+
                                     WalkingRes walkingList = response.body();
                                     Log.i("test22", ""+response.body());
                                     walkingLists.addAll(walkingList.items);
@@ -406,7 +409,11 @@ public class HomeFragment extends Fragment {
                                         String timeStr = String.format("%02d:%02d:%02d", hours, minutes, seconds);
                                         txtTime.setText(timeStr);
                                         Log.i("시간", timeStr+"");
+                                        if (totalTime >= walkingLists.size() * 3600) {
+                                            break;
+                                        }
                                     }
+
 
                                     // 거리
                                     double totalDistance = 0;

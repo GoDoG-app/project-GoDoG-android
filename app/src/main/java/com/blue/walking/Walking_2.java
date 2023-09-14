@@ -165,6 +165,8 @@ public class Walking_2 extends Fragment {
                             @Override
                             public void onResponse(Call<WalkingRes> call, Response<WalkingRes> response) {
                                 if (response.isSuccessful()){
+                                    // 이전데이터 초기화
+                                    walkingLists.clear();
                                     WalkingRes walkingList = response.body();
                                     Log.i("test22", ""+response.body());
                                     walkingLists.addAll(walkingList.items);

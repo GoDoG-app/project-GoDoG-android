@@ -4,11 +4,20 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     namespace 'com.blue.walking'
     compileSdk 33
 
     defaultConfig {
+
+        buildConfigField "String", "kakao_app_key", properties['kakao_app_key']
+        buildConfigField "String", "TMAP_API_KEY", properties['tmap_api_key']
+
+        manifestPlaceholders = [kakao_app_key: "kakao_app_key"]
+
         applicationId "com.blue.walking"
         minSdk 24
         targetSdk 33
@@ -16,6 +25,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     buildTypes {

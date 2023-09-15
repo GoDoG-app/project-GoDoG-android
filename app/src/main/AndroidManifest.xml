@@ -107,7 +107,7 @@
 
                 <data
                     android:host="oauth"
-                    android:scheme="kakao80e37f349a16fcd565298d9e9591c338" />
+                    android:scheme="kakao${kakao_app_key}" />
             </intent-filter>
         </activity>
         <activity

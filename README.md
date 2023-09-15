@@ -63,7 +63,7 @@
   지도 위치를 현재 내 위치로 잡아주고, 산책을 시작하면 시간과 거리가 작동합니다. 그리고 이동한 위치를 마커와 라인으로 표시해줍니다.
 
 <details>
-<summary>산책로 추천</summary>
+<summary>산책로 추천👆</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/839e73f1-611f-4113-ac95-a8b95d334784">
 </details>
 
@@ -82,7 +82,7 @@
   산책 총 횟수, 거리, 시간을 표시하며, 하단에는 달력과 저장한 산책 기록 목록을 보여줍니다.
 
 <details>
-<summary>산책하기&기록</summary>
+<summary>산책하기&기록👆</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/9298bdba-de7f-4ac4-a281-a2325197021e">
 </details>
 
@@ -93,7 +93,7 @@
 - 서버에서 Haversine 공식을 사용하여 두 지점 간의 거리를 계산하고, 사용자의 위치 반경 내에서 랜덤으로 위도와 경도를 생성합니다.
 
 <details>
-<summary>접기/펼치기</summary>
+<summary>접기/펼치기👆</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/6aaa927f-3c62-467c-8566-b8a773d1235a">
 </details>
 
@@ -121,7 +121,7 @@
   하단 + ProgressBar 버튼으로 글 작성이 가능합니다.
 
 <details>
-<summary>커뮤니티</summary>
+<summary>커뮤니티👆</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/ad5e4c6f-21b7-4a05-949f-86ea8bff5f28">
 </details>
 
@@ -148,7 +148,7 @@
   카카오 우편번호 검색 자바스크립트를 활용하여 주소를 검색할 수 있습니다.
 
 <details>
-<summary>채팅&약속잡기</summary>
+<summary>채팅&약속잡기👆</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/e5ca63e5-d471-4bb1-b9c8-e6a3251614ad">
 </details>
 
@@ -173,7 +173,7 @@ https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcek
 <br>
 <h2>🔥 에러사항</h2>
 <details>
-<summary>문제1. 워터풀 개발방식</summary>
+<summary>문제1. 워터풀 개발방식👆</summary>
   
 - 백엔드에서 개발한 API를 중간에 한꺼번에 배포하다보니 어디서 에러가 발생한지 모르는 상황 발생
 - 대처: 애자일 개발방식으로 변경
@@ -185,7 +185,7 @@ https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcek
 </details>
 
 <details>
-<summary>문제2.  Git push, pull시 충돌에러</summary>
+<summary>문제2.  Git push, pull시 충돌에러👆</summary>
 
 - 팀원 두명이 같은 파일을 수정해서 동시에 git에 올려 충돌 발생
 - 대처 : Git push시 팀원간의 소통

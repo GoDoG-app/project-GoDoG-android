@@ -161,7 +161,7 @@
   내 정보와 반려가족의 정보를 수정할 수 있고 산책 파트너 목록(친구), 산책 기록, 내가 쓴 커뮤니티 글과 댓글을 확인할 수도 있습니다.
 
 <details>
-<summary>내 정보</summary>
+<summary>내 정보👆</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/3c206bc0-de44-4fc2-8507-fba8ec211c98">
 </details>
 

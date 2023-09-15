@@ -1,5 +1,5 @@
 # 반려가족과의 행복한 순간, GoDoG 🐕
-<img src="https://github.com/kje0058/project-walk-app-android/assets/130967356/08e98596-dd91-4ad8-927f-f099d00e35a7">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/f1f1e9cd-2379-4126-9341-922151bbe83b">
 
 <div align=center>
   <h2>사용한 개발 Tool💻</h2>  
@@ -29,7 +29,7 @@
 <br>
 <h2>📅 프로젝트 기간</h2>
 
-- 2023년 8월 9일 ~ 9월 14일 (5주)
+- 2023년 7월 ~ 9월 (3개월)
 
 <br>
 <h2>💡 프로젝트 기획 의도</h2>
@@ -64,10 +64,7 @@
 
 <details>
 <summary>산책로 추천</summary>
-<img src="https://github.com/kje0058/project-walk-app-android/assets/130967356/bae3a455-5a97-4a7e-bc18-9b5543f46e20">
-</details>
-
-<br>
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/839e73f1-611f-4113-ac95-a8b95d334784">
 
 <h4>2. 실시간 산책과 산책 기록</h4>
    
@@ -83,7 +80,7 @@
 
 <details>
 <summary>산책하기&기록</summary>
-<img src="https://github.com/kje0058/project-walk-app-android/assets/130967356/9776ac91-08e5-4784-b8c2-740e14530cc6">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/9298bdba-de7f-4ac4-a281-a2325197021e">
 </details>
 
 <br>
@@ -94,10 +91,11 @@
 
 <details>
 <summary>접기/펼치기</summary>
-<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/ff40e49f-c06b-4fb6-988f-57bf673903fc">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/6aaa927f-3c62-467c-8566-b8a773d1235a">
 </details>
 
 <br>
+
 
 <h4>4. 커뮤니티</h4>
 
@@ -121,8 +119,7 @@
 
 <details>
 <summary>커뮤니티</summary>
-<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/c493fc0d-6189-4baf-b538-27c5fa86745b">
-</details>
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/ad5e4c6f-21b7-4a05-949f-86ea8bff5f28">
  
 <br>
 
@@ -148,7 +145,7 @@
 
 <details>
 <summary>채팅&약속잡기</summary>
-<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/d2244365-62e4-4767-b83f-eb37d4580fc6">
+<img src="">
 </details>
 
 <br>
@@ -161,7 +158,7 @@
 
 <details>
 <summary>내 정보</summary>
-<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/fe91a9a9-b724-4e89-abc4-496eb3008168">
+<img src="">
 </details>
 
 <br>
@@ -180,7 +177,7 @@ https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcek
   서버를 새로 만들어 API를 하나씩 테스트하고 배포하는 애자일 방식으로 개발을 진행하여 에러를 찾았고,
   라이브러리를 설치할 때 자동 설치된 라이브러리의 버전 문제였고 버전을 낮춰 해결
 
-<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/89fdd7ee-55e6-447d-96e1-2f0affb3fe1e">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/a7d735f2-03f5-494c-86ab-fc7dbad73be3">
 </details>
 
 <details>
@@ -192,7 +189,7 @@ https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcek
   Git branch를 만들어 git pull, push 상황을 공유하고 충돌이 더이상 일어나지 않게 Slack에서 소통함
   Git Gragh를 확인하여 git push 상황을 체크함
 
-<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/c3d580fb-c745-4f43-a305-907cab10d9df">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/68cabf96-47c7-4b5d-b220-b15c71d692c3">
 </details>
 
 <br>

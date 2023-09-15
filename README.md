@@ -90,7 +90,7 @@
 
 <h4>3. 내 주변의 친구 추천</h4>
 
-- 사용자의 위치 반경 내에서 랜덤으로 위도와 경도를 생성합니다.
+- 서버에서 Haversine 공식을 사용하여 두 지점 간의 거리를 계산하고, 사용자의 위치 반경 내에서 랜덤으로 위도와 경도를 생성합니다.
 
 <details>
 <summary>접기/펼치기</summary>
@@ -148,7 +148,7 @@
 
 <details>
 <summary>채팅&약속잡기</summary>
-<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/c493fc0d-6189-4baf-b538-27c5fa86745b">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/d2244365-62e4-4767-b83f-eb37d4580fc6">
 </details>
 
 <br>
@@ -175,8 +175,8 @@ https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcek
 <summary>문제1. 워터풀 개발방식</summary>
   
 - 백엔드에서 개발한 API를 중간에 한꺼번에 배포하다보니 어디서 에러가 발생한지 모르는 상황 발생
-- 대처: 워터풀 개발방식으로 변경
-
+- 대처: 애자일 개발방식으로 변경
+  
   서버를 새로 만들어 API를 하나씩 테스트하고 배포하는 애자일 방식으로 개발을 진행하여 에러를 찾았고,
   라이브러리를 설치할 때 자동 설치된 라이브러리의 버전 문제였고 버전을 낮춰 해결
 

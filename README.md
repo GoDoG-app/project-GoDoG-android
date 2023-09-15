@@ -22,6 +22,7 @@
 
 - Figma 화면기획서 : https://www.figma.com/proto/MJRqZZjh5cfzvLpQewLdMk/walk?type=design&node-id=204-582&t=WmC8c2gizHdNtQr6-1&scaling=scale-down&page-id=0%3A1&starting-point-node-id=204%3A582&show-proto-sidebar=1&mode=design
 - ERD cloud : https://www.erdcloud.com/d/yJ74eC2KMiisGuhBi
+- API 명세서 : 
 - 백엔드 GitHub Respository : https://github.com/kje0058/project-walking-app
 - 프론트엔드 GitHub Respository : https://github.com/kje0058/project-walk-app-android
 
@@ -55,16 +56,14 @@
 
 - 산책로 추천
 
-  홈 화면에서 내 주변 공원을 랜덤으로 추천합니다.
-  산책로까지의 빠른 경로와 느린 경로를 보여주고 소요시간, 거리를 표시해줍니다.
+  홈 화면에서 내 주변 공원을 랜덤으로 추천합니다. 그리고 산책로까지의 빠른 경로와 느린 경로를 보여주고 소요시간, 거리를 표시해줍니다.
 
 - 추천산책로 산책하기
 
-  지도 위치를 현재 내 위치로 잡아주고, 산책을 시작하면 시간과 거리가 작동합니다.
-  그리고 이동한 위치를 마커와 라인으로 표시해줍니다.
+  지도 위치를 현재 내 위치로 잡아주고, 산책을 시작하면 시간과 거리가 작동합니다. 그리고 이동한 위치를 마커와 라인으로 표시해줍니다.
 
 <details>
-<summary>접기/펼치기</summary>
+<summary>산책로 추천</summary>
 <img src="https://github.com/kje0058/project-walk-app-android/assets/130967356/bae3a455-5a97-4a7e-bc18-9b5543f46e20">
 </details>
 
@@ -76,15 +75,14 @@
 
 - 실시간 산책
 
-  지도 위치를 현재 내 위치로 잡아주고, 산책을 시작하면 시간과 거리가 작동합니다.
-  그리고 이동한 위치를 마커와 라인으로 표시해줍니다.
+  지도 위치를 현재 내 위치로 잡아주고, 산책을 시작하면 시간과 거리가 작동합니다. 그리고 이동한 위치를 마커와 라인으로 표시해줍니다.
 
 - 산책기록
   
   산책 총 횟수, 거리, 시간을 표시하며, 하단에는 달력과 저장한 산책 기록 목록을 보여줍니다.
 
 <details>
-<summary>접기/펼치기</summary>
+<summary>산책하기&기록</summary>
 <img src="https://github.com/kje0058/project-walk-app-android/assets/130967356/9776ac91-08e5-4784-b8c2-740e14530cc6">
 </details>
 
@@ -114,6 +112,7 @@
 - 게시글 상세보기 + 댓글
 
   게시글을 클릭하면 상세 화면으로 이동하고, 댓글 작성과 확인이 가능합니다.
+  
   실시간으로 많은 양의 댓글 DB를 저장하기 위해 Firebase Firestore를 사용했습니다.
 
 - 게시글 작성
@@ -121,7 +120,7 @@
   하단 + ProgressBar 버튼으로 글 작성이 가능합니다.
 
 <details>
-<summary>접기/펼치기</summary>
+<summary>커뮤니티</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/c493fc0d-6189-4baf-b538-27c5fa86745b">
 </details>
  
@@ -131,29 +130,77 @@
 
 - 채팅목록
 
-  내가 속한 채팅방 목록을 모두 보여줌
+  내가 속한 채팅방 목록을 모두 보여줍니다.
 
 - 1:1 채팅방
 
-  내가 보낸 메세지와 친구가 보낸 채팅 메세지를 구별하여 채팅방에 표시함
+  내가 보낸 메세지와 친구가 보낸 채팅 메세지를 구별하여 채팅방에 표시해줍니다.
 
 - 약속잡기
 
-   날짜, 약속시간, 장소를 선택하여 친구와 산책약속을 정함
+  날짜, 약속시간, 장소를 선택하여 친구와 산책약속을 정할 수 있으며, 약속이 잡히면 약속 메시지가 채팅창에 자동으로 전송되어 보여줍니다.
+  
+  실시간으로 많은 양의 채팅 DB를 저장하기 위해 Firebase Firestore를 사용했습니다.
 
 - 약속장소
 
-  카카오 우편번호 검색 자바스크립트를 활용하여 주소를 검색
+  카카오 우편번호 검색 자바스크립트를 활용하여 주소를 검색할 수 있습니다.
 
-- 약속메시지
-  약속이 잡히면 약속 메시지가 채팅창에 자동으로 보여짐
-  실시간으로 많은 양의 채팅 DB를 저장하기 위해 Firebase Firestore를 사용
+<details>
+<summary>채팅&약속잡기</summary>
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/c493fc0d-6189-4baf-b538-27c5fa86745b">
+</details>
 
+<br>
+
+<h4>6. 내 정보</h4>
+
+- 내 정보&반려가족 정보
+
+  내 정보와 반려가족의 정보를 수정할 수 있고 산책 파트너 목록(친구), 산책 기록, 내가 쓴 커뮤니티 글과 댓글을 확인할 수도 있습니다.
+
+<details>
+<summary>내 정보</summary>
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/fe91a9a9-b724-4e89-abc4-496eb3008168">
+</details>
+
+<br>
 <h2>📱 프로젝트 시연 동영상</h2>
-<img width="80" src="{이미지 경로}"/>
+<img width="80" src=""/>
 
+<br>
+<h2>🔥 에러사항</h2>
+<details>
+<summary>문제1. 워터풀 개발방식</summary>
+  
+- 백엔드에서 개발한 API를 중간에 한꺼번에 배포하다보니 어디서 에러가 발생한지 모르는 상황 발생
+- 대처: 워터풀 개발방식으로 변경
 
-<h2>에러사항</h2>
+  서버를 새로 만들어 API를 하나씩 테스트하고 배포하는 애자일 방식으로 개발을 진행하여 에러를 찾았고,
+  라이브러리를 설치할 때 자동 설치된 라이브러리의 버전 문제였고 버전을 낮춰 해결
 
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/89fdd7ee-55e6-447d-96e1-2f0affb3fe1e">
+</details>
 
-<h2>팀원</h2>
+<details>
+<summary>문제2.  Git push, pull시 충돌에러</summary>
+
+- 팀원 두명이 같은 파일을 수정해서 동시에 git에 올려 충돌 발생
+- 대처 : Git push시 팀원간의 소통
+  
+  Git branch를 만들어 git pull, push 상황을 공유하고 충돌이 더이상 일어나지 않게 Slack에서 소통함
+  Git Gragh를 확인하여 git push 상황을 체크함
+
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/c3d580fb-c745-4f43-a305-907cab10d9df">
+</details>
+
+<br>
+<h2>👨‍💻 팀원</h2>
+
+|이름|깃허브|역할|
+|------|---|---|
+|김정은|테스트2|조장 / 친구 추천, 카카오 로그인 및Firebase 채팅 개발|
+|김예진|테스트2|조원 / 안드로이드 기능 개발|
+|최태욱|테스트2|조원 / 서버 기능 개발|
+|황덕우|테스트2|조원 / TMap 지도 산책 개발|
+

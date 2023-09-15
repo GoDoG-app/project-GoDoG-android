@@ -22,7 +22,7 @@
 
 - Figma 화면기획서 : https://www.figma.com/proto/MJRqZZjh5cfzvLpQewLdMk/walk?type=design&node-id=204-582&t=WmC8c2gizHdNtQr6-1&scaling=scale-down&page-id=0%3A1&starting-point-node-id=204%3A582&show-proto-sidebar=1&mode=design
 - ERD cloud : https://www.erdcloud.com/d/yJ74eC2KMiisGuhBi
-- API 명세서 : 
+- API 명세서 : https://documenter.getpostman.com/view/28003812/2s9Y5WxiSb
 - 백엔드 GitHub Respository : https://github.com/kje0058/project-walking-app
 - 프론트엔드 GitHub Respository : https://github.com/kje0058/project-walk-app-android
 

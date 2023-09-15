@@ -65,6 +65,7 @@
 <details>
 <summary>산책로 추천</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/839e73f1-611f-4113-ac95-a8b95d334784">
+</details>
 
 <h4>2. 실시간 산책과 산책 기록</h4>
    

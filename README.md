@@ -166,7 +166,8 @@
 
 <br>
 <h2>📱 프로젝트 시연 동영상</h2>
-<img width="80" src=""/>
+
+https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcekey
 
 <br>
 <h2>🔥 에러사항</h2>

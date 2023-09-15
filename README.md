@@ -67,6 +67,8 @@
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/839e73f1-611f-4113-ac95-a8b95d334784">
 </details>
 
+<br>
+
 <h4>2. 실시간 산책과 산책 기록</h4>
    
    **Tmap SDK의 POI 주변검색, 실시간 지도보기, 보행자경로안내 사용**
@@ -121,7 +123,8 @@
 <details>
 <summary>커뮤니티</summary>
 <img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/ad5e4c6f-21b7-4a05-949f-86ea8bff5f28">
- 
+</details>
+
 <br>
 
 <h4>5. 채팅 & 약속잡기</h4>
@@ -146,7 +149,7 @@
 
 <details>
 <summary>채팅&약속잡기</summary>
-<img src="">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/e5ca63e5-d471-4bb1-b9c8-e6a3251614ad">
 </details>
 
 <br>
@@ -159,7 +162,7 @@
 
 <details>
 <summary>내 정보</summary>
-<img src="">
+<img src="https://github.com/GoDoG-app/project-GoDoG-android/assets/130967356/3c206bc0-de44-4fc2-8507-fba8ec211c98">
 </details>
 
 <br>
@@ -202,6 +205,3 @@ https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcek
 |김예진|https://github.com/blue618020|조원 / 안드로이드 기능 개발|
 |최태욱|https://github.com/skdixodnr|조원 / 서버 기능 개발|
 |황덕우|https://github.com/the9world|조원 / TMap 지도 산책 개발|
-
-
-ㅎㅎ

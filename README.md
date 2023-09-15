@@ -200,8 +200,8 @@ https://drive.google.com/file/d/1ZpAn0eP5NPqrZfY4rBPOdqAR7lLDeX8q/view?resourcek
 
 |이름|깃허브|역할|
 |------|---|---|
-|김정은|테스트2|조장 / 친구 추천, 카카오 로그인 및Firebase 채팅 개발|
-|김예진|테스트2|조원 / 안드로이드 기능 개발|
-|최태욱|테스트2|조원 / 서버 기능 개발|
-|황덕우|테스트2|조원 / TMap 지도 산책 개발|
+|김정은|https://github.com/kje0058|조장 / 친구 추천, 카카오 로그인 및Firebase 채팅 개발|
+|김예진|https://github.com/blue618020|조원 / 안드로이드 기능 개발|
+|최태욱|https://github.com/skdixodnr|조원 / 서버 기능 개발|
+|황덕우|https://github.com/the9world|조원 / TMap 지도 산책 개발|
 

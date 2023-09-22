@@ -56,8 +56,6 @@ public class FriendActivityFromFriendList extends AppCompatActivity {
 
     TextView userTemp;  // 온도 숫자 표시
     ProgressBar progressBar;  // 온도 표시
-    TextView userScore1;  // 내가 받은 후기1
-    TextView userScore2;  // 내가 받은 후기2
 
     ImageView imgPet;  // 동물 프로필 사진
     TextView petNickname;  // 동물 이름

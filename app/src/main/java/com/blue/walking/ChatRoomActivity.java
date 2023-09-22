@@ -1,5 +1,7 @@
 package com.blue.walking;
 
+import static android.view.View.GONE;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +66,11 @@ public class ChatRoomActivity extends AppCompatActivity {
     ImageView imgSend;  // 채팅 보내기
     ImageView imgBack;  // 뒤로가기
     Button btnPromise;  // 약속 잡기
+    Button btnPromiseList;  // 약속 목록 보기
+    ImageView imgAdd;  // 약속잡기와 목록 버튼을 띄워주는 용도
+    LinearLayout promiseLayout;  // 약속잡기와 목록 버튼이 있는 레이아웃
+
+
     String token;
     RecyclerView recyclerView;
     ChatRoomAdapter adapter;
@@ -80,6 +88,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     String roomName;
     Chat chat;
 
+    boolean i = true;  // 약속잡기와 목록 버튼을 숨기고 띄울 용도
+
     UserInfo userInfo; // 내 정보
 
 
@@ -93,6 +103,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         editChat = findViewById(R.id.editChat);
         imgSend = findViewById(R.id.imgSend);
         txtUserName = findViewById(R.id.txtUserName);
+        btnPromiseList = findViewById(R.id.btnPromiseList);
+        imgAdd = findViewById(R.id.imgAdd);
+        promiseLayout = findViewById(R.id.promiseLayout);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -206,7 +219,31 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
 
 
+        // 약속목록으로 이동
+        btnPromiseList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent;
+                intent = new Intent(ChatRoomActivity.this, PromiseListActivity.class);
+                startActivity(intent);
+            }
+        });
 
+
+        // 약속잡기와 목록 버튼을 숨기고 띄우기
+        imgAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (i==true){
+                    promiseLayout.setVisibility(View.VISIBLE);
+                    i = false;
+
+                } else {
+                    promiseLayout.setVisibility(GONE);
+                    i = true;
+                }
+            }
+        });
 
 
 

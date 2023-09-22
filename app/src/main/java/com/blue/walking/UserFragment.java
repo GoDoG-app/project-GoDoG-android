@@ -100,9 +100,6 @@ public class UserFragment extends Fragment {
     TextView userTemp;  // 온도 숫자 표시
     ProgressBar progressBar;  // 온도 표시
 
-    TextView userScore1;  // 내가 받은 후기1
-    TextView userScore2;  // 내가 받은 후기2
-
     ImageView imgPetAddition;  // 반려가족 등록+
 
     ImageView imgPet;  // 동물 프로필 사진
@@ -114,6 +111,7 @@ public class UserFragment extends Fragment {
     Button btnFollowList;  // 산책 파트너 목록
     Button btnWalkList;    // 산책 기록
     Button btnCommuList;   // 내가 쓴 글(커뮤니티)
+    Button btnPromiseList;  // 약속 목록
 
 
     String token;  // 토큰
@@ -135,8 +133,6 @@ public class UserFragment extends Fragment {
         userComment = rootView.findViewById(R.id.userComment);
         userUpdate = rootView.findViewById(R.id.userUpdate);
         userTemp = rootView.findViewById(R.id.userTemp);
-        userScore1 = rootView.findViewById(R.id.userScore1);
-        userScore2 = rootView.findViewById(R.id.userScore2);
 
         imgUser = rootView.findViewById(R.id.imgUser);
         imgUser.setClipToOutline(true);  // 둥근 테두리 적용
@@ -153,6 +149,7 @@ public class UserFragment extends Fragment {
         btnFollowList = rootView.findViewById(R.id.btnFollowList);
         btnWalkList = rootView.findViewById(R.id.btnWalkList);
         btnCommuList = rootView.findViewById(R.id.btnCommuList);
+        btnPromiseList = rootView.findViewById(R.id.btnPromiseList);
 
         progressBar = rootView.findViewById(R.id.progressBar);
         progressBar.setProgress((int) 36.5);
@@ -235,6 +232,16 @@ public class UserFragment extends Fragment {
                 intent = new Intent(getActivity(), FriendListActivity.class);
                 startActivity(intent);
 
+            }
+        });
+
+        btnPromiseList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 약속 목록 보기
+                Intent intent;
+                intent = new Intent(getActivity(), PromiseListActivity.class);
+                startActivity(intent);
             }
         });
 

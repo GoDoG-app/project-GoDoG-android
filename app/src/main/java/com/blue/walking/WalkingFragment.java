@@ -1,25 +1,17 @@
 package com.blue.walking;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.google.android.gms.maps.MapView;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.skt.tmap.TMapPoint;
-import com.skt.tmap.overlay.TMapPolyLine;
 
 import java.util.ArrayList;
 
@@ -95,6 +87,9 @@ public class WalkingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_walking, container, false);
+
+//        Intent intent = new Intent(getActivity(), WalkingActivity_1.class);
+//        startActivity(intent);
 
         bottomNavigationView = rootView.findViewById(R.id.bottomNavigationView);
         walking_1 = new Walking_1();

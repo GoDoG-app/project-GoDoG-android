@@ -8,148 +8,126 @@
     tools:context=".Walking_1">
 
     <LinearLayout
+        android:id="@+id/LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <FrameLayout
-                android:id="@+id/tmapViewContainer"
-                android:layout_width="match_parent"
-                android:layout_height="400dp">
-
-
-            </FrameLayout>
-
-            <ImageView
-                android:id="@+id/btnLocation"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="340dp"
-                android:src="@drawable/baseline_my_location_24" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="160dp"
-                android:layout_marginTop="160dp" />
-
-        </RelativeLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal">
+            android:background="#FFF7AB"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/textView34"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="산책시간"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
-
-                <Chronometer
-                    android:id="@+id/chronometer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:textColor="#000000"
-                    android:textSize="20sp" />
-            </LinearLayout>
+                android:layout_marginTop="50dp"
+                android:gravity="center"
+                android:text="똘이와 산책을 시작해보세요"
+                android:textColor="#6A1313"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/imgStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="50dp"
-                android:layout_marginRight="50dp"
-                android:layout_weight="0"
-                android:src="@drawable/baseline_play_arrow_24"
-                android:visibility="visible" />
+                android:layout_marginLeft="150dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/start" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView14"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="산책거리"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/txtDistance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="0 km"
-                    android:textColor="#000000"
-                    android:textSize="20sp" />
-            </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnReset"
-            android:layout_width="170dp"
+        <LinearLayout
+            android:id="@+id/산책중친구"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="#FFD953"
-            android:text="초기화"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            android:visibility="gone"
-            app:cornerRadius="10dp" />
+            android:background="#FFF7AB"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnLine"
-            android:layout_width="170dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="#FFD953"
-            android:text="지도 초기화"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            app:cornerRadius="10dp" />
+            <View
+                android:id="@+id/view6"
+                android:layout_width="match_parent"
+                android:layout_height="3px"
+                android:layout_marginTop="10dp"
+                android:background="#636363"
+                android:visibility="visible" />
 
-        <TextView
-            android:id="@+id/txtPlace"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/textView17"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginBottom="10dp"
+                android:text="산책중인 친구"
+                android:textColor="#000000"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="132dp"
+            android:orientation="horizontal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:text="추천 장소 이름"
-            android:textColor="#000000"
-            android:textSize="15sp"
-            android:visibility="invisible" />
+            android:background="#FFF7AB"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/view7"
+                android:layout_width="match_parent"
+                android:layout_height="3px"
+                android:layout_marginTop="10dp"
+                android:background="#636363"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="원하시는 마커를 선택하세요"
+                android:textColor="#000000"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/markerGirl"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/round_circle_backgroud"
+                android:scaleType="centerCrop"
+                android:src="@drawable/marker_girl" />
+
+            <ImageView
+                android:id="@+id/markerBoy"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="100dp"
+                android:src="@drawable/marker_boy" />
+        </LinearLayout>
 
     </LinearLayout>
 

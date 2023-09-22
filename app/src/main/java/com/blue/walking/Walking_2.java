@@ -3,20 +3,19 @@ package com.blue.walking;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CalendarView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.blue.walking.adapter.WalkingAdapter;
 import com.blue.walking.api.NetworkClient;
@@ -28,16 +27,6 @@ import com.blue.walking.model.PetList;
 import com.blue.walking.model.WalkingList;
 import com.blue.walking.model.WalkingRes;
 import com.bumptech.glide.Glide;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.DayViewDecorator;
-import com.prolificinteractive.materialcalendarview.DayViewFacade;
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.spans.DotSpan;
-
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.DateTimeParseException;
 
 import java.util.ArrayList;
 
@@ -101,7 +90,7 @@ public class Walking_2 extends Fragment {
     TextView txtDistance;  // 총 거리
     TextView txtTime;   // 총 시간
     TextView txtDate;   // 산책일지 날짜
-    MaterialCalendarView calendarView;  // 달력
+    CalendarView calendarView;  // 달력
     RecyclerView recyclerView;  // 산책일지 목록 띄우는 리사이클러뷰
     ArrayList<WalkingList> walkingListArrayList = new ArrayList<>();
     WalkingAdapter adapter;
@@ -214,44 +203,8 @@ public class Walking_2 extends Fragment {
                                     recyclerView.scrollToPosition(walkingListArrayList.size()-1);
                                     adapter.notifyDataSetChanged();
 
-                                    // 오늘 날짜를 선택
-                                    CalendarDay today = CalendarDay.today();
-                                    calendarView.setSelectedDate(today);
 
-                                    // 선택된 날짜에 대한 데코레이터 생성
-                                    SelectedDayDecorator selectedDayDecorator = new SelectedDayDecorator(today);
 
-                                    // 선택된 날짜에 데코레이터 적용
-                                    calendarView.addDecorator(selectedDayDecorator);
-                                    calendarView.addDecorator(new DayViewDecorator() {
-                                        @Override
-                                        public boolean shouldDecorate(CalendarDay day) {
-                                            for (WalkingList walkingItem : walkingLists) {
-                                                String recordedDate = walkingItem.createdAt;
-
-                                                try {
-                                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-                                                    LocalDateTime recordedDateTime = LocalDateTime.parse(recordedDate, formatter);
-                                                    LocalDate recordedLocalDate = recordedDateTime.toLocalDate();
-                                                    CalendarDay recordedCalendarDay = CalendarDay.from(recordedLocalDate);
-
-                                                    if (recordedCalendarDay.equals(day)) {
-                                                        return true;
-                                                    }
-                                                } catch (DateTimeParseException e) {
-                                                    Log.e("Error", "날짜 구문 분석 오류: " + recordedDate);
-                                                }
-                                            }
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public void decorate(DayViewFacade view) {
-                                            view.addSpan(new DotSpan(7F, Color.parseColor("#FD5656")));
-
-                                        }
-
-                                    });
 
                                 }
                             }
@@ -278,28 +231,31 @@ public class Walking_2 extends Fragment {
             }
         });
 
+
+
+        // 캘린더 뷰에서 날짜 클릭하면 해당 년도와 월을 보여줌
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                month = month + 1;
+                String month2;
+                if (month < 10) {
+                    month2 = "0" + month;
+                } else {
+                    month2 = "" + month;
+                }
+
+                String date = year + "." + (month2);
+                txtDate.setText(date + " 산책일지");
+
+
+            }
+        });
+
+
+
+
         return rootView;
-    }
-
-    public class SelectedDayDecorator implements DayViewDecorator {
-
-        private CalendarDay selectedDate;
-
-        public SelectedDayDecorator(CalendarDay selectedDate) {
-            this.selectedDate = selectedDate;
-        }
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            // 선택된 날짜와 현재 날짜가 같으면 true 반환하여 데코레이터를 적용
-            return selectedDate != null && selectedDate.equals(day);
-        }
-
-        @Override
-        public void decorate(DayViewFacade view) {
-            // 선택된 날짜의 텍스트 색상을 검정색으로 변경
-            view.addSpan(new ForegroundColorSpan(Color.BLACK));
-        }
     }
 
 

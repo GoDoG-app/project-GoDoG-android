@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">488060311112-j1o32hulbuk40f2o9j41p22fk9akc9c7.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">488060311112</string>
+    <string name="google_api_key" translatable="false">AIzaSyBWkYJi8bG-b0_rCapivQ2OGYxt_veJD1g</string>
+    <string name="google_app_id" translatable="false">1:488060311112:android:40fa4a1a5e2c708c286a7d</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBWkYJi8bG-b0_rCapivQ2OGYxt_veJD1g</string>
+    <string name="google_storage_bucket" translatable="false">project-walk-app.appspot.com</string>
+    <string name="project_id" translatable="false">project-walk-app</string>
+</resources>

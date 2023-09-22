@@ -12,14 +12,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFEE93"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_walking_menu" />
-
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -137,7 +129,7 @@
             app:cornerRadius="10dp" />
 
         <Button
-            android:id="@+id/btnMapReset"
+            android:id="@+id/btnLine"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -158,15 +150,6 @@
             android:textColor="#000000"
             android:textSize="15sp"
             android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView8"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="30dp"
-            android:scaleType="fitXY"
-            android:visibility="gone"
-            app:srcCompat="@drawable/frag" />
 
     </LinearLayout>
 

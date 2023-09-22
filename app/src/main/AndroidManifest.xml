@@ -26,7 +26,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Walking"
         android:usesCleartextTraffic="true"
-        tools:targetApi="30">
+        tools:targetApi="31">
+        <activity
+            android:name=".TestActivity"
+            android:exported="false" />
         <activity
             android:name=".WalkingNoteActivity"
             android:exported="false" />
@@ -84,6 +87,9 @@
         <activity
             android:name=".FriendListActivity"
             android:exported="false" />
+        <activity
+            android:name=".WalkingActivity_1"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -107,7 +113,7 @@
 
                 <data
                     android:host="oauth"
-                    android:scheme="kakao${kakao_app_key}" />
+                    android:scheme="kakao80e37f349a16fcd565298d9e9591c338" />
             </intent-filter>
         </activity>
         <activity

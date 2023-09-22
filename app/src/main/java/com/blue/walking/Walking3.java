@@ -1,14 +1,8 @@
 package com.blue.walking;
 
-import static android.view.View.GONE;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,30 +10,19 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.blue.walking.api.NetworkClient;
-import com.blue.walking.api.WalkingApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.blue.walking.config.Config;
 import com.blue.walking.model.Park;
-import com.blue.walking.model.ResultRes;
-import com.blue.walking.model.User;
 import com.blue.walking.model.UserInfo;
-import com.blue.walking.model.WalkingList;
-import com.google.gson.Gson;
 import com.skt.tmap.TMapData;
 import com.skt.tmap.TMapPoint;
 import com.skt.tmap.TMapView;
 import com.skt.tmap.overlay.TMapPolyLine;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class Walking3 extends AppCompatActivity {
 
@@ -77,7 +60,8 @@ public class Walking3 extends AppCompatActivity {
     TMapPoint endPoint;
     TMapPoint randomPoint1;
     TMapPoint randomPoint2;
-    String token;
+
+    ImageView imgLoop;
 
 
     @Override
@@ -99,6 +83,7 @@ public class Walking3 extends AppCompatActivity {
             // userInfo가 null인 경우 처리
             Log.e("UserInfo", "UserInfo null");
         }
+
         startLat = userInfo.lat; // 출발지
         startLng = userInfo.lng;
 
@@ -132,9 +117,20 @@ public class Walking3 extends AppCompatActivity {
         txtKm2 = findViewById(R.id.txtKm2);
         imgRoute1 = findViewById(R.id.imgRoute1);
         imgRoute2 = findViewById(R.id.imgRoute2);
+        imgLoop = findViewById(R.id.imgLoop);
         txtRegion.setText(userInfo.userAddress);
         txtPlace1.setText(park.getName()+"(빠른 경로)");
         txtPlace2.setText(park.getName()+"(느린 경로)");
+
+        imgLoop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Walking3.this, TestActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
 
         // 경로 추천용 두개의 지도
         // TmapView1 객체

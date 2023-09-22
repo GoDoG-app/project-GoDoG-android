@@ -158,7 +158,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:mcv_selectionColor="#FFF6C5"
+                    app:mcv_selectionColor="#BCA6FA"
                     app:mcv_showOtherDates="defaults"
                     app:mcv_tileSize="53dp" />
 
